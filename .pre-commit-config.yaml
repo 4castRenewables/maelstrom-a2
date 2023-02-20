@@ -1,0 +1,62 @@
+fail_fast: false
+default_language_version:
+  python: python3
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-added-large-files
+        args: [ "--maxkb=3000" ]
+        exclude: (__pycache__, *.pyc, *.pyo, *.iml, *.xml, *.cpy)
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+        exclude: (__pycache__, *.pyc, *.pyo, *.iml, *.xml, *.cpy)
+
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v3.9.0
+    hooks:
+      - id: reorder-python-imports
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.1.0
+    hooks:
+      - id: pyupgrade
+        args: [
+            "--py3-plus",
+            "--py36-plus",
+            "--py37-plus",
+            "--py38-plus",
+            "--py39-plus",
+        ]
+
+  - repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black
+        args: ["--config", "pyproject.toml"]
+        types_or: [python, pyi]
+      - id: black-jupyter
+        args: ["--config", "pyproject.toml"]
+        types_or: [jupyter]
+        additional_dependencies:
+          - ".[jupyter]"
+
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - Flake8-pyproject
+  - repo: local
+    hooks:
+      - id: jupyter-nb-clear-output
+        name: jupyter-nb-clear-output
+        stages: [commit]
+        language: system
+        files: \.ipynb$
+        entry: poetry run jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace

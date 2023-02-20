@@ -1,0 +1,7 @@
+Bootstrap: docker
+From: huggingface/transformers-pytorch-gpu
+%post
+apt install -y python3-venv
+pip install numpy scipy pandas matplotlib tqdm scikit-learn xarray dask netCDF4 bottleneck ipykernel \
+jupyterlab keras tensorflow torch datasets transformers sentencepiece ray[tune] shapely \
+xgboost nltk sentence_transformers catboost

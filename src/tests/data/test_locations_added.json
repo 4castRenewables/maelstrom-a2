@@ -1,0 +1,90 @@
+[
+    {
+        "id": "testid",
+        "name": "Fake city",
+        "full_name": "Fake city, fake country",
+        "country": "Fake Country",
+        "country_code": "FC",
+        "url": "https://api.twitter.com/1.1/geo/id/testid.json",
+        "place_type": "city",
+        "attributes": {
+            "geotagCount": "1"
+        },
+        "bounding_box": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [
+                        -42,
+                        42
+                    ],
+                    [
+                        42,
+                        42
+                    ],
+                    [
+                        -42,
+                        -42
+                    ],
+                    [
+                        42,
+                        -42
+                    ],
+                    [
+                        -42,
+                        42
+                    ]
+                ]
+            ]
+        },
+        "centroid": [
+            0,
+            0
+        ],
+        "contained_within": [
+            {
+                "id": "fakeidcounty",
+                "name": "Central Fake County",
+                "full_name": "Central Fake County, Fake Country",
+                "country": "Fake Country",
+                "country_code": "FC",
+                "url": "https://api.twitter.com/1.1/geo/id/fakeidcounty.json",
+                "place_type": "admin",
+                "attributes": {},
+                "bounding_box": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [
+                                -84,
+                                84
+                            ],
+                            [
+                                -84,
+                                -84
+                            ],
+                            [
+                                84,
+                                84
+                            ],
+                            [
+                                84,
+                                -84
+                            ],
+                            [
+                                -84,
+                                84
+                            ]
+                        ]
+                    ]
+                },
+                "centroid": [
+                    0,
+                    0
+                ]
+            }
+        ],
+        "polylines": [],
+        "geometry": null
+    }
+]
