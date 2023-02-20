@@ -1,9 +1,11 @@
 import a2.preprocess
 import a2.utils
 import numpy as np
+import pytest
 import pytest_cases
 
 
+@pytest.mark.optional
 @pytest_cases.parametrize(
     "dataset, expected_sorted_oov, expected_vocab_coverage, expected_text_coverage, expected_vocab",
     [

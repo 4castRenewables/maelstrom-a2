@@ -18,3 +18,21 @@ def vcr_config():
         # Replace the Authorization request header with "DUMMY" in cassettes
         "filter_headers": [("Authorization", "DUMMY")],
     }
+
+
+def pytest_addoption(parser):
+    parser.addoption("--skip_optional", action="store_true", default=False, help="skip running optional tests")
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "optional: mark test as optional")
+
+
+def pytest_collection_modifyitems(config, items):
+    if not config.getoption("--skip_optional"):
+        # --runslow given in cli: do not skip slow tests
+        return
+    skip_optional = pytest.mark.skip(reason="use --skip_optional option to skip")
+    for item in items:
+        if "optional" in item.keywords:
+            item.add_marker(skip_optional)
