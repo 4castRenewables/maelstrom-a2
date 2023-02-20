@@ -1,0 +1,5 @@
+*.nc !text !filter !merge !diff
+*.csv !text !filter !merge !diff
+*.json !text !filter !merge !diff
+*.gz !text !filter !merge !diff
+*.tar !text !filter !merge !diff
