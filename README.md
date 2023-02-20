@@ -72,6 +72,11 @@ e.g.,
 ```
 ## Testing
 
+### Skip tests that require large datasets
+
+Use `--skip_optional` when using pytest to skip these tests.
+
+
 ### Testing images
 Tests are based on the package [pytest-mpl](https://github.com/matplotlib/pytest-mpl).
 
