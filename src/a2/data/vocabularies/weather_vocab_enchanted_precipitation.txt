@@ -1,0 +1,25 @@
+blizzard
+cloudburst
+downpour
+drizzle
+flash flood
+flood
+flood stage
+forecast
+freezing rain
+hail
+ice storm
+lightning
+precipitation
+rain
+rain gauge
+rain shadow
+rainbands
+rain shower
+snow
+snow shower
+snowstorm
+sun
+sunny
+thunder
+thunderstorm
