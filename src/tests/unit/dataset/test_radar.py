@@ -5,6 +5,7 @@ import a2.dataset
 import a2.utils
 import distutils.dir_util
 import numpy as np
+import pytest
 import xarray
 
 FILE_LOC = pathlib.Path(__file__).parent
@@ -62,6 +63,7 @@ def test_nimrod_class_query():
     assert query_as_string == compare
 
 
+@pytest.mark.skip(reason="TODO: upload file too large")
 def test_nimrod_ds_cumulative_from_time(tmp_path, fake_cumulative_dataset):
     setup_directory(tmp_path, "test_nimrod_ds_cumulative_from_time")
 
