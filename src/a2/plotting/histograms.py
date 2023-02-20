@@ -256,6 +256,8 @@ def annotate_histogram(
 ):
     """
     annotate labels to individual bar of histogram plot
+    To download emoji images refer to `download_emoji` in
+    notebooks/dataset/visualize_raw_tweets.ipynb
 
     Parameters:
     ----------
