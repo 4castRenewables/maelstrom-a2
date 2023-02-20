@@ -1,6 +1,7 @@
 import pathlib
-import matplotlib.figure
+
 import matplotlib.axes
+import matplotlib.figure
 import pandas as pd
 
 

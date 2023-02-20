@@ -1,3 +1,4 @@
+# flake8: noqa
 import torch
 import transformers
 from deep500.utils import timer_torch as timer
