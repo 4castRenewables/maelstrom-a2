@@ -63,7 +63,7 @@ def test_nimrod_class_query():
     assert query_as_string == compare
 
 
-@pytest.mark.skip(reason="TODO: upload file too large")
+@pytest.mark.optional
 def test_nimrod_ds_cumulative_from_time(tmp_path, fake_cumulative_dataset):
     setup_directory(tmp_path, "test_nimrod_ds_cumulative_from_time")
 
