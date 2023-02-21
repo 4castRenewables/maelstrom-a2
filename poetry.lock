@@ -832,6 +832,36 @@ files = [
 ]
 
 [[package]]
+name = "cmake"
+version = "3.25.2"
+description = "CMake is an open-source, cross-platform family of tools designed to build, test and package software"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "cmake-3.25.2-py2.py3-none-macosx_10_10_universal2.macosx_10_10_x86_64.macosx_11_0_arm64.macosx_11_0_universal2.whl", hash = "sha256:962224cfb988ce9c9f3223de9cea68cd3a9d7c0f251866aee5db4620bed2ef73"},
+    {file = "cmake-3.25.2-py2.py3-none-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:42053bbaf7f77a13f713acd2cc6d724a2899b00a8f6042c0c80c9581f1ad9fde"},
+    {file = "cmake-3.25.2-py2.py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:a6d849fd0316a0bfa29b44752de8f30ea798771fea6a06d9f1cc5799910f10bf"},
+    {file = "cmake-3.25.2-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c94571e1225e54e9444f8e8c47987932194fa4ab45ce96dc4de4fe5dfcc89afa"},
+    {file = "cmake-3.25.2-py2.py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:715ef82e81b48db3e4c7744614c15ff361d53f6987fd70b1b66b0880595f2e2c"},
+    {file = "cmake-3.25.2-py2.py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:679900ad25bfbb83fc5f7ed8885711d68e334bcde51011f237520b4268b4d900"},
+    {file = "cmake-3.25.2-py2.py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:a550a4d16d89fd78e48bacb97eea906486625fe8a8eac8d4607ccfd89a00372a"},
+    {file = "cmake-3.25.2-py2.py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f9587645cea5298d5eb20649f58a83cc53c9efa7d57b0716449a39f366a74986"},
+    {file = "cmake-3.25.2-py2.py3-none-musllinux_1_1_aarch64.whl", hash = "sha256:27462531ffcd213397012cce341a7ff2b647d4f57a153a23f1a054805384ca05"},
+    {file = "cmake-3.25.2-py2.py3-none-musllinux_1_1_i686.whl", hash = "sha256:3bab3f5a60bd5843b07b83df97368983c59e2ab6b09ab08a80e608e9a37a6a09"},
+    {file = "cmake-3.25.2-py2.py3-none-musllinux_1_1_ppc64le.whl", hash = "sha256:faf8eb7e38a3167c1d502f6b6355717b645400f9c48947e9aab992f52d52df68"},
+    {file = "cmake-3.25.2-py2.py3-none-musllinux_1_1_s390x.whl", hash = "sha256:ef3b68c6096388fd4b139a6e4da5dd25e8fe8786b980375fe70914b81bac7f77"},
+    {file = "cmake-3.25.2-py2.py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:48d9a496eb1b1da375b98753009f3c69a59a207e61ecdb13d2bf06e33491dad3"},
+    {file = "cmake-3.25.2-py2.py3-none-win32.whl", hash = "sha256:36407f07f6241258fbe05c937304f52a9a8291fcc8e709c2fa1970632dc27aa3"},
+    {file = "cmake-3.25.2-py2.py3-none-win_amd64.whl", hash = "sha256:e77f856b09f3246d22e4c99458678f0e3d094a73903643bbc422fbc92b77e574"},
+    {file = "cmake-3.25.2-py2.py3-none-win_arm64.whl", hash = "sha256:814800cf5a1f5a32cb7af659f830e8f810692929bdf5c9a30e5c263b3d16af7c"},
+    {file = "cmake-3.25.2.tar.gz", hash = "sha256:bcf9f0369743278ec26961542b31ed1610e6f4cfc20c00a3f1c61985abb3b0d2"},
+]
+
+[package.extras]
+test = ["codecov (>=2.0.5)", "coverage (>=4.2)", "flake8 (>=3.0.4)", "path.py (>=11.5.0)", "pytest (>=3.0.3)", "pytest-cov (>=2.4.0)", "pytest-runner (>=2.9)", "pytest-virtualenv (>=1.7.0)", "scikit-build (>=0.10.0)", "setuptools (>=28.0.0)", "virtualenv (>=15.0.3)", "wheel (<0.38)"]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -1314,6 +1344,28 @@ files = [
     {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
     {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
 ]
+
+[[package]]
+name = "deep500"
+version = "0.2.0"
+description = "The deep learning metaframework"
+category = "dev"
+optional = false
+python-versions = "*"
+files = []
+develop = true
+
+[package.dependencies]
+cmake = "*"
+jinja2 = "*"
+numpy = "*"
+onnx = "*"
+pillow = "*"
+tqdm = "*"
+
+[package.source]
+type = "directory"
+url = "../deep500"
 
 [[package]]
 name = "deepdiff"
@@ -4018,6 +4070,55 @@ signals = ["blinker (>=1.4.0)"]
 signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
+name = "onnx"
+version = "1.13.0"
+description = "Open Neural Network Exchange"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "onnx-1.13.0-cp310-cp310-macosx_10_12_universal2.whl", hash = "sha256:4d25aaf5b385937eb3d0846616ff8fdff65b4f5d2f55c82ffe0c6deb021f4714"},
+    {file = "onnx-1.13.0-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:ea9ce14eb7bc4ff3e236d44433ed6b9a5cdb2921d357d28f74268b43d04897c0"},
+    {file = "onnx-1.13.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c77074bb9c12bef5c0054c972bba0280de6df0712dfccfdd224b0ee3f0b56cab"},
+    {file = "onnx-1.13.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e1f4f217942f97aad8bd3b707259338045ed5804b3a0dfa453d9f108f53a9ce2"},
+    {file = "onnx-1.13.0-cp310-cp310-win32.whl", hash = "sha256:41953d6a9c1fc1c1023438c8aac8ed2ee29a1739fbfce68f8ece38f34d326d02"},
+    {file = "onnx-1.13.0-cp310-cp310-win_amd64.whl", hash = "sha256:9b2691ad78ddcac2244b4299e5f5132895e12f99dbd1cfb310d10cdb50cd2d90"},
+    {file = "onnx-1.13.0-cp311-cp311-macosx_10_12_universal2.whl", hash = "sha256:c1eeec79e3cc35b808df4616f9ddef769fb4e5912e0eaacbddfa3a60d93d36c0"},
+    {file = "onnx-1.13.0-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:8008d9dd4479445584a5e08cce5b8319777a145fdf397c1791a59efa347bb732"},
+    {file = "onnx-1.13.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bad429298470efa5da5589f518036a125ca8864a766ad706278531c05c723f48"},
+    {file = "onnx-1.13.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8faef7ee6e2012ad1ff13ffe248809218ac4ea7040bd62a7e0740978feffe926"},
+    {file = "onnx-1.13.0-cp311-cp311-win32.whl", hash = "sha256:1d443d3b895dda42355ea6281eff638cc53a1a0b12244421d9fc09046444ba94"},
+    {file = "onnx-1.13.0-cp311-cp311-win_amd64.whl", hash = "sha256:88199c7eecba6c4f0b822147cf40184e7de94bcf915b3cbd0e2728966f7305c1"},
+    {file = "onnx-1.13.0-cp37-cp37m-macosx_10_12_universal2.whl", hash = "sha256:99fb9e674e1244fed09afd2a3106485d803357beaea7c0ae2f5956bde8319c54"},
+    {file = "onnx-1.13.0-cp37-cp37m-macosx_10_12_x86_64.whl", hash = "sha256:6113b4491cf27c408272397405c2f0daf8751515a91ea86f03db05f953433be9"},
+    {file = "onnx-1.13.0-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9b9ff692dff87dc180045c055502ab0d91d042f1cd3058d94de4141cd4445286"},
+    {file = "onnx-1.13.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:603587b438bbf685860ead13a83b771cd7a6a0565f745d825260c1ad6904674a"},
+    {file = "onnx-1.13.0-cp37-cp37m-win32.whl", hash = "sha256:2b8429926423e83aba724ba8586ef1611d7bf7f4f9f2cc4312856da86fd9c5ba"},
+    {file = "onnx-1.13.0-cp37-cp37m-win_amd64.whl", hash = "sha256:098176b93b19323639831561618da91aa472745cd518527a540152d7f9b8f7d3"},
+    {file = "onnx-1.13.0-cp38-cp38-macosx_10_12_universal2.whl", hash = "sha256:4bac7453fa5fa969352778f759896c43e3b8337ae532cd6dda36758b9dc656d7"},
+    {file = "onnx-1.13.0-cp38-cp38-macosx_10_12_x86_64.whl", hash = "sha256:2e8ece71cb00c1e8f5fec93f306a071b8d2929fded6b1e6a71cab710de2e798d"},
+    {file = "onnx-1.13.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bd305274b199ad04ea6c185437f736981265f20d7ac2cbf16411d2d35e5e8e68"},
+    {file = "onnx-1.13.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2ad8208252f6d61dcd487c2c62f6fbc1eee24bf11addb56c500cf0feb8966f36"},
+    {file = "onnx-1.13.0-cp38-cp38-win32.whl", hash = "sha256:cef04e12123fef9f1e44078311fe7e9d9da0713e273ea13147b77d57cfd5eea0"},
+    {file = "onnx-1.13.0-cp38-cp38-win_amd64.whl", hash = "sha256:934a6497b2feb7a5ec31063afea5da1b06131fb2e9979f9bdeeec5c8cf0e03d2"},
+    {file = "onnx-1.13.0-cp39-cp39-macosx_10_12_universal2.whl", hash = "sha256:43e1ff72dcff4eabf3a75b119156c96603c7c3cbcf93ac7dba0c12687511aa9d"},
+    {file = "onnx-1.13.0-cp39-cp39-macosx_10_12_x86_64.whl", hash = "sha256:e27021a056dfecfdc6307d8b50e69a4e32e2137b54bfe215c82580e8dceb7d84"},
+    {file = "onnx-1.13.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a5d5e7efbf7d6b81edf358bbfb008d1110ab020de0d52d8c84ffddbf07cedfb2"},
+    {file = "onnx-1.13.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:257db1d357671d81f789f30d4e9358fd6427ae3ebf5fd90e4b0b418e6c8bb295"},
+    {file = "onnx-1.13.0-cp39-cp39-win32.whl", hash = "sha256:eb32853d94a61728ba4dd0809740e782896d10178d5593f472d24f51c13c2e5d"},
+    {file = "onnx-1.13.0-cp39-cp39-win_amd64.whl", hash = "sha256:925e9ecc4cca0da65126e5320577b81c0c2ac3c9e0418e77ff21da63d0f3bcdb"},
+    {file = "onnx-1.13.0.tar.gz", hash = "sha256:410b39950367857f97b65093681fe2495a2e23d63777a8aceaf96c56a16d166e"},
+]
+
+[package.dependencies]
+numpy = ">=1.16.6"
+protobuf = ">=3.20.2,<4"
+typing-extensions = ">=3.6.2.1"
+
+[package.extras]
+lint = ["black (>=22.3)", "clang-format (==13.0.0)", "flake8 (>=5.0.2)", "isort[colors] (>=5.10)", "mypy (>=0.971)", "types-protobuf (==3.18.4)"]
+
+[[package]]
 name = "opentsne"
 version = "0.6.2"
 description = "Extensible, parallel implementations of t-SNE"
@@ -4549,26 +4650,34 @@ wcwidth = "*"
 
 [[package]]
 name = "protobuf"
-version = "4.21.12"
-description = ""
+version = "3.20.3"
+description = "Protocol Buffers"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "protobuf-4.21.12-cp310-abi3-win32.whl", hash = "sha256:b135410244ebe777db80298297a97fbb4c862c881b4403b71bac9d4107d61fd1"},
-    {file = "protobuf-4.21.12-cp310-abi3-win_amd64.whl", hash = "sha256:89f9149e4a0169cddfc44c74f230d7743002e3aa0b9472d8c28f0388102fc4c2"},
-    {file = "protobuf-4.21.12-cp37-abi3-macosx_10_9_universal2.whl", hash = "sha256:299ea899484ee6f44604deb71f424234f654606b983cb496ea2a53e3c63ab791"},
-    {file = "protobuf-4.21.12-cp37-abi3-manylinux2014_aarch64.whl", hash = "sha256:d1736130bce8cf131ac7957fa26880ca19227d4ad68b4888b3be0dea1f95df97"},
-    {file = "protobuf-4.21.12-cp37-abi3-manylinux2014_x86_64.whl", hash = "sha256:78a28c9fa223998472886c77042e9b9afb6fe4242bd2a2a5aced88e3f4422aa7"},
-    {file = "protobuf-4.21.12-cp37-cp37m-win32.whl", hash = "sha256:3d164928ff0727d97022957c2b849250ca0e64777ee31efd7d6de2e07c494717"},
-    {file = "protobuf-4.21.12-cp37-cp37m-win_amd64.whl", hash = "sha256:f45460f9ee70a0ec1b6694c6e4e348ad2019275680bd68a1d9314b8c7e01e574"},
-    {file = "protobuf-4.21.12-cp38-cp38-win32.whl", hash = "sha256:6ab80df09e3208f742c98443b6166bcb70d65f52cfeb67357d52032ea1ae9bec"},
-    {file = "protobuf-4.21.12-cp38-cp38-win_amd64.whl", hash = "sha256:1f22ac0ca65bb70a876060d96d914dae09ac98d114294f77584b0d2644fa9c30"},
-    {file = "protobuf-4.21.12-cp39-cp39-win32.whl", hash = "sha256:27f4d15021da6d2b706ddc3860fac0a5ddaba34ab679dc182b60a8bb4e1121cc"},
-    {file = "protobuf-4.21.12-cp39-cp39-win_amd64.whl", hash = "sha256:237216c3326d46808a9f7c26fd1bd4b20015fb6867dc5d263a493ef9a539293b"},
-    {file = "protobuf-4.21.12-py2.py3-none-any.whl", hash = "sha256:a53fd3f03e578553623272dc46ac2f189de23862e68565e83dde203d41b76fc5"},
-    {file = "protobuf-4.21.12-py3-none-any.whl", hash = "sha256:b98d0148f84e3a3c569e19f52103ca1feacdac0d2df8d6533cf983d1fda28462"},
-    {file = "protobuf-4.21.12.tar.gz", hash = "sha256:7cd532c4566d0e6feafecc1059d04c7915aec8e182d1cf7adee8b24ef1e2e6ab"},
+    {file = "protobuf-3.20.3-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:f4bd856d702e5b0d96a00ec6b307b0f51c1982c2bf9c0052cf9019e9a544ba99"},
+    {file = "protobuf-3.20.3-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:9aae4406ea63d825636cc11ffb34ad3379335803216ee3a856787bcf5ccc751e"},
+    {file = "protobuf-3.20.3-cp310-cp310-win32.whl", hash = "sha256:28545383d61f55b57cf4df63eebd9827754fd2dc25f80c5253f9184235db242c"},
+    {file = "protobuf-3.20.3-cp310-cp310-win_amd64.whl", hash = "sha256:67a3598f0a2dcbc58d02dd1928544e7d88f764b47d4a286202913f0b2801c2e7"},
+    {file = "protobuf-3.20.3-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:899dc660cd599d7352d6f10d83c95df430a38b410c1b66b407a6b29265d66469"},
+    {file = "protobuf-3.20.3-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e64857f395505ebf3d2569935506ae0dfc4a15cb80dc25261176c784662cdcc4"},
+    {file = "protobuf-3.20.3-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:d9e4432ff660d67d775c66ac42a67cf2453c27cb4d738fc22cb53b5d84c135d4"},
+    {file = "protobuf-3.20.3-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:74480f79a023f90dc6e18febbf7b8bac7508420f2006fabd512013c0c238f454"},
+    {file = "protobuf-3.20.3-cp37-cp37m-win32.whl", hash = "sha256:b6cc7ba72a8850621bfec987cb72623e703b7fe2b9127a161ce61e61558ad905"},
+    {file = "protobuf-3.20.3-cp37-cp37m-win_amd64.whl", hash = "sha256:8c0c984a1b8fef4086329ff8dd19ac77576b384079247c770f29cc8ce3afa06c"},
+    {file = "protobuf-3.20.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:de78575669dddf6099a8a0f46a27e82a1783c557ccc38ee620ed8cc96d3be7d7"},
+    {file = "protobuf-3.20.3-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:f4c42102bc82a51108e449cbb32b19b180022941c727bac0cfd50170341f16ee"},
+    {file = "protobuf-3.20.3-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:44246bab5dd4b7fbd3c0c80b6f16686808fab0e4aca819ade6e8d294a29c7050"},
+    {file = "protobuf-3.20.3-cp38-cp38-win32.whl", hash = "sha256:c02ce36ec760252242a33967d51c289fd0e1c0e6e5cc9397e2279177716add86"},
+    {file = "protobuf-3.20.3-cp38-cp38-win_amd64.whl", hash = "sha256:447d43819997825d4e71bf5769d869b968ce96848b6479397e29fc24c4a5dfe9"},
+    {file = "protobuf-3.20.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:398a9e0c3eaceb34ec1aee71894ca3299605fa8e761544934378bbc6c97de23b"},
+    {file = "protobuf-3.20.3-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:bf01b5720be110540be4286e791db73f84a2b721072a3711efff6c324cdf074b"},
+    {file = "protobuf-3.20.3-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:daa564862dd0d39c00f8086f88700fdbe8bc717e993a21e90711acfed02f2402"},
+    {file = "protobuf-3.20.3-cp39-cp39-win32.whl", hash = "sha256:819559cafa1a373b7096a482b504ae8a857c89593cf3a25af743ac9ecbd23480"},
+    {file = "protobuf-3.20.3-cp39-cp39-win_amd64.whl", hash = "sha256:03038ac1cfbc41aa21f6afcbcd357281d7521b4157926f30ebecc8d4ea59dcb7"},
+    {file = "protobuf-3.20.3-py2.py3-none-any.whl", hash = "sha256:a7ca6d488aa8ff7f329d4c545b2dbad8ac31464f1d8b1c87ad1346717731e4db"},
+    {file = "protobuf-3.20.3.tar.gz", hash = "sha256:2e3427429c9cffebf259491be0af70189607f365c2f41c7c3764af6f337105f2"},
 ]
 
 [[package]]
@@ -7998,4 +8107,4 @@ extend-exclude = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "bac3c953010e2595d35ff6438e3316e8b830c33d7c7dacd7ebc5725b9c79a548"
+content-hash = "7769b34e54e8cb1d12901a64cf7412cccebee3ca28c0128dc834f567e52f81aa"
