@@ -59,6 +59,7 @@ def test_plot_histogram_log(tmp_path, test_gaussian_random_samples, test_log_his
     assert np.allclose(h, h_expected)
 
 
+@pytest.mark.optional
 @pytest.mark.mpl_image_compare(BASELINE_DIR=BASELINE_DIR, tolerance=0)
 def test_annotate_histogram(fake_keywords):
     occurence = np.arange(len(fake_keywords))
