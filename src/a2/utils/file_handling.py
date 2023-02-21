@@ -292,3 +292,15 @@ def check_acess_rights_folder(file_or_folder):
         print(f"User can read {description} {file_or_folder}")
     else:
         print(f"User cannot read {description} {file_or_folder}")
+
+
+def check_folder_exists(path, check_is_empty=False, raise_exception=False):
+    if not os.path.isdir(path):
+        if raise_exception:
+            raise ValueError(f"{path=} doesn't exist!")
+        return False
+    if check_is_empty and not os.path.getsize(path):
+        if raise_exception:
+            raise ValueError(f"{path=} is empty!")
+        return False
+    return True
