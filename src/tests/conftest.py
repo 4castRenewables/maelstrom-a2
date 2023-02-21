@@ -30,7 +30,7 @@ def pytest_configure(config):
 
 def pytest_collection_modifyitems(config, items):
     if not config.getoption("--skip_optional"):
-        # --runslow given in cli: do not skip slow tests
+        # --skip_optional given in cli: skip optional tests
         return
     skip_optional = pytest.mark.skip(reason="use --skip_optional option to skip")
     for item in items:
