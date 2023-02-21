@@ -26,6 +26,7 @@ def test_get_emojis_from_vocab(vocabulary, exclude, expected):
         assert len(lis) == expected
 
 
+@pytest.mark.optional
 def test_get_vocabulary():
     assert isinstance(
         a2.twitter.downloader.get_vocabulary(
