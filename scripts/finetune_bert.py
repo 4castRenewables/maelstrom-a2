@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(args):
-
+    print(f"Running finetuning as {args.job_id=}")
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(os.path.join(args.data_dir, args.data_filename), raw=True)
     logging.info(f"loaded {ds_raw.index.shape[0]} tweets")
     ds_raw["text"] = (["index"], ds_raw[args.key_text].values.copy())
@@ -67,6 +67,7 @@ def main(args):
             tokenizer=dataset_object.tokenizer,
             folder_output=path_run,
             hyper_tuning=False,
+            disable_tqdm=True,
             fp16=True if a2.training.utils_training.gpu_available() else False,
             callbacks=[a2.training.training_deep500.TimerCallback(tmr, gpu=True)],
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
@@ -137,7 +138,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--output_dir",
-        "-out",
+        "-outdir",
         type=str,
         default=a2.utils.file_handling.get_folder_models(),
         help="Output directory where model is saved.",
@@ -176,6 +177,7 @@ if __name__ == "__main__":
     parser.add_argument("--test_size", "-ts", type=float, default=0.2, help="Fraction of test set.")
 
     parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
+    parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
 
     args = parser.parse_args()
     main(args)
