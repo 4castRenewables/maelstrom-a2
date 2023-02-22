@@ -1,23 +1,26 @@
-name:    ap5-all
-outpath: ap5_run
-comment: MAELSTROM AP5 benchmark jube script
+name:    ap2-all
+outpath: ap2_run
+comment: MAELSTROM AP2 benchmark jube script
 
 parameterset:
   - name: appParameter
     parameter:
       - name: nepochs
         type: int
-        _: 70
+        _: 1
       - name: lr
         type: float
-        _: 5.e-05
-      - name: model_name
+        _: 3e-05
+      - name: run_folder
         type: string
-        _: "my_unet_model"
+        _: "my_jube_test_run"
       - name: indir
         type: string
         tag: jwb|jwc
-        _: "/p/scratch/deepacf/maelstrom/maelstrom_data/ap5_michael/preprocessed_era5_crea6/netcdf_data/all_files/"
+        _: "/p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/tweets/"
+      - name: data_filename
+        type: string
+        _: "tweets_2017_01_era5_normed_filtered_predicted_simpledeberta.nc"
       - name: outdir
         type: string
         _: "$jube_wp_abspath/output_model"
@@ -26,19 +29,12 @@ parameterset:
       - name: modules
         tag: "jwb|jwc"
         separator: |
-        _: 
-          module load Stages/2022 &&
-          module load GCC/11.2.0 &&
-          module load ParaStationMPI/5.5.0-1 &&
-          module load mpi4py/3.1.3 &&
-          module load CDO/2.0.2 &&
-          module load NCO/5.0.3 &&
-          module load netcdf4-python/1.5.7-serial &&
-          module load SciPy-bundle/2021.10 &&
-          module load xarray/0.20.1 &&
-          module load dask/2021.9.1 &&
-          module load TensorFlow/2.6.0-CUDA-11.5 &&
-          module load Cartopy/0.20.0
+        _:
+          module load Stages/2023
+          module load GCCcore/.11.3.0
+          module load Python/3.10.4
+          module load cuDNN/8.6.0.163-CUDA-11.7
+          module load GCC/11.3.0
       - name: systemname
         tag: jwc
         _: jwc
@@ -66,7 +62,7 @@ parameterset:
       - name: timelimit
         _: "02:00:00"
       - name: account
-        _: jscbenchmark
+        _: deepacf
       - name: queue
         tag: jwb+!test
         _: booster
@@ -82,15 +78,15 @@ parameterset:
       - name: gres
         _: gpu:$n_gpu
       - name: executable
-        _: python -u $jube_benchmark_home/../main_scripts/main_train_unet.py
+        _: python -u $jube_benchmark_home/../scripts/finetune_bert.py
       - name: args_exec
         mode: text
-        _: > 
-          -in ${indir}
-          -out ${outdir}
+        _: >
+          --run_folder ${run_folder}
+          --data_filename ${data_filename}
           -lr ${lr}
           -nepochs ${nepochs}
-          -model_name ${model_name}
+          -indir ${indir}
           -id $${SLURM_JOBID}
 
 patternset:
@@ -118,7 +114,7 @@ result:
       name: result
       style: pretty
       sort: iter_pat
-      column: 
+      column:
         - {title: "JobID", _: jobid}
         - {title: "Job_Time", _: walltime}
         - {title: "Model_Size [Billion Param]", _: nlp_model_size}
@@ -139,8 +135,6 @@ step:
     do:
       _:
         $modules;
-        cd $jube_benchmark_home/../env_setup/ &&
-        source ./create_env.sh venv_ap5_$systemname
   - name:   submit
     use:
       - appParameter
@@ -156,5 +150,7 @@ step:
       error_file: $error_file
       _:
         $modules;
-        source $jube_benchmark_home/../virtual_envs/venv_ap5_$systemname/bin/activate;
+        source ~/.bashrc;
+        source $jube_benchmark_home/env.sh;
+        conda activate a2-benchmarking
         $submit $submit_script
