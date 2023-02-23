@@ -1,4 +1,4 @@
-import logging
+import logging as logging_std_library
 
 import a2.training.benchmarks as timer
 import torch
@@ -31,7 +31,7 @@ class TimerCallback(transformers.TrainerCallback):
         self.timer.complete_all()
 
     def on_step_begin(self, args, state, control, **kwargs):
-        logging.info(
+        logging_std_library.info(
             f"Epoch {int(state.epoch)}: Start iteration step {state.global_step}/{state.max_steps} of training..."
         )
         self.timer.start(timer.TimeType.BATCH, gpu=self.gpu)
