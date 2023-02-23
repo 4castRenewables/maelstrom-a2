@@ -1,0 +1,11 @@
+#!/bin/bash -x
+#SBATCH --nodes=#NODES#
+#SBATCH --time=#WALLTIME#
+#SBATCH -A #ACCOUNT#
+#SBATCH --gres=gpu:4
+#SBATCH --partition=#PARTITION#
+
+### start of jobscript
+
+#EXEC#
+touch #READY#
