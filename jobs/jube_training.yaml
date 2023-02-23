@@ -27,13 +27,19 @@ parameterset:
   - name: globalParameter
     parameter:
       - name: modules
-        tag: "jwb|jwc"
+        tag: "jwc"
+        seperator: |
+        _:
+          module load Stages/2022 &&
+          module load cuDNN/8.3.1.22-CUDA-11.5
+      - name: modules
+        tag: "jwb"
         separator: |
         _:
-          module load Stages/2023
-          module load GCCcore/.11.3.0
-          module load Python/3.10.4
-          module load cuDNN/8.6.0.163-CUDA-11.7
+          module load Stages/2023 &&
+          module load GCCcore/.11.3.0 &&
+          module load Python/3.10.4 &&
+          module load cuDNN/8.6.0.163-CUDA-11.7 &&
           module load GCC/11.3.0
       - name: systemname
         tag: jwc
@@ -55,6 +61,12 @@ parameterset:
         _: 1
       - name: nodes
         _: 1
+      - name: ready_file
+        _: ready
+      - name: err_file
+        _: gpu-err.%j
+      - name: out_file
+        _: gpu-out.%j
       - name: n_gpu
         _: 1
       - name: taskspernode
@@ -69,6 +81,8 @@ parameterset:
       - name: queue
         tag: jwb+test
         _: develbooster
+      - name: mail_type
+        _: BEGIN
       - name: queue
         tag: jwc+!test
         _: gpus
@@ -79,8 +93,10 @@ parameterset:
         _: gpu:$n_gpu
       - name: executable
         _: python -u $jube_benchmark_home/../scripts/finetune_bert.py
+      - name: submit_cmd
+        _: sbatch
       - name: job_file
-        _: submit.run
+        _: $jube_benchmark_home/job.run
       - name: args_exec
         mode: text
         _: >
@@ -139,13 +155,14 @@ substituteset:
   iofile: {in: "${job_file}.in", out: $job_file} #attributes with {} must be quoted
   sub:
     - {source: "#NODES#", dest: $nodes}
-    - {source: "#PROCS_PER_NODE#", dest: $ppn}
-    - {source: "#WALLTIME#", dest: $walltime}
-    - {source: "#ERROR_FILEPATH#", dest: $err_file}
+    - {source: "#PROCS_PER_NODE#", dest: $taskspernode}
+    - {source: "#WALLTIME#", dest: $timelimit}
+    - {source: "#ERROR_FILEPTHA#", dest: $err_file}
     - {source: "#OUT_FILEPATH#", dest: $out_file}
-    - {source: "#MAIL_ADDRESS#", dest: $mail_address}
-    - {source: "#MAIL_MODE#", dest: $mail_mode}
-    - {source: "#EXEC#", dest: $exec}
+    - {source: "#MAIL_TYPE#", dest: $mail_type}
+    - {source: "#ACCOUNT#", dest: $account}
+    - {source: "#PARTITION#", dest: $queue}
+    - {source: "#EXEC#", dest: "${executable} ${args_exec}"}
     - {source: "#READY#", _: $ready_file } # _ can be used here as well instead of dest (should be used
 
 step:
@@ -162,6 +179,7 @@ step:
       - globalParameter
       - systemParameter
       - executeset
+      - sub_job
       - from: platform.xml
         _: jobfiles
       - from: platform.xml
@@ -173,5 +191,5 @@ step:
         $modules;
         source ~/.bashrc;
         source $jube_benchmark_home/env.sh;
-        conda activate a2-benchmarking
-        $submit $submit_script
+        conda activate a2-benchmarking;
+        $submit_cmd $job_file;
