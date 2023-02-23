@@ -7,5 +7,9 @@
 
 ### start of jobscript
 
+source ~/.bashrc
+conda activate a2-benchmarking
+which python
+pip list
 #EXEC#
 touch #READY#

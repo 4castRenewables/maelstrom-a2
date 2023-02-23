@@ -37,10 +37,7 @@ parameterset:
         separator: |
         _:
           module load Stages/2023 &&
-          module load GCCcore/.11.3.0 &&
-          module load Python/3.10.4 &&
-          module load cuDNN/8.6.0.163-CUDA-11.7 &&
-          module load GCC/11.3.0
+          module load cuDNN/8.6.0.163-CUDA-11.7
       - name: systemname
         tag: jwc
         _: jwc
@@ -104,8 +101,8 @@ parameterset:
           --data_filename ${data_filename}
           -lr ${lr}
           -nepochs ${nepochs}
-          -indir ${indir}
-          -id $${SLURM_JOBID}
+          --data_dir ${indir}
+          -jid $${SLURM_JOBID}
 
 patternset:
    - name: perf_patterns
