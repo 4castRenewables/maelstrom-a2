@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(args):
-    print(f"Running finetuning as {args.job_id=}")
+    logging.info(f"Running finetuning as {args.job_id=}")
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(os.path.join(args.data_dir, args.data_filename), raw=True)
     logging.info(f"loaded {ds_raw.index.shape[0]} tweets")
     ds_raw["text"] = (["index"], ds_raw[args.key_text].values.copy())
@@ -61,6 +61,7 @@ def main(args):
             "data_description",
             args.data_description,
         )
+        tmr.start(timer.TimeType.RUN)
         trainer = trainer_object.get_trainer(
             dataset,
             hyper_parameters,
@@ -72,14 +73,17 @@ def main(args):
             callbacks=[a2.training.training_deep500.TimerCallback(tmr, gpu=True)],
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
         )
+        tmr.start(timer.TimeType.TRAINING)
         trainer.train()
-        tmr.print_all_time_stats()
+        tmr.start(timer.TimeType.TRAINING)
         test_ds = dataset_object.build(ds_raw, indices_train, indices_test, train=False)
         (
             predictions,
             prediction_probabilities,
         ) = a2.training.evaluate_hugging.predict_dataset(test_ds, trainer)
+        tmr.end(timer.TimeType.RUN)
 
+        tmr.print_all_time_stats()
         ds_test = a2.training.evaluate_hugging.build_ds_test(
             ds=ds_raw,
             indices_test=indices_test,

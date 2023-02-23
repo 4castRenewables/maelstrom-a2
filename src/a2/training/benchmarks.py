@@ -12,6 +12,9 @@ class TimeType:
     FORWARD: str = "FORWARD"
     BACKWARD: str = "BACKWARD"
     IO: str = "IO"
+    TRAINING: str = "TRAINING"
+    RUN: str = "RUN"
+    SAVING_MODEL: str = "SAVING_MODEL"
 
 
 MAX_LENGTH_TIME_TYPES = max([len(x) for x in TimeType().__dict__.values()])
@@ -22,10 +25,11 @@ def current_time():
 
 
 class Timer:
-    def __init__(self):
+    def __init__(self, print_all_single_time_stats=True):
         self.times_archive = {}
         self.times_running = {}
         self.TimeType = TimeType()
+        self.print_all_single_time_stats = print_all_single_time_stats
 
     def start(self, time_type, gpu=None):
         if time_type in self.TimeType.__dict__.keys():
@@ -42,12 +46,15 @@ class Timer:
         if time_type in self.times_running:
             duration = current_time() - self.times_running.pop(time_type)
             self._archive_timing(time_type, duration=duration)
+            if self.print_all_single_time_stats:
+                logging.info(f"{time_type:<10}: took {duration}")
         else:
             logging.warning(f"Attempting to finish timer type {time_type}, which was never started!")
 
     def complete_all(self):
-        for _type in self.times_running.copy().keys():
-            self.end(_type)
+        # for _type in self.times_running.copy().keys():
+        #     self.end(_type)
+        pass
 
     def print_all_time_stats(self):
         for _type, times in self.times_archive.items():
