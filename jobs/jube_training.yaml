@@ -1,3 +1,4 @@
+
 name:    ap2-all
 outpath: ap2_run
 comment: MAELSTROM AP2 benchmark jube script
@@ -5,12 +6,25 @@ comment: MAELSTROM AP2 benchmark jube script
 parameterset:
   - name: appParameter
     parameter:
-      - name: nepochs
+      - name: batch_size
         type: int
-        _: 1
+        _: 16
+      - name: nepochs
+        tag: "!hps"
+        type: int
+        _: 1, 3, 10
+      - name: nepochs
+        tag: hps
+        type: int
+        _: 1, 3
       - name: lr
+        tag: "!hps"
         type: float
         _: 3e-05
+      - name: lr
+        tag: hps
+        type: float
+        _: 3e-05, 7e-6
       - name: run_folder
         type: string
         _: "my_jube_test_run"
@@ -26,14 +40,14 @@ parameterset:
         _: "$jube_wp_abspath/output_model"
   - name: globalParameter
     parameter:
+      # - name: modules
+      #  tag: "jwc"
+      #  seperator: |
+      #  _:
+      #    module load Stages/2022 &&
+      #    module load cuDNN/8.3.1.22-CUDA-11.5
       - name: modules
-        tag: "jwc"
-        seperator: |
-        _:
-          module load Stages/2022 &&
-          module load cuDNN/8.3.1.22-CUDA-11.5
-      - name: modules
-        tag: "jwb"
+        # tag: "jwb"
         separator: |
         _:
           module load Stages/2023 &&
@@ -103,25 +117,34 @@ parameterset:
           -nepochs ${nepochs}
           --data_dir ${indir}
           -jid $${SLURM_JOBID}
+          --batch_size ${batch_size}
 
 patternset:
    - name: perf_patterns
      pattern:
-      - {name: iter_pat, type: int, _: "iteration\\s+$jube_pat_int/\\s*$jube_pat_nint"}
-      # every 10th iteration is logged
-      - {name: iterations, type: int, mode: python, _: "$iter_pat_max"}
-      - {name: tflops_pat, type: float, _: "TFLOPs:\\s+$jube_pat_fp"}
-      - {name: elp_pat, type: float, _: "elapsed time per iteration \\(s\\):\\s+$jube_pat_fp"}
-      - {name: tokens_per_second, type: float, mode: python, _: "(1.0/$elp_pat_avg)*$global_batch_size*$sequence_length"}
-      - {name: jobid, type: int, _: "Submitted batch job $jube_pat_int" }
-
+      - {name: jobid, type: int, _: "Running finetuning as args.job_id=$jube_pat_int" }
+      - {name: ntweets, type: int, _: "loaded $jube_pat_int tweets"}
+      - {name: epoch, type: int, _: "Epoch\\s+$jube_pat_int"}
+      - {name: run_time, type: float, _: "RUN\\s+: took ${jube_pat_fp}"}
+      - {name: training_time, type: float, _: "TRAINING\\s+: took ${jube_pat_fp}"}
+      - {name: epoch_time, type: float, _: "EPOCH\\s+: took ${jube_pat_fp}"}
+      - {name: io_time, type: float, _: "IO\\s+: took ${jube_pat_fp}"}
+      - {name: forward_time, type: float, _: "FORWARD\\s+: took ${jube_pat_fp}"}
+      - {name: backward_time, type: float, _: "BACKWARD\\s+: took ${jube_pat_fp}"}
+      - {name: batch_time, type: float, _: "BATCH\\s+: took ${jube_pat_fp}"}
+      - {name: saving_model_time, type: float, _: "SAVING_MODEL[\\s+]?: took ${jube_pat_fp}"}
+      - {name: loss, type: float, _: "{'loss': $jube_pat_fp"}
+      - {name: eval_loss, type: float, _: "{'eval_loss': $jube_pat_fp"}
+            
 analyser:
     name: analyse
     reduce: false
     use: perf_patterns
     analyse:
-        step: benchmark
-        file: job.out
+      step: submit
+      file:
+        - slurm-*.out
+        - stdout
 
 result:
     use: analyse
@@ -129,18 +152,27 @@ result:
       name: result
       style: pretty
       sort: iter_pat
+      format: ".2f"
       column:
+        - {title: "#tweets", _: ntweets}
         - {title: "JobID", _: jobid}
-        - {title: "Job_Time", _: walltime}
-        - {title: "Model_Size [Billion Param]", _: nlp_model_size}
-        - {title: "Nodes", _: nodes}
-        - {title: "Batch_Size", _: global_batch_size}
-        - {title: "Pipline_Parallel", _: pp_size}
-        - {title: "Tensor_Parallel", _: tp_size}
-        - {title: "Iterations", _: iterations}
-        # - {title: "TFLOPs logged", _: tflops_pat_cnt}
-        - {title: "Max_TFLOPs/GPU", _: tflops_pat_max}
-        - {title: "Tokens/sec",format: ".2f", _: tokens_per_second}
+        - {title: "#nodes", _: nodes}
+        - {title: "#gpu", _: n_gpu}
+        - {title: "T. IO", format: ".4f", _: io_time_sum}
+        - {title: "T. run", format: ".4f", _: run_time_last}
+        - {title: "T. training", format: ".4f", _: training_time_last}
+        - {title: "Avg. epoch", format: ".4f", _: epoch_time_avg}
+        - {title: "First epoch", format: ".4f", _: epoch_time_first}
+        - {title: "Min epoch", format: ".4f", _: epoch_time_min}
+        - {title: "Max epoch", format: ".4f", _: epoch_time_max}
+        - {title: "Avg. iteration", format: ".4f", _: batch_time_avg}
+        - {title: "F. loss", format: ".4f", _: loss_last}
+        - {title: "F. eval loss", format: ".4f", _: eval_loss_last}
+        - {title: "Saving time", format: ".4f", _: saving_model_time_last}
+        - {title: "l. rate", _: lr}
+        - {title: "min loss", format: ".4f", _: loss_min}
+        - {title: "# epochs", _: nepochs}
+        # - {title: "Job_Time", _: timelimit}
 
 #Load jobfile
 fileset:
