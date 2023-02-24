@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+import resource
 import time
 
 import numpy as np
@@ -70,3 +71,8 @@ class Timer:
             if self.debug:
                 for _type, elapsed_time in self.times_running.items():
                     logging.info(f"{_type} still running for {elapsed_time}s.")
+
+
+def get_max_memory_usage():
+    """In bytes"""
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1000
