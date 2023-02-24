@@ -25,10 +25,11 @@ def current_time():
 
 
 class Timer:
-    def __init__(self, print_all_single_time_stats=True):
+    def __init__(self, print_all_single_time_stats=True, debug=True):
         self.times_archive = {}
         self.times_running = {}
         self.TimeType = TimeType()
+        self.debug = debug
         self.print_all_single_time_stats = print_all_single_time_stats
 
     def start(self, time_type, gpu=None):
@@ -59,10 +60,13 @@ class Timer:
     def print_all_time_stats(self):
         for _type, times in self.times_archive.items():
             print(
-                f"{_type:<10}; "
+                f"{_type:<15}; "
                 f"min: {min(times):.04e}, "
                 f"max: {max(times):.04e}, "
                 f"mean: {np.mean(times):.04e}, "
                 f"median: {np.median(times):.04e}, "
                 f"counts: {len(times):>5}"
             )
+            if self.debug:
+                for _type, elapsed_time in self.times_running.items():
+                    logging.info(f"{_type} still running for {elapsed_time}s.")

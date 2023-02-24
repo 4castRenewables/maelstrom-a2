@@ -108,6 +108,7 @@ class HuggingFaceTrainerClass:
         callbacks: list | None = None,
         base_model_trainable: bool = True,
         trainer_class=transformers.Trainer,
+        logging_steps: int = 500,
     ):
         """
         Returns Hugging Face trainer object
@@ -124,6 +125,7 @@ class HuggingFaceTrainerClass:
               instead of 32-bit training.
         evaluate: Whether trainer only used for evaluation
         mantik: Whether using mantik for tracking
+        logging_steps: Number of steps before hugging face prints
 
         Returns
         -------
@@ -150,6 +152,7 @@ class HuggingFaceTrainerClass:
                 report_to=None,
                 save_strategy="epoch",
                 load_best_model_at_end=True,
+                logging_steps=logging_steps,
             )
         else:
             args = transformers.TrainingArguments(

@@ -72,10 +72,11 @@ def main(args):
             fp16=True if a2.training.utils_training.gpu_available() else False,
             callbacks=[a2.training.training_deep500.TimerCallback(tmr, gpu=True)],
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
+            logging_steps=1,
         )
         tmr.start(timer.TimeType.TRAINING)
         trainer.train()
-        tmr.start(timer.TimeType.TRAINING)
+        tmr.end(timer.TimeType.TRAINING)
         test_ds = dataset_object.build(ds_raw, indices_train, indices_test, train=False)
         (
             predictions,
