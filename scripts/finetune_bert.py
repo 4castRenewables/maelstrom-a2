@@ -108,7 +108,7 @@ def main(args):
             ds_test.raining.values, prediction_probabilities[:, 1], filename=filename_roc_plot
         )
         mlflow.log_artifact(filename_roc_plot)
-        logging.info(f"Max memory consumption [byte]: {timer.get_max_memory_usage()}")
+        logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
 
 
 if __name__ == "__main__":
