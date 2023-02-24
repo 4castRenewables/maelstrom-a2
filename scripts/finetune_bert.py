@@ -54,7 +54,6 @@ def main(args):
     mlflow.end_run()
     a2.training.tracking.initialize_mantik()
     with mlflow.start_run(run_name=args.run_name):
-        # tmr = timer.CPUGPUTimer()
         tmr = timer.Timer()
         a2.training.tracking.initialize_mantik()
         mlflow.log_param(
@@ -64,7 +63,7 @@ def main(args):
         tmr.start(timer.TimeType.RUN)
         trainer = trainer_object.get_trainer(
             dataset,
-            hyper_parameters,
+            hyper_parameters=hyper_parameters,
             tokenizer=dataset_object.tokenizer,
             folder_output=path_run,
             hyper_tuning=False,
@@ -74,6 +73,7 @@ def main(args):
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
             logging_steps=1,
         )
+        mlflow.log_params(trainer_object.hyper_parameters.__dict__)
         tmr.start(timer.TimeType.TRAINING)
         trainer.train()
         tmr.end(timer.TimeType.TRAINING)
