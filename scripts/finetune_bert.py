@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.INFO)
 
 def main(args):
     logging.info(f"Running finetuning as {args.job_id=}")
+    logging.info(f"Args used: {args.__dict__}")
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(os.path.join(args.data_dir, args.data_filename), raw=True)
     logging.info(f"loaded {ds_raw.index.shape[0]} tweets")
     ds_raw["text"] = (["index"], ds_raw[args.key_text].values.copy())
@@ -72,6 +73,7 @@ def main(args):
             callbacks=[a2.training.training_deep500.TimerCallback(tmr, gpu=True)],
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
             logging_steps=1,
+            base_model_trainable=args.base_model_trainable,
         )
         mlflow.log_params(trainer_object.hyper_parameters.__dict__)
         tmr.start(timer.TimeType.TRAINING)
@@ -184,6 +186,13 @@ if __name__ == "__main__":
 
     parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
     parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
+    parser.add_argument(
+        "--base_model_trainable",
+        "-trainable",
+        type=bool,
+        default=True,
+        help="Weights of base model (without classification head) are trainable.",
+    )
 
     args = parser.parse_args()
     main(args)
