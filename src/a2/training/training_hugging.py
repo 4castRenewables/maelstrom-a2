@@ -111,6 +111,7 @@ class HuggingFaceTrainerClass:
         trainer_class=transformers.Trainer,
         logging_steps: int = 500,
         evaluation_strategy: str = "steps",
+        eval_steps: int | None = 40,
         save_strategy: str = "epoch",
         load_best_model_at_end: bool = True,
     ):
@@ -130,7 +131,9 @@ class HuggingFaceTrainerClass:
         evaluate: Whether trainer only used for evaluation
         mantik: Whether using mantik for tracking
         logging_steps: Number of steps before hugging face prints
-        logging_steps: When to evaluate, after "steps" or "epoch"
+        evaluation_strategy: When to evaluate, after "steps" or "epoch"
+        save_strategy: When to save best model "steps" or "epoch"
+        load_best_model_at_end: Load best model at end of training
 
         Returns
         -------
@@ -161,6 +164,7 @@ class HuggingFaceTrainerClass:
                 num_train_epochs=hyper_parameters.epochs,
                 weight_decay=hyper_parameters.weight_decay,
                 report_to=None,
+                eval_steps=eval_steps,
                 save_strategy=save_strategy,
                 load_best_model_at_end=load_best_model_at_end,
                 logging_steps=logging_steps,
