@@ -1,5 +1,6 @@
 import dataclasses
 import functools
+import logging
 import typing as t
 
 import a2.dataset
@@ -109,6 +110,9 @@ class HuggingFaceTrainerClass:
         base_model_trainable: bool = True,
         trainer_class=transformers.Trainer,
         logging_steps: int = 500,
+        evaluation_strategy: str = "steps",
+        save_strategy: str = "epoch",
+        load_best_model_at_end: bool = True,
     ):
         """
         Returns Hugging Face trainer object
@@ -126,6 +130,7 @@ class HuggingFaceTrainerClass:
         evaluate: Whether trainer only used for evaluation
         mantik: Whether using mantik for tracking
         logging_steps: Number of steps before hugging face prints
+        logging_steps: When to evaluate, after "steps" or "epoch"
 
         Returns
         -------
@@ -136,6 +141,12 @@ class HuggingFaceTrainerClass:
         self.hyper_parameters = hyper_parameters
         if tokenizer is None:
             tokenizer = transformers.AutoTokenizer.from_pretrained(self.model_folder)
+        if load_best_model_at_end and save_strategy != evaluation_strategy:
+            logging.info(
+                f"Setting {save_strategy=} equal to {evaluation_strategy=} "
+                f"(required when {load_best_model_at_end=} = True)"
+            )
+            save_strategy = evaluation_strategy
         if not hyper_tuning:
             args = transformers.TrainingArguments(
                 folder_output,
@@ -144,14 +155,14 @@ class HuggingFaceTrainerClass:
                 lr_scheduler_type=hyper_parameters.lr_scheduler_type,
                 disable_tqdm=disable_tqdm,
                 fp16=fp16,
-                evaluation_strategy="epoch",
+                evaluation_strategy=evaluation_strategy,
                 per_device_train_batch_size=hyper_parameters.batch_size,
                 per_device_eval_batch_size=hyper_parameters.batch_size,
                 num_train_epochs=hyper_parameters.epochs,
                 weight_decay=hyper_parameters.weight_decay,
                 report_to=None,
-                save_strategy="epoch",
-                load_best_model_at_end=True,
+                save_strategy=save_strategy,
+                load_best_model_at_end=load_best_model_at_end,
                 logging_steps=logging_steps,
             )
         else:
@@ -159,10 +170,10 @@ class HuggingFaceTrainerClass:
                 folder_output,
                 disable_tqdm=True,
                 fp16=fp16,
-                evaluation_strategy="epoch",
+                evaluation_strategy=evaluation_strategy,
                 report_to=None,
-                save_strategy="epoch",
-                load_best_model_at_end=True,
+                save_strategy=save_strategy,
+                load_best_model_at_end=load_best_model_at_end,
             )
         model_init = functools.partial(self.get_model, mantik=mantik, base_model_trainable=base_model_trainable)
         if evaluate:
