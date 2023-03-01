@@ -172,7 +172,7 @@ if __name__ == "__main__":
     parser.add_argument("--number_epochs", "-nepochs", type=int, default=1, help="Numer of epochs to train.")
     parser.add_argument("--batch_size", "-bs", type=int, default=32, help="Number of samples per mini-batch.")
     parser.add_argument("--learning_rate", "-lr", type=float, default=3e-05, help="Learning rate to train model.")
-    parser.add_argument("--weight_decay", "-wd", type=float, default=0.01, help="Weight decay rate to train model.")
+    parser.add_argument("--weight_decay", "-wd", type=float, default=0, help="Weight decay rate to train model.")
     parser.add_argument(
         "--warmup_ratio", "-wr", type=float, default=0.4480456499617466, help="Warmup ratio to train model."
     )

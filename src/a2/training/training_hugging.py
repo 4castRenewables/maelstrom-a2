@@ -133,6 +133,7 @@ class HuggingFaceTrainerClass:
         mantik: Whether using mantik for tracking
         logging_steps: Number of steps before hugging face prints
         evaluation_strategy: When to evaluate, after "steps" or "epoch"
+        eval_steps: Number of steps between evaluation (only used if `evaluation_strategy`="steps")
         save_strategy: When to save best model "steps" or "epoch"
         load_best_model_at_end: Load best model at end of training
 
