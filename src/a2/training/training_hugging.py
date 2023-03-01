@@ -23,7 +23,8 @@ class HyperParametersDebertaClassifier:
     batch_size: int = 32
     weight_decay: float = 0.01
     epochs: int = 1
-    warmup_ratio: float = 0.4480456499617466
+    warmup_ratio: float = 0  # 0.4480456499617466
+    warmup_steps: float = 500  # 0
     hidden_dropout_prob: float = 0.1
     attention_probs_dropout_prob: float = 0.1
     cls_dropout: float = 0.1
@@ -111,7 +112,7 @@ class HuggingFaceTrainerClass:
         trainer_class=transformers.Trainer,
         logging_steps: int = 500,
         evaluation_strategy: str = "steps",
-        eval_steps: int | None = 40,
+        eval_steps: int | None = 100,
         save_strategy: str = "epoch",
         load_best_model_at_end: bool = True,
     ):
@@ -155,6 +156,7 @@ class HuggingFaceTrainerClass:
                 folder_output,
                 learning_rate=hyper_parameters.learning_rate,
                 warmup_ratio=hyper_parameters.warmup_ratio,
+                warmup_steps=hyper_parameters.warmup_steps,
                 lr_scheduler_type=hyper_parameters.lr_scheduler_type,
                 disable_tqdm=disable_tqdm,
                 fp16=fp16,
