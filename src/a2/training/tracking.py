@@ -31,6 +31,7 @@ def log_metric_classification_report(truth: t.Sequence, predictions: t.Sequence,
     Returns
     -------
     """
+    initialize_mantik()
     classification_report = a2.plotting.analysis.check_prediction(
         truth=truth,
         prediction=predictions,
@@ -38,6 +39,11 @@ def log_metric_classification_report(truth: t.Sequence, predictions: t.Sequence,
         output_dict=True,
     )
     logging.info(classification_report)
+    log_classification_report(classification_report, step)
+    mlflow.log_artifact("confusion_matrix.pdf")
+
+
+def log_classification_report(classification_report, step):
     initialize_mantik()
     mlflow.log_metric(
         key="eval_f1_raining",
@@ -59,4 +65,3 @@ def log_metric_classification_report(truth: t.Sequence, predictions: t.Sequence,
         value=classification_report["macro avg"]["f1-score"],
         step=step,
     )
-    mlflow.log_artifact("confusion_matrix.pdf")
