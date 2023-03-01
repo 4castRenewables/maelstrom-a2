@@ -68,6 +68,8 @@ def parallelize(
         with multiprocessing.Pool(processes=processes) as pool:
             results = pool.map(function, args_zipped)
     else:
+        if single_arg:
+            args_zipped = ((arg,) for arg in args_zipped)
         if kwargs_as_dict is not None:
             kwargs_iter = itertools.repeat(kwargs_as_dict)
         else:
