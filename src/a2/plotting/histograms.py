@@ -53,6 +53,86 @@ def plot_histogram_2d(
     marginal_color: str | None = None,
     figure_size: t.List[float] | None = None,
     colormap: str = "viridis",
+):
+    return _plot_histogram_2d(
+        x,
+        y,
+        ds=ds,
+        bins=bins,
+        xlim=xlim,
+        ylim=ylim,
+        ax=ax,
+        ax_colorbar=ax_colorbar,
+        log=log,
+        filename=filename,
+        fig=fig,
+        n_bins=n_bins,
+        norm=norm,
+        linear_thresh=linear_thresh,
+        label_x=label_x,
+        label_y=label_y,
+        label_colorbar=label_colorbar,
+        font_size=font_size,
+        overplot_values=overplot_values,
+        cmap=cmap,
+        overplot_round_base=overplot_round_base,
+        overplot_color=overplot_color,
+        return_matrix=return_matrix,
+        aspect=aspect,
+        vmin=vmin,
+        vmax=vmax,
+        marginal_x=marginal_x,
+        marginal_x_label_x=marginal_x_label_x,
+        marginal_x_label_y=marginal_x_label_y,
+        marginal_x_show_xticks=marginal_x_show_xticks,
+        marginal_y=marginal_y,
+        marginal_y_label_x=marginal_y_label_x,
+        marginal_y_label_y=marginal_y_label_y,
+        marginal_y_show_yticks=marginal_y_show_yticks,
+        marginal_color=marginal_color,
+        figure_size=figure_size,
+        colormap=colormap,
+    )
+
+
+def _plot_histogram_2d(
+    x: t.Union[np.ndarray, str],
+    y: t.Union[np.ndarray, str],
+    ds: xarray.Dataset | None = None,
+    bins: t.Sequence | None = None,
+    xlim: t.Sequence | None = None,
+    ylim: t.Sequence | None = None,
+    ax: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
+    ax_colorbar: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
+    log: t.Union[bool, t.List[bool]] = False,
+    filename: t.Union[str, pathlib.Path] = None,
+    fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
+    n_bins: t.Union[int, t.List[int]] = 60,
+    norm: str | None = None,
+    linear_thresh: t.Union[float, t.List[float]] = 1e-9,
+    label_x: str | None = None,
+    label_y: str | None = None,
+    label_colorbar: str | None = None,
+    font_size: int = 12,
+    overplot_values: bool = False,
+    cmap: str = "plasma",
+    overplot_round_base: int | None = None,
+    overplot_color: str = "gray",
+    return_matrix: bool = False,
+    aspect: str = "auto",
+    vmin: float | None = None,
+    vmax: float | None = None,
+    marginal_x: str = "histogram",
+    marginal_x_label_x: bool = False,
+    marginal_x_label_y: str = "N",
+    marginal_x_show_xticks: bool = False,
+    marginal_y: str = "histogram",
+    marginal_y_label_x: str = "N",
+    marginal_y_label_y: bool = False,
+    marginal_y_show_yticks: bool = False,
+    marginal_color: str | None = None,
+    figure_size: t.List[float] | None = None,
+    colormap: str = "viridis",
 ) -> t.Union[plt.axes, t.Tuple[plt.axes, t.Sequence]]:
     """
     plots 2d histogram
@@ -99,12 +179,6 @@ def plot_histogram_2d(
     axes
     """
 
-    def get_label(label):
-        if label is not None and label:
-            return label
-        else:
-            return ""
-
     if marginal_x is not None and marginal_y is not None:
         fig, axes, axes_colorbar = a2.plotting.utils_plotting.create_axes_grid(
             n_cols=2,
@@ -124,6 +198,12 @@ def plot_histogram_2d(
     else:
         fig, ax = a2.plotting.utils_plotting.create_figure_axes(fig=fig, ax=ax, font_size=font_size)
 
+    def get_label(label):
+        if label is not None and label:
+            return label
+        else:
+            return ""
+
     if isinstance(x, str):
         if ds is not None:
             if label_x is None:
@@ -138,20 +218,11 @@ def plot_histogram_2d(
             y = ds[y].values
         else:
             ValueError(f"{ds=}, if {y=} given as string, dataset required")
-    x = np.ndarray.flatten(x)  # type: ignore
-    y = np.ndarray.flatten(y)  # type: ignore
 
-    a2.utils.checks.validate_array(x)
-    a2.utils.checks.validate_array(y)
-    if x.shape != y.shape:
-        raise Exception(f"x and y need to be of same shape: {np.shape(x)} != {np.shape(y)}")
-    log = a2.plotting.utils_plotting.to_list(log)
-    n_bins = a2.plotting.utils_plotting.to_list(n_bins)
-    xlim = a2.plotting.utils_plotting.to_list(xlim)
-    ylim = a2.plotting.utils_plotting.to_list(ylim)
-    n_bins = [i + 1 if i is not None else i for i in n_bins]  # using bin edges later, where n_edges = n_bins + 1
-    if not isinstance(linear_thresh, list):
-        linear_thresh = [linear_thresh, linear_thresh]
+    x, y = _get_xy_values(x, y)
+
+    xlim, ylim, log, n_bins, linear_thresh = _prepare_parameters(xlim, ylim, log, n_bins, linear_thresh)
+
     if bins is None:
         bin_edges_x = get_bin_edges(
             data=x,
@@ -173,6 +244,7 @@ def plot_histogram_2d(
         bin_edges_x, bin_edges_y = bins
     a2.utils.checks.validate_array(bin_edges_x)  # type: ignore
     a2.utils.checks.validate_array(bin_edges_y)  # type: ignore
+
     norm_object = a2.plotting.utils_plotting.get_norm(norm, vmin=vmin, vmax=vmax)
     H, bin_edges_x, bin_edges_y = np.histogram2d(x, y, bins=[np.array(bin_edges_x), np.array(bin_edges_y)])
     H_plot = H.T
@@ -249,6 +321,26 @@ def plot_histogram_2d(
     if return_matrix:
         return ax, H
     return ax
+
+
+def _prepare_parameters(xlim, ylim, log, n_bins, linear_thresh):
+    log = a2.plotting.utils_plotting.to_list(log)
+    n_bins = a2.plotting.utils_plotting.to_list(n_bins)
+    xlim = a2.plotting.utils_plotting.to_list(xlim)
+    ylim = a2.plotting.utils_plotting.to_list(ylim)
+    n_bins = [i + 1 if i is not None else i for i in n_bins]  # using bin edges later, where n_edges = n_bins + 1
+    linear_thresh = a2.plotting.utils_plotting.to_list(linear_thresh)
+    return xlim, ylim, log, n_bins, linear_thresh
+
+
+def _get_xy_values(x, y):
+    x = np.ndarray.flatten(x)  # type: ignore
+    a2.utils.checks.validate_array(x)
+    y = np.ndarray.flatten(y)  # type: ignore
+    a2.utils.checks.validate_array(y)
+    if x.shape != y.shape:
+        raise Exception(f"x and y need to be of same shape: {np.shape(x)} != {np.shape(y)}")
+    return x, y
 
 
 def annotate_histogram(
@@ -332,6 +424,7 @@ def plot_histogram(
     alpha: float = 1,
     annotatations_bars: t.Optional[list] = None,
     color: str | None = None,
+    min_counts: int = 0,
 ) -> t.Union[plt.axes, t.Tuple[plt.figure, plt.axes]]:
     """
     plots 1d histogram
@@ -364,6 +457,11 @@ def plot_histogram(
     -------
     axes
     """
+    if all([isinstance(i, str) for i in x]):
+        labels_bars, x, counts = np.unique(x, return_inverse=True, return_counts=True)
+        n_bins = len(labels_bars)
+        annotatations_bars = [_la if c >= min_counts else "" for _la, c in zip(labels_bars, counts)]
+        xlim = [0, np.max(x)]
     log = a2.plotting.utils_plotting.to_list(log)
     xlim = a2.plotting.utils_plotting.to_list(xlim)
     ylim = a2.plotting.utils_plotting.to_list(ylim)
@@ -375,6 +473,9 @@ def plot_histogram(
     x = flatten_array(x)
 
     fig, ax = a2.plotting.utils_plotting.create_figure_axes(fig=fig, ax=ax, font_size=font_size)
+    if min_counts > 0:
+        ax.axhline(min_counts)
+
     if bin_edges is None:
         bin_edges, linear_thresh = get_bin_edges(
             data=x,
@@ -398,7 +499,7 @@ def plot_histogram(
         xlim=xlim,
         ylim=ylim,
         ax=ax,
-        log=log[1],
+        log=log,
         linear_thresh=linear_thresh,
         label_x=label_x,
         label_y=label_y,
@@ -406,10 +507,11 @@ def plot_histogram(
         alpha=alpha,
         color=color,
     )
-
+    if annotatations_bars is not None:
+        annotate_histogram(ax, plot, labels=annotatations_bars, as_label="x", fontsize=font_size)
     fig.tight_layout()
     a2.plotting.utils_plotting.save_figure(fig, filename)
-
+    print(f"{log=}")
     if return_plot:
         return ax, plot
     return ax
