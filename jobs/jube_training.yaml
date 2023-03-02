@@ -7,16 +7,21 @@ parameterset:
   - name: appParameter
     parameter:
       - name: batch_size
+        tag: "!hps"
         type: int
-        _: 16
+        _: 32
+      - name: batch_size
+        tag: hps
+        type: int
+        _: 16, 32, 64
       - name: nepochs
         tag: "!hps"
         type: int
-        _: 1, 3, 10
+        _: 10
       - name: nepochs
         tag: hps
         type: int
-        _: 1, 3
+        _: 1, 3, 10
       - name: lr
         tag: "!hps"
         type: float
@@ -25,6 +30,12 @@ parameterset:
         tag: hps
         type: float
         _: 3e-05, 7e-6
+      - name: weightsfixed
+        type: string
+        _: "" #"-weightsfixed"
+      - name: key_rain
+        type: string
+        _: "tp_h" # "station_tp_mm" or "tp_h"
       - name: run_folder
         type: string
         _: "my_jube_test_run"
@@ -33,6 +44,13 @@ parameterset:
         tag: jwb|jwc
         _: "/p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/tweets/"
       - name: data_filename
+        tag: medium
+        _: "2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
+      - name: data_filename
+        tag: large
+        _: "2017-2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
+      - name: data_filename
+        tag: "!medium+!large"
         type: string
         _: "tweets_2017_01_era5_normed_filtered_predicted_simpledeberta.nc"
       - name: outdir
@@ -83,7 +101,11 @@ parameterset:
       - name: taskspernode
         _: $n_gpu
       - name: timelimit
+        tag: test
         _: "02:00:00"
+      - name: timelimit
+        tag: "!test"
+        _: "24:00:00"
       - name: account
         _: deepacf
       - name: queue
@@ -118,6 +140,8 @@ parameterset:
           --data_dir ${indir}
           -jid $${SLURM_JOBID}
           --batch_size ${batch_size}
+          --key_rain ${key_rain}
+          ${weightsfixed}
 
 patternset:
    - name: perf_patterns
@@ -135,7 +159,8 @@ patternset:
       - {name: saving_model_time, type: float, _: "SAVING_MODEL[\\s+]?: took ${jube_pat_fp}"}
       - {name: loss, type: float, _: "{'loss': $jube_pat_fp"}
       - {name: eval_loss, type: float, _: "{'eval_loss': $jube_pat_fp"}
-            
+      - {name: max_memory, type: float, _: "Max memory consumption \\[Gbyte\\]: $jube_pat_fp"}
+      
 analyser:
     name: analyse
     reduce: false
@@ -152,19 +177,19 @@ result:
       name: result
       style: pretty
       sort: iter_pat
-      format: ".2f"
       column:
         - {title: "#tweets", _: ntweets}
         - {title: "JobID", _: jobid}
-        - {title: "#nodes", _: nodes}
-        - {title: "#gpu", _: n_gpu}
+        # - {title: "#nodes", _: nodes}
+        # - {title: "#gpu", _: n_gpu}
+        - {title: "BS", _: batch_size}
         - {title: "T. IO", format: ".4f", _: io_time_sum}
         - {title: "T. run", format: ".4f", _: run_time_last}
         - {title: "T. training", format: ".4f", _: training_time_last}
         - {title: "Avg. epoch", format: ".4f", _: epoch_time_avg}
         - {title: "First epoch", format: ".4f", _: epoch_time_first}
-        - {title: "Min epoch", format: ".4f", _: epoch_time_min}
-        - {title: "Max epoch", format: ".4f", _: epoch_time_max}
+        # - {title: "Min epoch", format: ".4f", _: epoch_time_min}
+        # - {title: "Max epoch", format: ".4f", _: epoch_time_max}
         - {title: "Avg. iteration", format: ".4f", _: batch_time_avg}
         - {title: "F. loss", format: ".4f", _: loss_last}
         - {title: "F. eval loss", format: ".4f", _: eval_loss_last}
@@ -172,6 +197,7 @@ result:
         - {title: "l. rate", _: lr}
         - {title: "min loss", format: ".4f", _: loss_min}
         - {title: "# epochs", _: nepochs}
+        - {title: "Mem", format: ".4f",  _: max_memory}
         # - {title: "Job_Time", _: timelimit}
 
 #Load jobfile
