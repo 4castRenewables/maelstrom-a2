@@ -6,7 +6,6 @@ import a2.dataset
 import a2.plotting
 import a2.training
 import a2.utils
-import mlflow
 import numpy as np
 import sklearn.metrics
 import sklearn.model_selection
@@ -21,7 +20,8 @@ def main(args):
     logging.info(f"Running finetuning as {args.job_id=}")
     logging.info(f"Args used: {args.__dict__}")
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(os.path.join(args.data_dir, args.data_filename), raw=True)
-    logging.info(f"loaded {ds_raw.index.shape[0]} tweets")
+    N_tweets = ds_raw.index.shape[0]
+    logging.info(f"loaded {N_tweets} tweets")
     ds_raw["text"] = (["index"], ds_raw[args.key_text].values.copy())
     ds_raw["raining"] = (["index"], np.array(ds_raw[args.key_rain].values > args.threshold_rain, dtype=int))
 
@@ -32,7 +32,8 @@ def main(args):
         shuffle=True,
         stratify=ds_raw.raining.values,
     )
-
+    model_name = os.path.split(args.model_path)[1]
+    logging.info(f"Using ML model: {model_name}")
     dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
     dataset = dataset_object.build(ds_raw, indices_train, indices_test)
 
@@ -42,6 +43,7 @@ def main(args):
         weight_decay=args.weight_decay,
         epochs=args.number_epochs,
         warmup_ratio=args.warmup_ratio,
+        warmup_steps=args.warmup_steps,
         hidden_dropout_prob=args.hidden_dropout_prob,
         cls_dropout=args.cls_dropout,
         lr_scheduler_type=args.lr_scheduler_type,
@@ -51,15 +53,18 @@ def main(args):
 
     path_run = os.path.join(args.output_dir, args.run_folder)
     path_figures = os.path.join(path_run, args.figure_folder)
-
-    mlflow.end_run()
+    tracker = a2.training.tracking.Tracker()
+    tracker.end_run()
     a2.training.tracking.initialize_mantik()
-    with mlflow.start_run(run_name=args.run_name):
+    with tracker.start_run(run_name=args.run_name):
         tmr = timer.Timer()
         a2.training.tracking.initialize_mantik()
-        mlflow.log_param(
-            "data_description",
-            args.data_description,
+        tracker.log_params(
+            {
+                "data_description": args.data_description,
+                "N_tweets": N_tweets,
+                "model_name": model_name,
+            }
         )
         tmr.start(timer.TimeType.RUN)
         trainer = trainer_object.get_trainer(
@@ -75,7 +80,7 @@ def main(args):
             logging_steps=1,
             base_model_trainable=not args.base_model_weights_fixed,
         )
-        mlflow.log_params(trainer_object.hyper_parameters.__dict__)
+        tracker.log_params(trainer_object.hyper_parameters.__dict__)
         tmr.start(timer.TimeType.TRAINING)
         trainer.train()
         tmr.end(timer.TimeType.TRAINING)
@@ -95,7 +100,7 @@ def main(args):
         )
         truth = ds_test.raining.values
 
-        a2.training.tracking.log_metric_classification_report(truth, predictions, step=hyper_parameters.epochs)
+        a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=hyper_parameters.epochs)
 
         filename_certainty_plot = os.path.join(path_figures, "plot_2d_predictions_truth.pdf")
         a2.plotting.analysis.plot_prediction_certainty(
@@ -103,13 +108,13 @@ def main(args):
             prediction_probabilities=ds_test["prediction_probability_raining"].values,
             filename=filename_certainty_plot,
         )
-        mlflow.log_artifact(filename_certainty_plot)
+        tracker.log_artifact(filename_certainty_plot)
 
         filename_roc_plot = os.path.join(path_figures, "roc.pdf")
         a2.plotting.analysis.plot_roc(
             ds_test.raining.values, prediction_probabilities[:, 1], filename=filename_roc_plot
         )
-        mlflow.log_artifact(filename_roc_plot)
+        tracker.log_artifact(filename_roc_plot)
         logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
 
 
@@ -173,9 +178,8 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", "-bs", type=int, default=32, help="Number of samples per mini-batch.")
     parser.add_argument("--learning_rate", "-lr", type=float, default=3e-05, help="Learning rate to train model.")
     parser.add_argument("--weight_decay", "-wd", type=float, default=0, help="Weight decay rate to train model.")
-    parser.add_argument(
-        "--warmup_ratio", "-wr", type=float, default=0.4480456499617466, help="Warmup ratio to train model."
-    )
+    parser.add_argument("--warmup_ratio", "-wr", type=float, default=0, help="Warmup ratio to train model.")
+    parser.add_argument("--warmup_steps", "-ws", type=float, default=500, help="Warmup steps to train model.")
     parser.add_argument(
         "--hidden_dropout_prob", "-hdp", type=float, default=0.1, help="Probability of hidden droup out layer."
     )
