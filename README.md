@@ -106,6 +106,9 @@ Embed Tweets as RGB (or similar) on a grid (unstructured?!/average embeddings?!/
 * Motivate certainty in prediction with softmax output
 * Results: confusion matrix and/or AUC plot
 
+### Noisy labels
+* Precipitation forecasts are notoriously difficult. Therefore models are built to systematically overpredict rain. For this project, comparing ERA5 data with data from nearby weather stations showed a precision of predicting rain of only 35%.
+
 ### Clustering algorithms
 * k-nearest neighbours (vote by k-nearest neigbour on member class/ average value for regressor)
 ### Automative active learning
