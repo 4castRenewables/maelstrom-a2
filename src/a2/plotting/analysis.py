@@ -69,7 +69,7 @@ def plot_prediction_certainty(
         fig=fig,
         vmin=vmin,
         vmax=vmax,
-        cmap=cmap,
+        colormap=cmap,
         font_size=font_size,
         **kwargs,
     )
