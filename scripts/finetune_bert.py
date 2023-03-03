@@ -17,6 +17,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(args):
+    os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
     logging.info(f"Running finetuning as {args.job_id=}")
     logging.info(f"Args used: {args.__dict__}")
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(os.path.join(args.data_dir, args.data_filename), raw=True)
@@ -75,7 +76,10 @@ def main(args):
             hyper_tuning=False,
             disable_tqdm=True,
             fp16=True if a2.training.utils_training.gpu_available() else False,
-            callbacks=[a2.training.training_deep500.TimerCallback(tmr, gpu=True)],
+            callbacks=[
+                a2.training.training_deep500.TimerCallback(tmr, gpu=True),
+                a2.training.tracking_hugging.LogCallback(tracker),
+            ],
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
             logging_steps=1,
             base_model_trainable=not args.base_model_weights_fixed,
