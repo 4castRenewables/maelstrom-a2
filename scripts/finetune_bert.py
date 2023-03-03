@@ -83,6 +83,7 @@ def main(args):
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
             logging_steps=1,
             base_model_trainable=not args.base_model_weights_fixed,
+            eval_steps=args.eval_steps,
         )
         tracker.log_params(trainer_object.hyper_parameters.__dict__)
         tmr.start(timer.TimeType.TRAINING)
@@ -191,6 +192,8 @@ if __name__ == "__main__":
     parser.add_argument("--lr_scheduler_type", "-lst", type=str, default="linear", help="Learning rate scheduler type.")
 
     parser.add_argument("--test_size", "-ts", type=float, default=0.2, help="Fraction of test set.")
+
+    parser.add_argument("--eval_steps", "-esteps", type=int, default=500, help="Fraction of test set.")
 
     parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
     parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
