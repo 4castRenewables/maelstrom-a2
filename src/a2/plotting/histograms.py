@@ -38,61 +38,194 @@ def plot_histogram_2d(
     cmap: str = "plasma",
     overplot_round_base: int | None = None,
     overplot_color: str = "gray",
-    return_matrix: bool = False,
     aspect: str = "auto",
     vmin: float | None = None,
     vmax: float | None = None,
-    marginal_x: str = "histogram",
+    facet_column: list | None = None,
+    facet_row: list | None = None,
+    marginal_x: str = "default",
     marginal_x_label_x: bool = False,
     marginal_x_label_y: str = "N",
     marginal_x_show_xticks: bool = False,
-    marginal_y: str = "histogram",
+    marginal_y: str = "default",
     marginal_y_label_x: str = "N",
     marginal_y_label_y: bool = False,
     marginal_y_show_yticks: bool = False,
-    marginal_color: str | None = None,
+    marginal_color: str | None = "#1f77b4",
     figure_size: t.List[float] | None = None,
     colormap: str = "viridis",
+    colorbar_width=0.02,
+    spacing_x=0.03,
+    spacing_y=0.03,
+    spacing_colorbar=0.03,
+    title: str = "",
 ):
-    return _plot_histogram_2d(
-        x,
-        y,
-        ds=ds,
-        bins=bins,
-        xlim=xlim,
-        ylim=ylim,
-        ax=ax,
-        ax_colorbar=ax_colorbar,
-        log=log,
-        filename=filename,
-        fig=fig,
-        n_bins=n_bins,
-        norm=norm,
-        linear_thresh=linear_thresh,
-        label_x=label_x,
-        label_y=label_y,
-        label_colorbar=label_colorbar,
-        font_size=font_size,
-        overplot_values=overplot_values,
-        cmap=cmap,
-        overplot_round_base=overplot_round_base,
-        overplot_color=overplot_color,
-        return_matrix=return_matrix,
-        aspect=aspect,
-        vmin=vmin,
-        vmax=vmax,
-        marginal_x=marginal_x,
-        marginal_x_label_x=marginal_x_label_x,
-        marginal_x_label_y=marginal_x_label_y,
-        marginal_x_show_xticks=marginal_x_show_xticks,
-        marginal_y=marginal_y,
-        marginal_y_label_x=marginal_y_label_x,
-        marginal_y_label_y=marginal_y_label_y,
-        marginal_y_show_yticks=marginal_y_show_yticks,
-        marginal_color=marginal_color,
+    marginal_x, marginal_y = _resolve_defaults(facet_column, facet_row, marginal_x, marginal_y)
+    _check_histogram_parameter_consistency(facet_column, facet_row, marginal_x, marginal_y, ds)
+
+    facet_column_values, column_masks, n_facet_column_values, facet_column_title = prepare_facet(ds, facet_column)
+    facet_row_values, row_masks, n_facet_row_values, facet_row_title = prepare_facet(ds, facet_row)
+
+    n_columns = 1
+    if n_facet_column_values:
+        n_columns = n_facet_column_values
+    elif marginal_x is not None:
+        n_columns = 2
+
+    n_rows = 1
+    if n_facet_row_values:
+        n_rows = n_facet_row_values
+    elif marginal_y is not None:
+        n_rows = 2
+
+    def add_masks(mask, to_add):
+        if to_add is None:
+            return mask
+        if mask is None:
+            return to_add
+        else:
+            return mask & to_add
+
+    masks = np.full((n_rows, n_columns), None, dtype=object)
+    for i_row in range(n_rows):
+        for i_column in range(n_columns):
+            if column_masks is not None:
+                masks[i_row, i_column] = add_masks(masks[i_row, i_column], column_masks[i_column])
+            if row_masks is not None:
+                masks[i_row, i_column] = add_masks(masks[i_row, i_column], row_masks[i_row])
+
+    def add_titles(titles, delimeter=", "):
+        return f"{delimeter}".join([t for t in titles if len(t)])
+
+    titles = np.full((n_rows, n_columns), title, dtype=object)
+    for i_row in range(n_rows):
+        for i_column in range(n_columns):
+            if facet_row:
+                titles[i_row, i_column] = add_titles([titles[i_row, i_column], facet_row_title[i_row]])
+            if facet_column:
+                titles[i_row, i_column] = add_titles([titles[i_row, i_column], facet_column_title[i_column]])
+
+    skip_row_col = None
+    widths_along_x = None
+    heights_along_y = None
+    colorbar_include_row_col = None
+
+    colorbar_off = False
+    if marginal_x is not None and marginal_y is not None:
+        skip_row_col = [[0, 1]]
+        widths_along_x = [0.2, 0.1]
+        heights_along_y = [0.1, 0.2]
+        colorbar_include_row_col = [[1, 1]]
+
+    fig, axes, axes_colorbar = a2.plotting.utils_plotting.create_axes_grid(
+        n_cols=n_columns,
+        n_rows=n_rows,
         figure_size=figure_size,
-        colormap=colormap,
+        skip_row_col=skip_row_col,
+        colorbar_width=colorbar_width,
+        spacing_x=spacing_x,
+        spacing_y=spacing_y,
+        widths_along_x=widths_along_x,
+        heights_along_y=heights_along_y,
+        colorbar_include_row_col=colorbar_include_row_col,
+        spacing_colorbar=spacing_colorbar,
+        colorbar_off=colorbar_off,
     )
+    if font_size is not None:
+        a2.plotting.utils_plotting.set_font(font_size=font_size)
+
+    results_dic = {"axes": [], "histograms": []}
+    for i_row in range(n_rows):
+        for i_column in range(n_columns):
+            ax = axes[i_row, i_column]
+            ax_colorbar = axes_colorbar[i_row, i_column]
+            axes_marginal = None
+            if marginal_x is not None and marginal_y is not None:
+                ax = axes[1][0]
+                ax_colorbar = axes_colorbar[1][1]
+                axes_marginal = axes
+            mask = masks[i_row, i_column]
+            title = titles[i_row, i_column]
+            _ax, _hist = _plot_histogram_2d(
+                x,
+                y,
+                ds=ds,
+                bins=bins,
+                xlim=xlim,
+                ylim=ylim,
+                ax=ax,
+                ax_colorbar=ax_colorbar,
+                log=log,
+                n_bins=n_bins,
+                norm=norm,
+                linear_thresh=linear_thresh,
+                label_x=label_x,
+                label_y=label_y,
+                label_colorbar=label_colorbar,
+                font_size=font_size,
+                overplot_values=overplot_values,
+                overplot_round_base=overplot_round_base,
+                overplot_color=overplot_color,
+                vmin=vmin,
+                vmax=vmax,
+                marginal_x=marginal_x,
+                marginal_x_label_x=marginal_x_label_x,
+                marginal_x_label_y=marginal_x_label_y,
+                marginal_x_show_xticks=marginal_x_show_xticks,
+                marginal_y=marginal_y,
+                marginal_y_label_x=marginal_y_label_x,
+                marginal_y_label_y=marginal_y_label_y,
+                marginal_y_show_yticks=marginal_y_show_yticks,
+                marginal_color=marginal_color,
+                axes_marginal=axes_marginal,
+                colormap=colormap,
+                title=title,
+                mask=mask,
+            )
+
+            results_dic["axes"].append(_ax)
+            results_dic["histograms"].append(_hist)
+
+            if marginal_x is not None and marginal_y is not None:
+                break
+    a2.plotting.utils_plotting.save_figure(fig, filename)
+    return results_dic
+
+
+def _resolve_defaults(facet_column, facet_row, marginal_x, marginal_y):
+    if marginal_x == "default":
+        if facet_column is None and facet_row is None:
+            marginal_x = "histogram"
+        else:
+            marginal_x = None
+    if marginal_y == "default":
+        if facet_column is None and facet_row is None:
+            marginal_y = "histogram"
+        else:
+            marginal_y = None
+    return marginal_x, marginal_y
+
+
+def _check_histogram_parameter_consistency(facet_column, facet_row, marginal_x, marginal_y, ds):
+    if (bool(marginal_x) + bool(marginal_y)) not in [0, 2]:
+        raise NotImplementedError(f"{bool(marginal_x)=} anbool(d) {marginal_y=} both have to be on/off")
+    if (bool(marginal_x) or bool(marginal_y)) and (facet_column or facet_row):
+        raise NotImplementedError(
+            f"Cannot use ({marginal_x=} or {marginal_y}) at the same time as ({facet_column=} or {facet_row})"
+        )
+    if (facet_column or facet_row) and ds is None:
+        raise NotImplementedError(f"Cannnot use {facet_column=} and/or {facet_row}, when {ds=} is not given!")
+
+
+def prepare_facet(ds, facet):
+    if facet is not None and facet in ds:
+        facet_values = np.unique(ds[facet].values)
+        masks = [ds[facet] == val for val in facet_values]
+        n_facet_values = len(facet_values)
+        facet_title = [f"{facet} == {val}" for val in facet_values]
+    else:
+        facet_values, masks, n_facet_values, facet_title = None, None, 0, ""
+    return facet_values, masks, n_facet_values, facet_title
 
 
 def _plot_histogram_2d(
@@ -105,7 +238,6 @@ def _plot_histogram_2d(
     ax: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
     ax_colorbar: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
     log: t.Union[bool, t.List[bool]] = False,
-    filename: t.Union[str, pathlib.Path] = None,
     fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
     n_bins: t.Union[int, t.List[int]] = 60,
     norm: str | None = None,
@@ -115,11 +247,8 @@ def _plot_histogram_2d(
     label_colorbar: str | None = None,
     font_size: int = 12,
     overplot_values: bool = False,
-    cmap: str = "plasma",
     overplot_round_base: int | None = None,
     overplot_color: str = "gray",
-    return_matrix: bool = False,
-    aspect: str = "auto",
     vmin: float | None = None,
     vmax: float | None = None,
     marginal_x: str = "histogram",
@@ -131,8 +260,10 @@ def _plot_histogram_2d(
     marginal_y_label_y: bool = False,
     marginal_y_show_yticks: bool = False,
     marginal_color: str | None = None,
-    figure_size: t.List[float] | None = None,
     colormap: str = "viridis",
+    axes_marginal: list | None = None,
+    mask: np.ndarray | None = None,
+    title: None | str = None,
 ) -> t.Union[plt.axes, t.Tuple[plt.axes, t.Sequence]]:
     """
     plots 2d histogram
@@ -160,7 +291,6 @@ def _plot_histogram_2d(
     font_size: size of font
     overplot_values: show number of samples on plot
     overplot_round_base: Round values to be overplotted to this base int
-    return_matrix: Additionally return histogram values
     marginal_x: Add additional plot on top of histogram plot ("histogram"/None)
     marginal_x_label_x: Label along x-axis for plot `marginal_x`
     marginal_x_label_y: Label along y-axis for plot `marginal_x`
@@ -171,6 +301,7 @@ def _plot_histogram_2d(
     marginal_y_show_yticks: Wether to show ticks along the y-axis for plot `marginal_y`
     figure_size: Size of figure (height, width), default (10, 6)
     colormap: Matplotlib colormap name
+    mask: Mask x/y values (required shape same as shape of x/y)
     vmin: Minimum value of colormap
     vmax: Maximum value of colormap
 
@@ -178,25 +309,6 @@ def _plot_histogram_2d(
     -------
     axes
     """
-
-    if marginal_x is not None and marginal_y is not None:
-        fig, axes, axes_colorbar = a2.plotting.utils_plotting.create_axes_grid(
-            n_cols=2,
-            n_rows=2,
-            figure_size=figure_size,
-            skip_row_col=[[0, 1]],
-            colorbar_width=0.02,
-            spacing_x=0.03,
-            spacing_y=0.03,
-            widths_along_x=[0.2, 0.1],
-            heights_along_y=[0.1, 0.2],
-            colorbar_include_row_col=[[1, 1]],
-            spacing_colorbar=0.03,
-        )
-        ax = axes[1][0]
-        ax_colorbar = axes_colorbar[1][1]
-    else:
-        fig, ax = a2.plotting.utils_plotting.create_figure_axes(fig=fig, ax=ax, font_size=font_size)
 
     def get_label(label):
         if label is not None and label:
@@ -219,7 +331,7 @@ def _plot_histogram_2d(
         else:
             ValueError(f"{ds=}, if {y=} given as string, dataset required")
 
-    x, y = _get_xy_values(x, y)
+    x, y = _get_xy_values(x, y, mask)
 
     xlim, ylim, log, n_bins, linear_thresh = _prepare_parameters(xlim, ylim, log, n_bins, linear_thresh)
 
@@ -242,6 +354,7 @@ def _plot_histogram_2d(
         )
     else:
         bin_edges_x, bin_edges_y = bins
+
     a2.utils.checks.validate_array(bin_edges_x)  # type: ignore
     a2.utils.checks.validate_array(bin_edges_y)  # type: ignore
 
@@ -272,10 +385,8 @@ def _plot_histogram_2d(
     a2.plotting.utils_plotting.set_y_log(ax, log[1], linear_thresh=linear_thresh[1])
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
-    if label_x is not None:
-        ax.set_xlabel(label_x)
-    if label_y is not None:
-        ax.set_ylabel(label_y)
+
+    a2.plotting.utils_plotting.set_title(ax, title)
 
     if marginal_x == "histogram":
         plot_histogram(
@@ -283,7 +394,7 @@ def _plot_histogram_2d(
             bin_edges=bin_edges_x,
             xlim=xlim,
             ylim=None,
-            ax=axes[0][0],
+            ax=axes_marginal[0][0],
             log=log[0],
             fig=fig,
             n_bins=n_bins[0],
@@ -295,14 +406,14 @@ def _plot_histogram_2d(
             color=marginal_color,
         )
         if not marginal_x_show_xticks:
-            a2.plotting.utils_plotting.remove_tick_labels(axes[0][0], "x")
+            a2.plotting.utils_plotting.remove_tick_labels(axes_marginal[0][0], "x")
     if marginal_y == "histogram":
         plot_histogram(
             y,
             bin_edges=bin_edges_y,
             xlim=None,
             ylim=ylim,
-            ax=axes[1][1],
+            ax=axes_marginal[1][1],
             log=log[1],
             fig=fig,
             n_bins=n_bins[1],
@@ -314,13 +425,10 @@ def _plot_histogram_2d(
             color=marginal_color,
         )
         if not marginal_y_show_yticks:
-            a2.plotting.utils_plotting.remove_tick_labels(axes[1][1], "y")
+            a2.plotting.utils_plotting.remove_tick_labels(axes_marginal[1][1], "y")
     if fig is not None and marginal_x is None and marginal_y is None:
         fig.tight_layout()
-    a2.plotting.utils_plotting.save_figure(fig, filename)
-    if return_matrix:
-        return ax, H
-    return ax
+    return ax, H
 
 
 def _prepare_parameters(xlim, ylim, log, n_bins, linear_thresh):
@@ -333,13 +441,16 @@ def _prepare_parameters(xlim, ylim, log, n_bins, linear_thresh):
     return xlim, ylim, log, n_bins, linear_thresh
 
 
-def _get_xy_values(x, y):
+def _get_xy_values(x, y, mask):
     x = np.ndarray.flatten(x)  # type: ignore
     a2.utils.checks.validate_array(x)
     y = np.ndarray.flatten(y)  # type: ignore
     a2.utils.checks.validate_array(y)
     if x.shape != y.shape:
         raise Exception(f"x and y need to be of same shape: {np.shape(x)} != {np.shape(y)}")
+    if mask is not None:
+        x = x[mask]
+        y = y[mask]
     return x, y
 
 

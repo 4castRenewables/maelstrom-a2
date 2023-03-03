@@ -81,7 +81,8 @@ class TrainerWithTimer(Trainer):
     """
 
     def __init__(self, *args, **kwargs):
-        [self.timer_callback] = kwargs["callbacks"]
+        print(f'{kwargs["callbacks"]=}')
+        self.timer_callback = kwargs["callbacks"][0]
         self.tmr = self.timer_callback.timer
         self.tmr_gpu = self.timer_callback.gpu
         super().__init__(*args, **kwargs)

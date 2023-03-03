@@ -4,7 +4,6 @@ import a2.training.dataset_hugging
 import a2.training.evaluate_hugging
 import a2.training.training_hugging
 import a2.utils
-import mlflow
 import numpy as np
 import sklearn.model_selection
 
@@ -46,10 +45,13 @@ def test_HuggingFaceTrainerClass_get_trainer(
         folder_output=folder_output,
     )
 
+    tracker = a2.training.tracking.Tracker()
+
     def get_raw_parameters():
-        run = mlflow.active_run()
-        _tracking_uri = mlflow.get_tracking_uri()
-        _run_artifact_dir = mlflow.utils.file_utils.local_file_uri_to_path(_tracking_uri)
+        run = tracker.active_run()
+        _tracking_uri = tracker.get_tracking_uri()
+        print(f"{_tracking_uri=}")
+        _run_artifact_dir = tracker.local_file_uri_to_path(_tracking_uri)
         folder_params = _run_artifact_dir + f"0/{run.info.run_id}/params/"
         parameters = {}
         for file in os.listdir(folder_params):
@@ -58,10 +60,10 @@ def test_HuggingFaceTrainerClass_get_trainer(
                 parameters[file] = a2.utils.utils.evaluate_string(content)  # if isinstance(content, str) else content
         return parameters
 
-    mlflow.set_tracking_uri("file://" + folder_tracking.__str__() + "/")
-    experiment_id = mlflow.create_experiment("experiment1")
-    with mlflow.start_run(experiment_id=experiment_id):
-        mlflow.log_params(trainer_object.hyper_parameters.__dict__)
+    tracker.set_tracking_uri("file://" + folder_tracking.__str__() + "/")
+    experiment_id = tracker.create_experiment("experiment1")
+    with tracker.start_run(experiment_id=experiment_id):
+        tracker.log_params(trainer_object.hyper_parameters.__dict__)
         parameters = get_raw_parameters()
         assert parameters == trainer_object.hyper_parameters.__dict__
         trainer.train()
@@ -83,7 +85,7 @@ def test_HuggingFaceTrainerClass_get_trainer(
             prediction_probabilities=prediction_probabilities,
         )
         truth = ds_test.raining.values
-        a2.training.tracking.log_metric_classification_report(truth, predictions, step=1)
+        a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=1)
         assert np.array_equal(predictions, np.array([1, 1, 1, 1]))
     (truth, predictions, prediction_probabilities,) = a2.training.evaluate_hugging.make_predictions_loaded_model(
         ds,
