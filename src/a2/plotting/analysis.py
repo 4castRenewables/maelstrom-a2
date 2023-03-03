@@ -57,7 +57,7 @@ def plot_prediction_certainty(
     """
     if figure_size is None:
         figure_size = [8, 8]
-    ax, H = a2.plotting.histograms.plot_histogram_2d(
+    results_dic = a2.plotting.histograms.plot_histogram_2d(
         truth,
         prediction_probabilities,
         n_bins=[n_true_labels, n_bins],
@@ -65,7 +65,6 @@ def plot_prediction_certainty(
         label_colorbar=label_colorbar,
         label_y=label_y,
         overplot_values=True,
-        return_matrix=True,
         filename=filename,
         fig=fig,
         vmin=vmin,
@@ -75,8 +74,8 @@ def plot_prediction_certainty(
         **kwargs,
     )
     if return_matrix:
-        return ax, H
-    return ax
+        return results_dic["axes"][0], results_dic["histograms"][0]
+    return results_dic["axes"][0]
 
 
 def classification_report(
