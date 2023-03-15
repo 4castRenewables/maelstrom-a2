@@ -117,10 +117,14 @@ parameterset:
         _: gpu-err.%j
       - name: out_file
         _: gpu-out.%j
-      - name: n_gpu
+      - name: ngpus
+        tag: e4
         _: 1
+      - name: ngpus
+        tag: "jwc|jwb"
+        _: 4
       - name: taskspernode
-        _: $n_gpu
+        _: $ngpus
       - name: timelimit
         tag: test
         _: "01:00:00"
@@ -162,6 +166,12 @@ parameterset:
       - name: job_file
         tag: e4
         _: $jube_benchmark_home/job.run.e4
+      - name: visible_devices
+        tag: jwc | jwb 
+        _: CUDA_VISIBLE_DEVICES=0
+      - name: visible_devices
+        tag: e4
+        _: ""
       - name: args_exec
         mode: text
         _: >
@@ -253,7 +263,8 @@ substituteset:
     - {source: "#MAIL_TYPE#", dest: $mail_type}
     - {source: "#ACCOUNT#", dest: $account}
     - {source: "#PARTITION#", dest: $queue}
-    - {source: "#EXEC#", dest: "${executable} ${args_exec}"}
+    - {source: "#NGPUS#", dest: $ngpus}
+    - {source: "#EXEC#", dest: "${visible_devices} ${executable} ${args_exec}"}
     - {source: "#READY#", _: $ready_file } # _ can be used here as well instead of dest (should be used
 
 step:
