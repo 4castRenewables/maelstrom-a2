@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.INFO)
 def main(args):
     os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
     logging.info(f"Running finetuning as {args.job_id=}")
+    logging.info(f"Iteration: {args.iteration=}")
     logging.info(f"Args used: {args.__dict__}")
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(os.path.join(args.data_dir, args.data_filename), raw=True)
     N_tweets = ds_raw.index.shape[0]
@@ -206,6 +207,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
+    parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
     parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
     parser.add_argument(
         "--base_model_weights_fixed",
