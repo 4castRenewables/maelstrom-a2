@@ -41,7 +41,7 @@ parameterset:
         _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
       - name: model_path
         tag: e4
-        _: /home/kehlert/models/deberta-v3-small/
+        _: /data/maelstrom/kehlert/models/deberta-v3-small
       - name: indir
         type: string
         tag: jwb|jwc
@@ -172,7 +172,7 @@ parameterset:
           -jid $${SLURM_JOBID}
           --batch_size ${batch_size}
           --key_rain ${key_rain}
-          --model_path {model_path}
+          --model_path ${model_path}
           ${weightsfixed}
 
 patternset:
