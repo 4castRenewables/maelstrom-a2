@@ -17,7 +17,7 @@ parameterset:
       - name: nepochs
         tag: "!hps"
         type: int
-        _: 4
+        _: 1
       - name: nepochs
         tag: hps
         type: int
@@ -55,7 +55,7 @@ parameterset:
         _: "2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
       - name: data_filename
         tag: large
-        _: "2017-2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
+        _: "2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
       - name: data_filename
         tag: "!medium+!large"
         type: string
@@ -175,6 +175,7 @@ parameterset:
           --batch_size ${batch_size}
           --key_rain ${key_rain}
           --model_path ${model_path}
+          --output_dir ${outdir}
           ${weightsfixed}
 
 patternset:
