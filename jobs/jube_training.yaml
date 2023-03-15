@@ -52,7 +52,7 @@ parameterset:
         _: "/data/maelstrom/kehlert/data/tweets/"
       - name: data_filename
         tag: medium
-        _: "2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
+        _: "2020_text_precipitation.nc" # "2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
       - name: data_filename
         tag: large
         _: "2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
