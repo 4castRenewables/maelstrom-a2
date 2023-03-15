@@ -37,11 +37,19 @@ parameterset:
         type: string
         _: "tp_h" # "station_tp_mm" or "tp_h"
       - name: model_path
-        _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-base/ #/p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
+        tag: "jwb|jwc"
+        _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
+      - name: model_path
+        tag: e4
+        _: /home/kehlert/models/deberta-v3-small/
       - name: indir
         type: string
         tag: jwb|jwc
         _: "/p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/tweets/"
+      - name: indir
+        type: string
+        tag: e4
+        _: "/data/maelstrom/kehlert/data/tweets/"
       - name: data_filename
         tag: medium
         _: "2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
@@ -69,11 +77,17 @@ parameterset:
       #    module load Stages/2022 &&
       #    module load cuDNN/8.3.1.22-CUDA-11.5
       - name: modules
-        # tag: "jwb"
+        tag: "jwb|jwc"
         separator: |
         _:
           module load Stages/2023 &&
           module load cuDNN/8.6.0.163-CUDA-11.7
+      - name: modules
+        tag: e4
+        separator: |
+        _:
+          module load slurm
+          module load nvidia/cuda-11.7
       - name: systemname
         tag: jwc
         _: jwc
@@ -89,6 +103,7 @@ parameterset:
         mode: text
         separator: |
         _:
+          . /opt/share/scripts/powerdiscovery/getpower.sh $${SLURMD_NODENAME} <CAPTURE TIME> &;
           $modules;
       - name: threadspertask
         _: 1
@@ -106,26 +121,33 @@ parameterset:
         _: $n_gpu
       - name: timelimit
         tag: test
-        _: "02:00:00"
+        _: "01:00:00"
       - name: timelimit
         tag: "!test"
         _: "24:00:00"
       - name: account
+        tag: jwb+!test
         _: deepacf
+      - name: account
+        tag: e4
+        _: maelstrom
       - name: queue
         tag: jwb+!test
         _: booster
       - name: queue
         tag: jwb+test
         _: develbooster
-      - name: mail_type
-        _: BEGIN
+      - name: queue
+        tag: e4
+        _: i-gpu-a100
       - name: queue
         tag: jwc+!test
         _: gpus
       - name: queue
         tag: jwc+test
         _: develgpus
+      - name: mail_type
+        _: BEGIN
       - name: gres
         _: gpu:$n_gpu
       - name: executable
@@ -133,7 +155,11 @@ parameterset:
       - name: submit_cmd
         _: sbatch
       - name: job_file
+        tag: jwc|jwb
         _: $jube_benchmark_home/job.run
+      - name: job_file
+        tag: e4
+        _: $jube_benchmark_home/job.run.e4
       - name: args_exec
         mode: text
         _: >
