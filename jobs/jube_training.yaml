@@ -30,6 +30,9 @@ parameterset:
         tag: hps
         type: float
         _: 3e-05, 7e-6
+      - name: weight_decay
+        type: float
+        _: 0.01
       - name: weightsfixed
         type: string
         _: "" #"-weightsfixed"
@@ -186,6 +189,7 @@ parameterset:
           --key_rain ${key_rain}
           --model_path ${model_path}
           --output_dir ${outdir}
+          --weight_decay ${weight_decay}
           ${weightsfixed}
 
 patternset:
