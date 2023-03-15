@@ -44,7 +44,7 @@ parameterset:
         _: /data/maelstrom/kehlert/models/deberta-v3-small
       - name: indir
         type: string
-        tag: jwb|jwc
+        tag: "jwb|jwc"
         _: "/p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/tweets/"
       - name: indir
         type: string
@@ -80,8 +80,10 @@ parameterset:
         tag: "jwb|jwc"
         separator: |
         _:
+          module purge &&
           module load Stages/2023 &&
-          module load cuDNN/8.6.0.163-CUDA-11.7
+          module load cuDNN/8.6.0.163-CUDA-11.7 &&
+          module unload Python/3.10.4
       - name: modules
         tag: e4
         separator: |
@@ -126,7 +128,7 @@ parameterset:
         tag: "!test"
         _: "24:00:00"
       - name: account
-        tag: jwb+!test
+        tag: jwb|jwc
         _: deepacf
       - name: account
         tag: e4
