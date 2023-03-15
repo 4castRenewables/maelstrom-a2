@@ -8,6 +8,7 @@ import os
 import pathlib
 import tarfile
 import typing as t
+import warnings
 import zipfile
 
 import requests
@@ -253,7 +254,7 @@ def get_folder_data():
     else:
         folder_data = pathlib.Path("/home/kristian/Projects/a2/data/")
     if not os.path.isdir(folder_data):
-        raise ValueError(f"{folder_data=} does not exist!")
+        warnings.warn(f"{folder_data=} does not exist!")
     return folder_data
 
 
@@ -264,7 +265,7 @@ def get_folder_models():
     else:
         folder_models = pathlib.Path("/home/kristian/Projects/a2/models/")
     if not os.path.isdir(folder_models):
-        raise ValueError(f"{folder_models=} does not exist!")
+        warnings.warn(f"{folder_models=} does not exist!")
     return folder_models
 
 
