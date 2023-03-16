@@ -18,6 +18,7 @@ logging.basicConfig(format="%(asctime)s %(levelname)-8s %(message)s", level=logg
 
 def main(args):
     if args.log_gpu_memory:
+        timer.init_cuda()
         timer.reset_cuda_memory_monitoring()
     os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
     logging.info(f"Running finetuning as {args.job_id=}")
@@ -60,7 +61,6 @@ def main(args):
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     tracker.end_run()
     if args.log_gpu_memory:
-        timer.init_cuda()
         timer.reset_cuda_memory_monitoring()
     with tracker.start_run(run_name=args.run_name):
         tmr = timer.Timer()
