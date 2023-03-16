@@ -80,6 +80,10 @@ def get_max_memory_usage():
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1000
 
 
+def init_cuda():
+    torch.cuda.init()
+
+
 def reset_cuda_memory_monitoring():
     for i_cuda in range(torch.cuda.device_count()):
         torch.cuda.reset_peak_memory_stats(i_cuda)
