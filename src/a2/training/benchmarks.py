@@ -4,6 +4,7 @@ import resource
 import time
 
 import numpy as np
+import torch
 
 
 @dataclasses.dataclass(frozen=True)
@@ -76,3 +77,10 @@ class Timer:
 def get_max_memory_usage():
     """In bytes"""
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1000
+
+
+def get_cuda_memory_usage(log_message):
+    logging.info("CUDA memory logging....")
+    for i_cuda in range(torch.cuda.device_count()):
+        logging.info(f"{log_message}: Cuda device {i_cuda} report:")
+        logging.info(torch.cuda.memory_stats(i_cuda))

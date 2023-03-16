@@ -69,6 +69,7 @@ def main(args):
             }
         )
         tmr.start(timer.TimeType.RUN)
+        timer.get_cuda_memory_usage("Starting run")
         trainer = trainer_object.get_trainer(
             dataset,
             hyper_parameters=hyper_parameters,
@@ -96,6 +97,7 @@ def main(args):
             predictions,
             prediction_probabilities,
         ) = a2.training.evaluate_hugging.predict_dataset(test_ds, trainer)
+        timer.get_cuda_memory_usage("Finished training")
         tmr.end(timer.TimeType.RUN)
 
         tmr.print_all_time_stats()
@@ -123,6 +125,7 @@ def main(args):
         )
         tracker.log_artifact(filename_roc_plot)
         logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
+        timer.get_cuda_memory_usage("Finished run")
 
 
 if __name__ == "__main__":
