@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+import pprint
 import resource
 import time
 
@@ -84,7 +85,8 @@ def reset_cuda_memory_monitoring():
 
 
 def get_cuda_memory_usage(log_message):
-    logging.info("CUDA memory logging....")
+    logging.info("CUDA memory logging....\n")
     for i_cuda in range(torch.cuda.device_count()):
-        logging.info(f"{log_message}: Cuda device {i_cuda} report:")
-        print(torch.cuda.memory_stats(i_cuda))
+        logging.info(f"{log_message}: Cuda device {i_cuda} report:\n")
+        pprint.pprint(torch.cuda.memory_stats(i_cuda))
+        logging.info(f"Report done! for Cuda device {i_cuda}\n")
