@@ -57,14 +57,12 @@ def main(args):
 
     path_run = os.path.join(args.output_dir, args.run_folder)
     path_figures = os.path.join(path_run, args.figure_folder)
-    tracker = a2.training.tracking.Tracker()
+    tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     tracker.end_run()
-    a2.training.tracking.initialize_mantik()
     if args.log_gpu_memory:
         timer.reset_cuda_memory_monitoring()
     with tracker.start_run(run_name=args.run_name):
         tmr = timer.Timer()
-        a2.training.tracking.initialize_mantik()
         tracker.log_params(
             {
                 "data_description": args.data_description,
@@ -230,6 +228,11 @@ if __name__ == "__main__":
         "--log_gpu_memory",
         action="store_true",
         help="Monitor Cuda memory usage.",
+    )
+    parser.add_argument(
+        "--ignore_tracking",
+        action="store_true",
+        help="Use mantik tracking.",
     )
 
     args = parser.parse_args()
