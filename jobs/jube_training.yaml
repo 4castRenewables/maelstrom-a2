@@ -178,8 +178,10 @@ parameterset:
         tag: e4
         _: $jube_benchmark_home/job.run.e4
       - name: visible_devices
+        type: string
+        separator: ";"
         tag: jwc | jwb 
-        _: CUDA_VISIBLE_DEVICES=0
+        _: "CUDA_VISIBLE_DEVICES=0,1"
       - name: visible_devices
         tag: e4
         _: ""
