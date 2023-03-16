@@ -81,7 +81,8 @@ def get_max_memory_usage():
 
 
 def reset_cuda_memory_monitoring():
-    torch.cuda.reset_peak_memory_stats()
+    for i_cuda in range(torch.cuda.device_count()):
+        torch.cuda.reset_peak_memory_stats(i_cuda)
 
 
 def get_cuda_memory_usage(log_message):
