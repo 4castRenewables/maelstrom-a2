@@ -60,6 +60,7 @@ def main(args):
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     tracker.end_run()
     if args.log_gpu_memory:
+        timer.init_cuda()
         timer.reset_cuda_memory_monitoring()
     with tracker.start_run(run_name=args.run_name):
         tmr = timer.Timer()
