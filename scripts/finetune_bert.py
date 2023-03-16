@@ -58,6 +58,7 @@ def main(args):
     tracker = a2.training.tracking.Tracker()
     tracker.end_run()
     a2.training.tracking.initialize_mantik()
+    timer.reset_cuda_memory_monitoring()
     with tracker.start_run(run_name=args.run_name):
         tmr = timer.Timer()
         a2.training.tracking.initialize_mantik()
