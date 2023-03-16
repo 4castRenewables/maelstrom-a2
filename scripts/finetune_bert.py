@@ -17,6 +17,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(args):
+    timer.reset_cuda_memory_monitoring()
     os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
     logging.info(f"Running finetuning as {args.job_id=}")
     logging.info(f"Iteration: {args.iteration=}")

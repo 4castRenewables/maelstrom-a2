@@ -90,3 +90,7 @@ def get_cuda_memory_usage(log_message):
         logging.info(f"{log_message}: Cuda device {i_cuda} report:\n")
         pprint.pprint(torch.cuda.memory_stats(i_cuda))
         logging.info(f"Report done! for Cuda device {i_cuda}\n")
+        logging.info(f"Gpu memory currently allocated: {torch.cuda.memory_allocated(i_cuda)/1e9} GB.")
+        logging.info(f"Gpu max memory allocated: {torch.cuda.max_memory_allocated(i_cuda)/1e9} GB.")
+        logging.info(f"Gpu memory currently reserved: {torch.cuda.memory_reserved(i_cuda)/1e9} GB.")
+        logging.info(f"Gpu max memory reserved: {torch.cuda.max_memory_reserved(i_cuda)/1e9} GB.")
