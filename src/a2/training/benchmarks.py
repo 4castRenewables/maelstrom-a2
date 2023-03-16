@@ -83,4 +83,4 @@ def get_cuda_memory_usage(log_message):
     logging.info("CUDA memory logging....")
     for i_cuda in range(torch.cuda.device_count()):
         logging.info(f"{log_message}: Cuda device {i_cuda} report:")
-        logging.info(torch.cuda.memory_stats(i_cuda))
+        print(torch.cuda.memory_stats(i_cuda))
