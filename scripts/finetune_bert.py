@@ -13,7 +13,9 @@ from a2.training import benchmarks as timer
 
 # from deep500.utils import timer_torch as timer
 
-logging.basicConfig(format="%(asctime)s %(levelname)-8s %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S")
+logging.basicConfig(
+    format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
+)
 
 
 def main(args):
