@@ -84,6 +84,7 @@ tensorboard = "^2.11.0"
 
 [tool.poetry.group.benchmarking.dependencies]
 onnx = "^1.13.0"
+optimum = {extras = ["onnxruntime"], version = "^1.7.1", optional = true}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
