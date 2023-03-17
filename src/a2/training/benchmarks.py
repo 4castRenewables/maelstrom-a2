@@ -18,6 +18,7 @@ class TimeType:
     TRAINING: str = "TRAINING"
     RUN: str = "RUN"
     SAVING_MODEL: str = "SAVING_MODEL"
+    EVALUATION: str = "EVALUATION"
 
 
 MAX_LENGTH_TIME_TYPES = max([len(x) for x in TimeType().__dict__.values()])
