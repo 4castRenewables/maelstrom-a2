@@ -43,13 +43,13 @@ tweets_filename = "~/Desktop/2020_text_precipitation.nc"
 key_inputs = "text_normalized"
 key_label = "raining"
 
-ds = xarray.load_dataset(tweets_filename).sel(index=range(1000))
+ds = xarray.load_dataset(tweets_filename).sel(index=range(100))
 ds["raining"] = (["index"], np.array(ds["tp_h"].values > 1e-8, dtype=int))
 
 tok_ds, tokenizer = tokenize_dataset(ds, model_folder, key_inputs, key_label)
 
 trainer = get_trainer(tokenizer, model_folder)
-
+print(tok_ds)
 prediction_probabilities = torch.nn.functional.softmax(torch.Tensor(trainer.predict(tok_ds).predictions), dim=1).numpy()
 predictions = prediction_probabilities.argmax(-1)
 
