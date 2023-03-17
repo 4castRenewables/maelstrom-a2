@@ -155,8 +155,11 @@ parameterset:
         tag: jwb+test
         _: develbooster
       - name: queue
-        tag: e4
+        tag: "e4+!e4amd"
         _: i-gpu-a100
+      - name: queue
+        tag: e4amd
+        _: a-gpu-mi100
       - name: queue
         tag: jwc+!test
         _: gpus
