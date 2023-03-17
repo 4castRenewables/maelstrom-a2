@@ -21,7 +21,10 @@ def initialize_mantik():
 def catch_mantik_exceptions(func):
     def wrapper_catch_exception(*args, **kwargs):
         try:
-            func(*args, **kwargs)
+            if not args[0].ignore:
+                func(*args, **kwargs)
+            else:
+                lambda x: None
         except mlflow.exceptions.MlflowException as e:
             logging.info(f"Ignoring mlflow exception:\n{e}")
         except Exception as exc:
@@ -31,8 +34,10 @@ def catch_mantik_exceptions(func):
 
 
 class Tracker:
-    def __init__(self) -> None:
-        initialize_mantik()
+    def __init__(self, ignore=True) -> None:
+        self.ignore = ignore
+        if not self.ignore:
+            initialize_mantik()
 
     @catch_mantik_exceptions
     def log_param(self, name, value):
@@ -52,8 +57,12 @@ class Tracker:
 
     @contextlib.contextmanager
     def start_run(self, *args, **kwargs):
-        yield mlflow.start_run(*args, **kwargs)
+        if not self.ignore:
+            yield mlflow.start_run(*args, **kwargs)
+        else:
+            yield None
 
+    @catch_mantik_exceptions
     def end_run(self, *args, **kwargs):
         mlflow.end_run(*args, **kwargs)
 
