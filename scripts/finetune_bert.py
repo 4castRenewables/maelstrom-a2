@@ -13,10 +13,13 @@ from a2.training import benchmarks as timer
 
 # from deep500.utils import timer_torch as timer
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(format="%(asctime)s %(levelname)-8s %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S")
 
 
 def main(args):
+    if args.log_gpu_memory:
+        timer.init_cuda()
+        timer.reset_cuda_memory_monitoring()
     os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
     logging.info(f"Running finetuning as {args.job_id=}")
     logging.info(f"Iteration: {args.iteration=}")
@@ -55,12 +58,12 @@ def main(args):
 
     path_run = os.path.join(args.output_dir, args.run_folder)
     path_figures = os.path.join(path_run, args.figure_folder)
-    tracker = a2.training.tracking.Tracker()
+    tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     tracker.end_run()
-    a2.training.tracking.initialize_mantik()
+    if args.log_gpu_memory:
+        timer.reset_cuda_memory_monitoring()
     with tracker.start_run(run_name=args.run_name):
         tmr = timer.Timer()
-        a2.training.tracking.initialize_mantik()
         tracker.log_params(
             {
                 "data_description": args.data_description,
@@ -69,6 +72,8 @@ def main(args):
             }
         )
         tmr.start(timer.TimeType.RUN)
+        if args.log_gpu_memory:
+            timer.get_cuda_memory_usage("Starting run")
         trainer = trainer_object.get_trainer(
             dataset,
             hyper_parameters=hyper_parameters,
@@ -88,6 +93,7 @@ def main(args):
             evaluation_strategy=args.evaluation_strategy,
         )
         tracker.log_params(trainer_object.hyper_parameters.__dict__)
+        tracker.log_params(args.__dict__)
         tmr.start(timer.TimeType.TRAINING)
         trainer.train()
         tmr.end(timer.TimeType.TRAINING)
@@ -96,6 +102,8 @@ def main(args):
             predictions,
             prediction_probabilities,
         ) = a2.training.evaluate_hugging.predict_dataset(test_ds, trainer)
+        if args.log_gpu_memory:
+            timer.get_cuda_memory_usage("Finished training")
         tmr.end(timer.TimeType.RUN)
 
         tmr.print_all_time_stats()
@@ -123,6 +131,8 @@ def main(args):
         )
         tracker.log_artifact(filename_roc_plot)
         logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
+        if args.log_gpu_memory:
+            timer.get_cuda_memory_usage("Finished run")
 
 
 if __name__ == "__main__":
@@ -214,6 +224,16 @@ if __name__ == "__main__":
         "-weightsfixed",
         action="store_true",
         help="Weights of base model (without classification head) are fixed (not trainable).",
+    )
+    parser.add_argument(
+        "--log_gpu_memory",
+        action="store_true",
+        help="Monitor Cuda memory usage.",
+    )
+    parser.add_argument(
+        "--ignore_tracking",
+        action="store_true",
+        help="Use mantik tracking.",
     )
 
     args = parser.parse_args()
