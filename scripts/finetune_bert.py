@@ -99,6 +99,7 @@ def main(args):
         tmr.start(timer.TimeType.TRAINING)
         trainer.train()
         tmr.end(timer.TimeType.TRAINING)
+        tmr.start(timer.TimeType.EVALUATION)
         test_ds = dataset_object.build(ds_raw, indices_train, indices_test, train=False)
         (
             predictions,
@@ -106,6 +107,7 @@ def main(args):
         ) = a2.training.evaluate_hugging.predict_dataset(test_ds, trainer)
         if args.log_gpu_memory:
             timer.get_cuda_memory_usage("Finished training")
+        tmr.end(timer.TimeType.EVALUATION)
         tmr.end(timer.TimeType.RUN)
 
         tmr.print_all_time_stats()
