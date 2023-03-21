@@ -19,11 +19,12 @@ logging.basicConfig(
 
 
 def main(args):
+    os.environ["MLFLOW_EXPERIMENT_NAME"] = "maelstrom-a2-eval"
     if args.log_gpu_memory:
         timer.init_cuda()
         timer.reset_cuda_memory_monitoring()
     os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
-    logging.info(f"Running finetuning as {args.job_id=}")
+    logging.info(f"Running evaluation as {args.job_id=}")
     logging.info(f"Iteration: {args.iteration=}")
     logging.info(f"Args used: {args.__dict__}")
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(os.path.join(args.data_dir, args.data_filename), raw=True)
@@ -45,22 +46,9 @@ def main(args):
     dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
     dataset = dataset_object.build(ds_raw, indices_train, indices_test)
 
-    hyper_parameters = a2.training.training_hugging.HyperParametersDebertaClassifier(
-        learning_rate=args.learning_rate,
-        batch_size=args.batch_size,
-        weight_decay=args.weight_decay,
-        epochs=args.number_epochs,
-        warmup_ratio=args.warmup_ratio,
-        warmup_steps=args.warmup_steps,
-        hidden_dropout_prob=args.hidden_dropout_prob,
-        cls_dropout=args.cls_dropout,
-        lr_scheduler_type=args.lr_scheduler_type,
-    )
-
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path)
 
-    path_run = os.path.join(args.output_dir, args.run_folder)
-    path_figures = os.path.join(path_run, args.figure_folder)
+    path_figures = os.path.join(args.output_dir, args.figure_folder)
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     tracker.end_run()
     if args.log_gpu_memory:
@@ -79,27 +67,15 @@ def main(args):
             timer.get_cuda_memory_usage("Starting run")
         trainer = trainer_object.get_trainer(
             dataset,
-            hyper_parameters=hyper_parameters,
             tokenizer=dataset_object.tokenizer,
-            folder_output=path_run,
-            hyper_tuning=False,
             disable_tqdm=True,
-            fp16=True if a2.training.utils_training.gpu_available() else False,
             callbacks=[
                 a2.training.training_deep500.TimerCallback(tmr, gpu=True),
                 a2.training.tracking_hugging.LogCallback(tracker),
             ],
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
-            logging_steps=1,
-            base_model_trainable=not args.base_model_weights_fixed,
-            eval_steps=args.eval_steps,
-            evaluation_strategy=args.evaluation_strategy,
         )
-        tracker.log_params(trainer_object.hyper_parameters.__dict__)
         tracker.log_params(args.__dict__)
-        tmr.start(timer.TimeType.TRAINING)
-        trainer.train()
-        tmr.end(timer.TimeType.TRAINING)
         tmr.start(timer.TimeType.EVALUATION)
         test_ds = dataset_object.build(ds_raw, indices_train, indices_test, train=False)
         (
@@ -120,7 +96,7 @@ def main(args):
         )
         truth = ds_test.raining.values
 
-        a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=hyper_parameters.epochs)
+        a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=None)
 
         filename_certainty_plot = os.path.join(path_figures, "plot_2d_predictions_truth.pdf")
         a2.plotting.analysis.plot_prediction_certainty(
@@ -168,21 +144,18 @@ if __name__ == "__main__":
         "--model_path",
         "-in",
         type=str,
-        default="/p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/",
-        help="Directory where input netCDF-files are stored.",
+        required=True,
+        help="Path to trained model.",
     )
+    parser.add_argument("--run_name", type=str, default="era5 whole dataset", help="Name of run used for logging only.")
+
     parser.add_argument(
         "--output_dir",
         "-outdir",
         type=str,
         default=a2.utils.file_handling.get_folder_models(),
-        help="Output directory where model is saved.",
+        help="Directory where output products saved (e.g., figures).",
     )
-    parser.add_argument(
-        "--run_folder", type=str, required=True, help="Output folder where model is saved in `output_dir`."
-    )
-    parser.add_argument("--run_name", type=str, default="era5 whole dataset", help="Name of run used for logging only.")
-
     parser.add_argument(
         "--figure_folder", type=str, default="figures/", help="Directory where input netCDF-files are stored."
     )
@@ -196,40 +169,11 @@ if __name__ == "__main__":
         help="Threshold above which precipitation is considered raining in input file.",
     )
 
-    parser.add_argument("--number_epochs", "-nepochs", type=int, default=1, help="Numer of epochs to train.")
-    parser.add_argument("--batch_size", "-bs", type=int, default=32, help="Number of samples per mini-batch.")
-    parser.add_argument("--learning_rate", "-lr", type=float, default=3e-05, help="Learning rate to train model.")
-    parser.add_argument("--weight_decay", "-wd", type=float, default=0, help="Weight decay rate to train model.")
-    parser.add_argument("--warmup_ratio", "-wr", type=float, default=0, help="Warmup ratio to train model.")
-    parser.add_argument("--warmup_steps", "-ws", type=float, default=500, help="Warmup steps to train model.")
-    parser.add_argument(
-        "--hidden_dropout_prob", "-hdp", type=float, default=0.1, help="Probability of hidden droup out layer."
-    )
-    parser.add_argument("--cls_dropout", "-cd", type=float, default=0.1, help="Dropout probability in classifier head.")
-    parser.add_argument("--lr_scheduler_type", "-lst", type=str, default="linear", help="Learning rate scheduler type.")
-
     parser.add_argument("--test_size", "-ts", type=float, default=0.2, help="Fraction of test set.")
-
-    parser.add_argument(
-        "--evaluation_strategy", "-estrat", type=str, default="epoch", help="When to evaluate steps/epoch/no"
-    )
-    parser.add_argument(
-        "--eval_steps",
-        "-esteps",
-        type=int,
-        default=None,
-        help="Number of steps between evaluations if evaluation strategy is set to steps.",
-    )
 
     parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
     parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
     parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
-    parser.add_argument(
-        "--base_model_weights_fixed",
-        "-weightsfixed",
-        action="store_true",
-        help="Weights of base model (without classification head) are fixed (not trainable).",
-    )
     parser.add_argument(
         "--log_gpu_memory",
         action="store_true",
