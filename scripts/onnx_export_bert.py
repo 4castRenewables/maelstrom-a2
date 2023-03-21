@@ -13,13 +13,13 @@ tokenizer = transformers.AutoTokenizer.from_pretrained(
 )
 
 dummy_model_input = tokenizer("This is a sample", return_tensors="pt")
-
+print(dummy_model_input)
 model = transformers.AutoModelForSequenceClassification.from_pretrained(model_folder, torchscript=True)
 
 torch.onnx.export(
     model,
     tuple(dummy_model_input.values()),
-    f="torch-model.onnx",
+    f="ap2.onnx",
     input_names=["input_ids", "attention_mask"],
     output_names=["logits"],
     dynamic_axes={

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "a2"
-version = "0.2.24"
+version = "0.2.25"
 description = "Package for predicting information about the weather from social media data as application 2 for maelstrom project"
 authors = ["Kristian Ehlert <kristian.ehlert@4-cast.de>"]
 packages = [{ include = "a2", from = "src"}]
@@ -85,6 +85,7 @@ tensorboard = "^2.11.0"
 [tool.poetry.group.benchmarking.dependencies]
 onnx = "^1.13.0"
 optimum = {extras = ["onnxruntime"], version = "^1.7.1", optional = true}
+transformers = {extras = ["onnx"], version = "^4.27.1"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
