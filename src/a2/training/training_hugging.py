@@ -6,6 +6,7 @@ import typing as t
 import a2.dataset
 import a2.plotting.analysis
 import a2.training.tracking
+import a2.training.utils_training
 import datasets
 import numpy as np
 import sklearn.model_selection
@@ -141,6 +142,8 @@ class HuggingFaceTrainerClass:
         -------
         Hugging Face Trainer
         """
+        if not a2.training.utils_training.gpu_available():
+            fp16 = False
         if hyper_parameters is None:
             hyper_parameters = HyperParametersDebertaClassifier()
         self.hyper_parameters = hyper_parameters
