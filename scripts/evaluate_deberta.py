@@ -27,7 +27,10 @@ def main(args):
     logging.info(f"Running evaluation as {args.job_id=}")
     logging.info(f"Iteration: {args.iteration=}")
     logging.info(f"Args used: {args.__dict__}")
+    tmr = timer.Timer()
+    tmr.start(timer.TimeType.IO)
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(os.path.join(args.data_dir, args.data_filename), raw=True)
+    tmr.end(timer.TimeType.IO)
     N_tweets = ds_raw.index.shape[0]
     logging.info(f"loaded {N_tweets} tweets")
     ds_raw["text"] = (["index"], ds_raw[args.key_text].values.copy())
@@ -43,8 +46,10 @@ def main(args):
     logging.info(f"Using {len(indices_test)} for evaluation and {len(indices_train)} for training.")
     model_name = os.path.split(args.model_path)[1]
     logging.info(f"Using ML model: {model_name}")
+    tmr.start(timer.TimeType.IO)
     dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
     dataset = dataset_object.build(ds_raw, indices_train, indices_test)
+    tmr.end(timer.TimeType.IO)
 
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path)
 
@@ -54,7 +59,6 @@ def main(args):
     if args.log_gpu_memory:
         timer.reset_cuda_memory_monitoring()
     with tracker.start_run(run_name=args.run_name):
-        tmr = timer.Timer()
         tracker.log_params(
             {
                 "data_description": args.data_description,
@@ -76,8 +80,8 @@ def main(args):
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
         )
         tracker.log_params(args.__dict__)
-        tmr.start(timer.TimeType.EVALUATION)
         test_ds = dataset_object.build(ds_raw, indices_train, indices_test, train=False)
+        tmr.start(timer.TimeType.EVALUATION)
         (
             predictions,
             prediction_probabilities,
