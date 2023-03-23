@@ -16,6 +16,9 @@ parameterset:
       - name: key_rain
         type: string
         _: "tp_h" # "station_tp_mm" or "tp_h"
+      - name: test_size
+        type: float
+        _: 0.1
       - name: model_path
         tag: "jwb|jwc"
         _: /p/project/deepacf/maelstrom/ehlert1/a2/jobs/ap2_run/000101/000001_submit/work/output_model/ap2-all_101/checkpoint-1492
@@ -166,7 +169,7 @@ parameterset:
           --output_dir ${outdir}
           --iteration ${iteration}
           --ignore_tracking
-          --test_size 0.999
+          --test_size ${test_size}
 
 patternset:
    - name: perf_patterns
