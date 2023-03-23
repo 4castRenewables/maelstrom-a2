@@ -40,6 +40,12 @@ parameterset:
         tag: "!medium+!large"
         type: string
         _: "tweets_2017_01_era5_normed_filtered_predicted_simpledeberta.nc"
+      - name: slurm_output
+        type: string
+        _: "$jube_wp_abspath/slurm-out.%j"
+      - name: slurm_error
+        type: string
+        _: "$jube_wp_abspath/slurm-err.%j"
       - name: outdir
         type: string
         _: "$jube_wp_abspath/output_model"
@@ -87,10 +93,6 @@ parameterset:
         _: 1
       - name: ready_file
         _: ready
-      - name: err_file
-        _: gpu-err.%j
-      - name: out_file
-        _: gpu-out.%j
       - name: ngpus
         tag: e4
         _: 1
@@ -146,7 +148,7 @@ parameterset:
       - name: visible_devices
         type: string
         separator: ";"
-        tag: jwc | jwb 
+        tag: jwc | jwb
         _: "CUDA_VISIBLE_DEVICES=0,1,2,3"
       - name: visible_devices
         tag: e4
@@ -163,7 +165,7 @@ parameterset:
           --model_path ${model_path}
           --output_dir ${outdir}
           --iteration ${iteration}
- 
+
 patternset:
    - name: perf_patterns
      pattern:
@@ -186,7 +188,7 @@ patternset:
       - {name: ndevices, type: string, _: "CUDA_VISIBLE_DEVICES=${jube_pat_wrd}$"}
       - {name: gpu_max_mem_allocated, type: float, _: "Gpu max memory allocated: ${jube_pat_fp}"}
       - {name: gpu_max_mem_reserved, type: float, _: "Gpu max memory reserved: ${jube_pat_fp}"}
-      
+
 analyser:
     name: analyse
     reduce: false
@@ -195,9 +197,9 @@ analyser:
       step: submit
       file:
         - slurm-*.out
-        - stdout
         - slurm.err
         - slurm.out
+        - stdout
 
 result:
     use: analyse
@@ -241,12 +243,12 @@ substituteset:
     - {source: "#NODES#", dest: $nodes}
     - {source: "#PROCS_PER_NODE#", dest: $taskspernode}
     - {source: "#WALLTIME#", dest: $timelimit}
-    - {source: "#ERROR_FILEPTHA#", dest: $err_file}
-    - {source: "#OUT_FILEPATH#", dest: $out_file}
     - {source: "#MAIL_TYPE#", dest: $mail_type}
     - {source: "#ACCOUNT#", dest: $account}
     - {source: "#PARTITION#", dest: $queue}
     - {source: "#NGPUS#", dest: $ngpus}
+    - {source: "#SLURMOUTPUT#", dest: $slurm_output}
+    - {source: "#SLURMERROR#", dest: $slurm_error}
     - {source: "#EXEC#", dest: "${visible_devices} ${executable} ${args_exec}"}
     - {source: "#READY#", _: $ready_file } # _ can be used here as well instead of dest (should be used
 
