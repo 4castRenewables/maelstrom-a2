@@ -4,6 +4,8 @@
 #SBATCH -A #ACCOUNT#
 #SBATCH --gres=gpu:#NGPUS#
 #SBATCH --partition=#PARTITION#
+#SBATCH --output=#SLURMOUTPUT#
+#SBATCH --error=#SLURMERROR#
 
 ### start of jobscript
 
