@@ -46,10 +46,6 @@ def main(args):
     logging.info(f"Using {len(indices_test)} for evaluation and {len(indices_train)} for training.")
     model_name = os.path.split(args.model_path)[1]
     logging.info(f"Using ML model: {model_name}")
-    tmr.start(timer.TimeType.IO)
-    dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
-    dataset = dataset_object.build(ds_raw, indices_train, indices_test)
-    tmr.end(timer.TimeType.IO)
 
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path)
 
@@ -69,8 +65,13 @@ def main(args):
         tmr.start(timer.TimeType.RUN)
         if args.log_gpu_memory:
             timer.get_cuda_memory_usage("Starting run")
+        dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
+        tmr.start(timer.TimeType.IO)
+        test_ds = dataset_object.build(ds_raw, indices_train, indices_test, train=False)
+        tmr.end(timer.TimeType.IO)
+        tmr.start(timer.TimeType.EVALUATION)
         trainer = trainer_object.get_trainer(
-            dataset,
+            test_ds,
             tokenizer=dataset_object.tokenizer,
             disable_tqdm=True,
             callbacks=[
@@ -78,10 +79,9 @@ def main(args):
                 a2.training.tracking_hugging.LogCallback(tracker),
             ],
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
+            evaluate=True,
         )
         tracker.log_params(args.__dict__)
-        test_ds = dataset_object.build(ds_raw, indices_train, indices_test, train=False)
-        tmr.start(timer.TimeType.EVALUATION)
         (
             predictions,
             prediction_probabilities,
