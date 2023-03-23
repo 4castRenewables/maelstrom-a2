@@ -192,6 +192,7 @@ class HuggingFaceTrainerClass:
                 args=args,
                 tokenizer=tokenizer,
                 compute_metrics=_compute_metrics,
+                callbacks=callbacks,
             )
         return trainer_class(
             model_init=model_init,
