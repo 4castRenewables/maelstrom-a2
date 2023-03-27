@@ -132,7 +132,7 @@ parameterset:
         _: |
           label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
           echo "POWERMEASUREMENT: Label = $$label"
-          opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
+          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
       - name: postprocess
         tag: "jwb|jwc"
         _: ""
