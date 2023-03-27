@@ -9,6 +9,14 @@ parameterset:
         tag: benchs
         type: int
         _: 1,2,3
+      - name: conda_env
+        tag: e4amd
+        type: string
+        _: a2-amd
+      - name: conda_env
+        tag: "!e4amd"
+        type: string
+        _: a2-benchmarking
       - name: iteration
         tag: "!benchs"
         type: int
@@ -123,7 +131,7 @@ parameterset:
         separator: |
         _: |
           label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
-          echo "POWERMEASUREMENT: Label = $$label" 
+          echo "POWERMEASUREMENT: Label = $$label"
           opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
       - name: postprocess
         tag: "jwb|jwc"
@@ -311,6 +319,7 @@ substituteset:
     - {source: "#SLURMOUTPUT#", dest: $slurm_output}
     - {source: "#SLURMERROR#", dest: $slurm_error}
     - {source: "#EXEC#", dest: "${visible_devices} ${executable} ${args_exec}"}
+    - {source: "#EXECCONDA#", dest: "conda activate ${conda_env}"}
     - {source: "#READY#", _: $ready_file } # _ can be used here as well instead of dest (should be used
 
 step:
@@ -339,5 +348,5 @@ step:
         $modules;
         source ~/.bashrc;
         source $jube_benchmark_home/env.sh;
-        conda activate a2-benchmarking;
+        conda activate $conda_env;
         $submit_cmd $job_file;
