@@ -103,11 +103,17 @@ parameterset:
           module load cuDNN/8.6.0.163-CUDA-11.7 &&
           module unload Python/3.10.4
       - name: modules
-        tag: e4
+        tag: "e4+!e4amd"
         separator: |
         _:
           module load slurm
           module load nvidia/cuda-11.7
+      - name: modules
+        tag: e4amd
+        separator: |
+        _:
+          module load slurm
+          module load amd/rocm-5.2.1
       - name: systemname
         tag: jwc
         _: jwc
@@ -130,6 +136,7 @@ parameterset:
         mode: text
         separator: |
         _: |
+          ${modules};
           label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
           echo "POWERMEASUREMENT: Label = $$label"
           /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
