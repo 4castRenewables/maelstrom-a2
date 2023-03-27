@@ -106,14 +106,14 @@ parameterset:
         tag: "e4+!e4amd"
         separator: |
         _:
-          module load slurm
-          module load nvidia/cuda-11.7
+          module load slurm &&
+          module load nvidia/cuda-11.7 &&
       - name: modules
         tag: e4amd
         separator: |
         _:
-          module load slurm
-          module load amd/rocm-5.2.1
+          module load slurm &&
+          module load amd/rocm-5.2.1 &&
       - name: systemname
         tag: jwc
         _: jwc
