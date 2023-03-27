@@ -13,5 +13,6 @@ source ~/.bashrc
 #EXECCONDA#
 which python
 pip list
+module list
 #EXEC#
 touch #READY#
