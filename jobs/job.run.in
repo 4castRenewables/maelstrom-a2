@@ -10,7 +10,7 @@
 ### start of jobscript
 
 source ~/.bashrc
-conda activate a2-benchmarking
+#EXECCONDA#
 which python
 pip list
 #EXEC#
