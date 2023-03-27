@@ -82,7 +82,8 @@ def get_max_memory_usage():
 
 
 def init_cuda():
-    torch.cuda.init()
+    if torch.cuda.is_available():
+        torch.cuda.init()
 
 
 def reset_cuda_memory_monitoring():
