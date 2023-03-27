@@ -7848,7 +7848,7 @@ notebook = ">=4.4.1"
 name = "wordcloud"
 version = "1.8.2.2"
 description = "A little word cloud generator"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -8383,4 +8383,4 @@ extend-exclude = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "1ad0dc56aceff32c55fec603da95b8d05e2a88f7b6aeca2cff5b75196760f984"
+content-hash = "865bd697d120be26e07afb7a01b449a72cd9bcf47d06c3a65dbd26d293ebaad9"
