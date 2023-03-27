@@ -136,7 +136,6 @@ parameterset:
         mode: text
         separator: |
         _: |
-          ${modules};
           label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
           echo "POWERMEASUREMENT: Label = $$label"
           /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
@@ -325,6 +324,7 @@ substituteset:
     - {source: "#NGPUS#", dest: $ngpus}
     - {source: "#SLURMOUTPUT#", dest: $slurm_output}
     - {source: "#SLURMERROR#", dest: $slurm_error}
+    - {source: "#MODULES#", dest: "${modules}"}
     - {source: "#EXEC#", dest: "${visible_devices} ${executable} ${args_exec}"}
     - {source: "#EXECCONDA#", dest: "conda activate ${conda_env}"}
     - {source: "#READY#", _: $ready_file } # _ can be used here as well instead of dest (should be used

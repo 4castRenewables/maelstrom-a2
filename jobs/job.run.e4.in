@@ -10,6 +10,7 @@
 ### start of jobscript
 
 source ~/.bashrc
+#MODULES#
 #EXECCONDA#
 which python
 pip list
