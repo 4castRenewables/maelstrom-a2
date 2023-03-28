@@ -268,6 +268,8 @@ analyser:
       step: submit
       file:
         - slurm-*.out
+        - slurm-out.*
+        - slurm-err.*
         - slurm.out
         - slurm.err
         - stdout
