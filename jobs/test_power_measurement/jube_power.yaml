@@ -29,7 +29,7 @@ parameterset:
       - name: nodes
         _: 1
       - name: timelimit
-        _: "00:02:00"
+        _: "01:00:00"
       - name: account
         _: maelstrom
       - name: queue
