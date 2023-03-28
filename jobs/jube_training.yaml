@@ -136,9 +136,9 @@ parameterset:
         mode: text
         separator: |
         _: |
-          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
-          echo "POWERMEASUREMENT: Label = $$label"
-          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
+          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh);
+          echo "POWERMEASUREMENT: Label = $$label";
+          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &;
       - name: postprocess
         tag: "jwb|jwc"
         _: ""
@@ -147,8 +147,8 @@ parameterset:
         mode: text
         separator: |
         _: |
-          kill -9 $$(cat ~/powerout.$$label.pid)
-          awk '{print "POWERMEASUREMENT: " $0}' ~/powerout.$$label.csv
+          kill -9 $$(cat ~/powerout.$$label.pid);
+          awk '{print "POWERMEASUREMENT: " $0}' ~/powerout.$$label.csv;
       - name: threadspertask
         _: 1
       - name: nodes
