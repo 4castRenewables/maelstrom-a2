@@ -256,7 +256,10 @@ patternset:
       - {name: ndevices, type: string, _: "CUDA_VISIBLE_DEVICES=${jube_pat_wrd}$"}
       - {name: gpu_max_mem_allocated, type: float, _: "Gpu max memory allocated: ${jube_pat_fp}"}
       - {name: gpu_max_mem_reserved, type: float, _: "Gpu max memory reserved: ${jube_pat_fp}"}
-
+      - {name: label_pat, type: string, _: "POWERMEASUREMENT: Label = $jube_pat_wrd"}
+      - {name: time_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_int,$jube_pat_nint,$jube_pat_nint"}
+      - {name: watt_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_int,$jube_pat_nint"}
+      - {name: va_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_nint,$jube_pat_int"}
 analyser:
     name: analyse
     reduce: false
@@ -305,6 +308,15 @@ result:
         # - {title: "MaxMemAlloc", format: ".4f", _: gpu_max_mem_allocated_max}
         - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
         # - {title: "Job_Time", _: timelimit}
+        - {title: "Node(s)",         _: label_pat}
+        - {title: "Timestamp start", _: time_pat_first}
+        - {title: "Timestamp end",   _: time_pat_last}
+        - {title: "Avg. Watts",      _: watt_pat_avg}
+        - {title: "Min. Watts",      _: watt_pat_min}
+        - {title: "Max. Watts",      _: watt_pat_max}
+        - {title: "Avg. VA",         _: va_pat_avg}
+        - {title: "Min. VA",         _: va_pat_min}
+        - {title: "Max. VA",         _: va_pat_max}
 
 #Load jobfile
 fileset:
