@@ -310,7 +310,7 @@ result:
         # - {title: "MaxMemAlloc", format: ".4f", _: gpu_max_mem_allocated_max}
         - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
         # - {title: "Job_Time", _: timelimit}
-        - {title: "Node(s)", format: ".4f", _: label_pat}
+        - {title: "Node(s)", _: label_pat}
         - {title: "Tstart", format: ".4f", _: time_pat_first}
         - {title: "Tend", format: ".4f", _: time_pat_last}
         - {title: "A.W", format: ".4f", _: watt_pat_avg}
