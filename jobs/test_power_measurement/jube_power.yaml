@@ -33,7 +33,7 @@ parameterset:
       - name: account
         _: maelstrom
       - name: queue
-        _: a-mil-hw
+        _: a-gpu-mi100
       - name: executable
         _: sleep
       - name: args_exec
