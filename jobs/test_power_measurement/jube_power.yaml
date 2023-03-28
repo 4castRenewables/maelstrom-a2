@@ -34,6 +34,8 @@ parameterset:
         _: maelstrom
       - name: queue
         _: a-gpu-mi100
+      - name: gres
+        _: gpu:1
       - name: executable
         _: sleep
       - name: args_exec
