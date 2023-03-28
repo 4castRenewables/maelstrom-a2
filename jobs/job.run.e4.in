@@ -6,6 +6,8 @@
 #SBATCH -A #ACCOUNT#
 #SBATCH --partition=#PARTITION#
 #SBATCH --gres=gpu:1
+#SBATCH --output=#SLURMOUTPUT#
+#SBATCH --error=#SLURMERROR#
 
 ### start of jobscript
 
