@@ -309,14 +309,14 @@ result:
         - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
         # - {title: "Job_Time", _: timelimit}
         - {title: "Node(s)",         _: label_pat}
-        - {title: "Timestamp start", _: time_pat_first}
-        - {title: "Timestamp end",   _: time_pat_last}
-        - {title: "Avg. Watts",      _: watt_pat_avg}
-        - {title: "Min. Watts",      _: watt_pat_min}
-        - {title: "Max. Watts",      _: watt_pat_max}
-        - {title: "Avg. VA",         _: va_pat_avg}
-        - {title: "Min. VA",         _: va_pat_min}
-        - {title: "Max. VA",         _: va_pat_max}
+        - {title: "Tstart", _: time_pat_first}
+        - {title: "Tend",   _: time_pat_last}
+        - {title: "A.W",      _: watt_pat_avg}
+        - {title: "Mi.W",      _: watt_pat_min}
+        - {title: "Ma.W",      _: watt_pat_max}
+        - {title: "A.VA",         _: va_pat_avg}
+        - {title: "Mi.VA",         _: va_pat_min}
+        - {title: "Ma.VA",         _: va_pat_max}
 
 #Load jobfile
 fileset:
