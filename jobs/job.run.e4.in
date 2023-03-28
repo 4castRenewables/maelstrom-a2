@@ -14,7 +14,9 @@
 source ~/.bashrc
 #MODULES#
 #EXECCONDA#
+#PREPROCESS#
 which python
 pip list
 #EXEC#
 touch #READY#
+#POSTPROCESS#
