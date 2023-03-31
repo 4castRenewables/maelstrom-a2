@@ -13,6 +13,14 @@ parameterset:
         tag: "!benchs"
         type: int
         _: 1
+      - name: conda_env
+        tag: e4amd
+        type: string
+        _: a2-amd
+      - name: conda_env
+        tag: "!e4amd"
+        type: string
+        _: a2-benchmarking
       - name: key_rain
         type: string
         _: "tp_h" # "station_tp_mm" or "tp_h"
@@ -24,7 +32,7 @@ parameterset:
         _: /p/project/deepacf/maelstrom/ehlert1/a2/jobs/ap2_run/000101/000001_submit/work/output_model/ap2-all_101/checkpoint-1492
       - name: model_path
         tag: e4
-        _: NEEDSTOBESET
+        _: /data/maelstrom/kehlert/a2/jobs/ap2_run/000051/000001_submit/work/output_model/ap2-all_51/checkpoint-5965
       - name: indir
         type: string
         tag: "jwb|jwc"
@@ -68,11 +76,17 @@ parameterset:
           module load cuDNN/8.6.0.163-CUDA-11.7 &&
           module unload Python/3.10.4
       - name: modules
-        tag: e4
+        tag: "e4+!e4amd"
         separator: |
         _:
-          module load slurm
+          module load slurm &&
           module load nvidia/cuda-11.7
+      - name: modules
+        tag: e4amd
+        separator: |
+        _:
+          module load slurm &&
+          module load amd/rocm-5.2.1
       - name: systemname
         tag: jwc
         _: jwc
@@ -86,10 +100,28 @@ parameterset:
     parameter:
       - name: preprocess
         mode: text
+        tag: "jwb|jwc"
         separator: |
         _:
-          . /opt/share/scripts/powerdiscovery/getpower.sh $${SLURMD_NODENAME} <CAPTURE TIME> &;
-          $modules;
+          ${modules};
+      - name: preprocess
+        tag: e4
+        mode: text
+        separator: |
+        _: |
+          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
+          echo "POWERMEASUREMENT: Label = $$label"
+          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
+      - name: postprocess
+        tag: "jwb|jwc"
+        _: ""
+      - name: postprocess
+        tag: e4
+        mode: text
+        separator: |
+        _: |
+          kill -9 $$(cat ~/powerout.$$label.pid)
+          awk '{print "POWERMEASUREMENT: " $0}' ~/powerout.$$label.csv
       - name: threadspertask
         _: 1
       - name: nodes
@@ -193,6 +225,10 @@ patternset:
       - {name: ndevices, type: string, _: "CUDA_VISIBLE_DEVICES=${jube_pat_wrd}$"}
       - {name: gpu_max_mem_allocated, type: float, _: "Gpu max memory allocated: ${jube_pat_fp}"}
       - {name: gpu_max_mem_reserved, type: float, _: "Gpu max memory reserved: ${jube_pat_fp}"}
+      - {name: label_pat, type: string, _: "POWERMEASUREMENT: Label = $jube_pat_wrd"}
+      - {name: time_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_int,$jube_pat_nint,$jube_pat_nint"}
+      - {name: watt_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_int,$jube_pat_nint"}
+      - {name: va_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_nint,$jube_pat_int"}
 
 analyser:
     name: analyse
@@ -202,8 +238,10 @@ analyser:
       step: submit
       file:
         - slurm-*.out
-        - slurm-err.*
         - slurm-out.*
+        - slurm-err.*
+        - slurm.out
+        - slurm.err
         - stdout
 
 result:
@@ -235,6 +273,15 @@ result:
         # - {title: "MaxMemAlloc", format: ".4f", _: gpu_max_mem_allocated_max}
         - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
         # - {title: "Job_Time", _: timelimit}
+        - {title: "Node(s)", _: label_pat}
+        - {title: "Tstart", _: time_pat_first}
+        - {title: "Tend", _: time_pat_last}
+        - {title: "A.W", format: ".2f", _: watt_pat_avg}
+        # - {title: "Mi.W", format: ".4f", _: watt_pat_min}
+        - {title: "Ma.W", format: ".2f", _: watt_pat_max}
+        - {title: "A.VA", format: ".2f", _: va_pat_avg}
+        # - {title: "Mi.VA", format: ".4f", _: va_pat_min}
+        - {title: "Ma.VA", format: ".2f", _: va_pat_max}
 
 #Load jobfile
 fileset:
@@ -254,7 +301,11 @@ substituteset:
     - {source: "#NGPUS#", dest: $ngpus}
     - {source: "#SLURMOUTPUT#", dest: $slurm_output}
     - {source: "#SLURMERROR#", dest: $slurm_error}
+    - {source: "#MODULES#", dest: "${modules}"}
     - {source: "#EXEC#", dest: "${visible_devices} ${executable} ${args_exec}"}
+    - {source: "#EXECCONDA#", dest: "conda activate ${conda_env}"}
+    - {source: "#PREPROCESS#", dest: "${preprocess}"}
+    - {source: "#POSTPROCESS#", dest: "${postprocess}"}
     - {source: "#READY#", _: $ready_file } # _ can be used here as well instead of dest (should be used
 
 step:
@@ -283,5 +334,5 @@ step:
         $modules;
         source ~/.bashrc;
         source $jube_benchmark_home/env.sh;
-        conda activate a2-benchmarking;
+        conda activate $conda_env;
         $submit_cmd $job_file;
