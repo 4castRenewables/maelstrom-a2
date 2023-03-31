@@ -313,12 +313,12 @@ result:
         - {title: "Node(s)", _: label_pat}
         - {title: "Tstart", _: time_pat_first}
         - {title: "Tend", _: time_pat_last}
+        - {title: "Ma.W", format: ".2f", _: watt_pat_max}
         - {title: "A.W", format: ".2f", _: watt_pat_avg}
         # - {title: "Mi.W", format: ".4f", _: watt_pat_min}
-        - {title: "Ma.W", format: ".2f", _: watt_pat_max}
+        - {title: "Ma.VA", format: ".2f", _: va_pat_max}
         - {title: "A.VA", format: ".2f", _: va_pat_avg}
         # - {title: "Mi.VA", format: ".4f", _: va_pat_min}
-        - {title: "Ma.VA", format: ".2f", _: va_pat_max}
 
 #Load jobfile
 fileset:
