@@ -9,6 +9,10 @@ parameterset:
         tag: benchs
         type: int
         _: 1,2,3
+      - name: iteration
+        tag: "!benchs"
+        type: int
+        _: 1
       - name: conda_env
         tag: e4amd
         type: string
@@ -17,10 +21,6 @@ parameterset:
         tag: "!e4amd"
         type: string
         _: a2-benchmarking
-      - name: iteration
-        tag: "!benchs"
-        type: int
-        _: 1
       - name: batch_size
         tag: "!hps"
         type: int
