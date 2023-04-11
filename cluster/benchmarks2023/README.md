@@ -87,3 +87,5 @@ Setup is based on Cuda Version 11.7, which is the most up to date version presen
     jube result -a -u jube_evaluation.yaml ap2_eval --id 11 12
     ```
 
+## Training without jube
+Alternatively, job script `submit_train.sh` can be used to train the model on the cluster (via `run_benchmark.sh`).
