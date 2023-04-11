@@ -23,7 +23,7 @@ parameterset:
         _: a2-benchmarking
       - name: key_rain
         type: string
-        _: "tp_h" # "station_tp_mm" or "tp_h"
+        _: "tp_h"
       - name: test_size
         type: float
         _: 0.1
@@ -43,7 +43,7 @@ parameterset:
         _: "/data/maelstrom/kehlert/data/tweets/"
       - name: data_filename
         tag: medium
-        _: "2020_text_precipitation.nc" # "2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
+        _: "2020_text_precipitation.nc"
       - name: data_filename
         tag: large
         _: "2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
@@ -306,7 +306,7 @@ substituteset:
     - {source: "#EXECCONDA#", dest: "conda activate ${conda_env}"}
     - {source: "#PREPROCESS#", dest: "${preprocess}"}
     - {source: "#POSTPROCESS#", dest: "${postprocess}"}
-    - {source: "#READY#", _: $ready_file } # _ can be used here as well instead of dest (should be used
+    - {source: "#READY#", _: $ready_file }
 
 step:
   - name:   setup_venv
