@@ -1,0 +1,22 @@
+#!/bin/bash -x
+#SBATCH --nodes=#NODES#
+#SBATCH --time=#WALLTIME#
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH -A #ACCOUNT#
+#SBATCH --partition=#PARTITION#
+#SBATCH --gres=gpu:1
+#SBATCH --output=#SLURMOUTPUT#
+#SBATCH --error=#SLURMERROR#
+
+### start of jobscript
+
+source ~/.bashrc
+#MODULES#
+#EXECCONDA#
+#PREPROCESS#
+which python
+pip list
+#EXEC#
+touch #READY#
+#POSTPROCESS#
