@@ -1,8 +1,6 @@
 # Train and evaluate on cluster with JUBE
 
 ## Setup environment
-Setup is based on Cuda Version 11.7, which is the most up to date version present on JUWELS/E4.
-
 1. Install Miniconda (see [docs](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)).
 2. Create environment `a2-benchmarking` and install required packages.
     * For Nvidia GPUs:
@@ -18,6 +16,7 @@ Setup is based on Cuda Version 11.7, which is the most up to date version presen
         . install_amd.sh
         ```
 
+*Note*, Nvidia setup is based on Cuda Version 11.7, which is the most up to date version present on JUWELS/E4.
 ## Submit training
 1. Make sure module JUBE (jube) is loaded
 
