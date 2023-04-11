@@ -52,10 +52,10 @@ def plot_histogram_2d(
     marginal_color: str | None = "#1f77b4",
     figure_size: t.List[float] | None = None,
     colormap: str = "viridis",
-    colorbar_width=0.02,
-    spacing_x=0.03,
-    spacing_y=0.03,
-    spacing_colorbar=0.03,
+    colorbar_width: float = 0.02,
+    spacing_x: float = 0.03,
+    spacing_y: float = 0.03,
+    spacing_colorbar: float = 0.03,
     title: str = "",
 ):
     marginal_x, marginal_y = _resolve_defaults(facet_column, facet_row, marginal_x, marginal_y)
@@ -527,7 +527,6 @@ def plot_histogram(
     label_x: t.Optional[str] = None,
     label_y: t.Optional[str] = None,
     font_size: int = 12,
-    label: str = None,
     return_plot: bool = False,
     vertical: bool = False,
     alpha: float = 1,
@@ -559,7 +558,6 @@ def plot_histogram(
     label_y: label of y-axis
     font_size: size of font
     alpha: alpha value of plot
-    label: Label of plot
     return_plot: return axes and bar plot object
 
     Returns
