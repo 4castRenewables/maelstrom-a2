@@ -25,7 +25,7 @@ def plot_histogram_2d(
     ax: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
     ax_colorbar: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
     log: t.Union[bool, t.List[bool]] = False,
-    filename: t.Union[str, pathlib.Path] = None,
+    filename: str | pathlib.Path | None = None,
     fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
     n_bins: t.Union[int, t.List[int]] = 60,
     norm: str | None = None,
@@ -58,6 +58,60 @@ def plot_histogram_2d(
     spacing_colorbar: float = 0.03,
     title: str = "",
 ):
+    """
+    Plots 2d histogram including histograms in margins
+
+    Log types included `False`, `log`/`True`, `symlog`.
+    Norm takes care of colorbar scale, so far included: `log`
+    Parameters:
+    ----------
+    x: values binned on x-axis
+    y: values binned on y-axis
+    bins: if None computed based on data provided, otherwise should
+          provide [x_edges, y_edges]
+    xlim: limits of x-axis and bin_edges, if None determined from x
+    ylim: limits of y-axis and bin_edges, if None determined from y
+    ax: matplotlib axes for histogram
+    ax_colorbar: matplotlib axes for colorbar
+    log: type of bins
+    filename: plot saved to file if provided
+    fig: matplotlib figure
+    n_bins: number of bins
+    norm: scaling of colorbar
+    linear_thresh: required if using log='symlog' to indicate
+                   where scale turns linear
+    label_x: label of x-axis
+    label_y: label of y-axis
+    label_colorbar: label of colorbar
+    font_size: size of font
+    overplot_values: show number of samples on plot
+    overplot_round_base: Round values to be overplotted to this base int
+    overplot_color: Color of samples to be overplotted
+    vmin: Minimum value of colormap
+    vmax: Maximum value of colormap
+    facet_column: Assign all samples belonging to unique value from this field to histogram as columns
+    facet_row: Assign all samples belonging to unique value from this field to histogram as rows
+    marginal_x: Add additional plot on top of histogram plot ("histogram"/None)
+    marginal_x_label_x: Label along x-axis for plot `marginal_x`
+    marginal_x_label_y: Label along y-axis for plot `marginal_x`
+    marginal_x_show_xticks: Wether to show ticks along the x-axis for plot `marginal_x`
+    marginal_y: Add additional plot on top of histogram plot ("histogram"/None)
+    marginal_y_label_x: Label along x-axis for plot `marginal_y`
+    marginal_y_label_y: Label along y-axis for plot `marginal_y`
+    marginal_y_show_yticks: Wether to show ticks along the y-axis for plot `marginal_y`
+    marginal_color: Color of histogram bars in marginal plots
+    figure_size: Size of figure (height, width), default (10, 6)
+    colormap: Matplotlib colormap name
+    colorbar_width: Width of the colorbars
+    spacing_x: Spacing between axes along horizontal direction
+    spacing_y: Spacing between axes along vertical direction
+    spacing_colorbar: Spacing between axes and colorbar axes
+    title: Title of figure
+
+    Returns
+    -------
+    axes, histogram values
+    """
     marginal_x, marginal_y = _resolve_defaults(facet_column, facet_row, marginal_x, marginal_y)
     _check_histogram_parameter_consistency(facet_column, facet_row, marginal_x, marginal_y, ds)
 
@@ -259,53 +313,23 @@ def _plot_histogram_2d(
     marginal_y_show_yticks: bool = False,
     marginal_color: str | None = None,
     colormap: str = "viridis",
+    title: None | str = None,
     axes_marginal: list | None = None,
     mask: np.ndarray | None = None,
-    title: None | str = None,
-) -> t.Union[plt.axes, t.Tuple[plt.axes, t.Sequence]]:
+) -> t.Tuple[plt.axes, t.Sequence]:
     """
-    plots 2d histogram
+    Plots 2d histogram
 
-    Log types included `False`, `log`/`True`, `symlog`.
-    Norm takes care of colorbar scale, so far included: `log`
     Parameters:
     ----------
-    x: values binned on x-axis
-    y: values binned on y-axis
-    bins: if None computed based on data provided, otherwise should
-          provide [x_edges, y_edges]
-    xlim: limits of x-axis and bin_edges, if None determined from x
-    ylim: limits of y-axis and bin_edges, if None determined from y
-    ax: matplotlib axes
-    log: type of bins
-    filename: plot saved to file if provided
-    fig: matplotlib figure
-    n_bins: number of bins
-    norm: scaling of colorbar
-    linear_thresh: required if using log='symlog' to indicate
-                   where scale turns linear
-    label_x: label of x-axis
-    label_y: label of y-axis
-    font_size: size of font
-    overplot_values: show number of samples on plot
-    overplot_round_base: Round values to be overplotted to this base int
-    marginal_x: Add additional plot on top of histogram plot ("histogram"/None)
-    marginal_x_label_x: Label along x-axis for plot `marginal_x`
-    marginal_x_label_y: Label along y-axis for plot `marginal_x`
-    marginal_x_show_xticks: Wether to show ticks along the x-axis for plot `marginal_x`
-    marginal_y: Add additional plot on top of histogram plot ("histogram"/None)
-    marginal_y_label_x: Label along x-axis for plot `marginal_y`
-    marginal_y_label_y: Label along y-axis for plot `marginal_y`
-    marginal_y_show_yticks: Wether to show ticks along the y-axis for plot `marginal_y`
-    figure_size: Size of figure (height, width), default (10, 6)
-    colormap: Matplotlib colormap name
+    axes_marginal: Matplotlib axes to plot margins into
     mask: Mask x/y values (required shape same as shape of x/y)
-    vmin: Minimum value of colormap
-    vmax: Maximum value of colormap
+
+    See definition of `plot_histogram_2d` for explanation of same parameters
 
     Returns
     -------
-    axes
+    axes, histogram values
     """
 
     def get_label(label):
