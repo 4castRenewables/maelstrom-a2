@@ -15,6 +15,7 @@
         conda activate a2-amd
         . install_amd.sh
         ```
+3. Create `env.sh` file, which exports all global variables required by Mantik (see [Mantik](https://cloud.mantik.ai/) docs for more details).
 
 *Note*, Nvidia setup is based on Cuda Version 11.7, which is the most up to date version present on JUWELS/E4.
 *Note2*, benchmarks were run with python package a2 version 0.3.
