@@ -198,7 +198,7 @@ parameterset:
       - name: gres
         _: gpu:$n_gpu
       - name: executable
-        _: python -u $jube_benchmark_home/../scripts/finetune_bert.py
+        _: python -u $jube_benchmark_home/../scripts/finetune_deberta.py
       - name: submit_cmd
         _: sbatch
       - name: job_file
