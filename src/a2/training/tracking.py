@@ -20,21 +20,21 @@ def initialize_mantik():
 
 def catch_mantik_exceptions(func):
     def wrapper_catch_exception(*args, **kwargs):
+        result = None
         try:
             if not args[0].ignore:
-                func(*args, **kwargs)
-            else:
-                lambda x: None
+                result = func(*args, **kwargs)
         except mlflow.exceptions.MlflowException as e:
             logging.info(f"Ignoring mlflow exception:\n{e}")
         except Exception as exc:
             raise ValueError("Tracking error!") from exc
+        return result
 
     return wrapper_catch_exception
 
 
 class Tracker:
-    def __init__(self, ignore=True) -> None:
+    def __init__(self, ignore=False) -> None:
         self.ignore = ignore
         if not self.ignore:
             initialize_mantik()
@@ -78,7 +78,7 @@ class Tracker:
     def local_file_uri_to_path(self, *args, **kwargs):
         return mlflow.utils.file_utils.local_file_uri_to_path(*args, **kwargs)
 
-    @catch_mantik_exceptions
+    # @catch_mantik_exceptions
     def set_tracking_uri(self, *args, **kwargs):
         mlflow.set_tracking_uri(*args, **kwargs)
 
@@ -90,8 +90,10 @@ class Tracker:
     def create_experiment(self, name, **kwargs):
         experiment_id = self.get_experiment_by_name(name)
         print(f"{experiment_id=}")
+        logging.info(f"{not experiment_id=}")
         if not experiment_id:
             experiment_id = mlflow.create_experiment(name, **kwargs)
+            logging.info(f"create new: {experiment_id}")
         return experiment_id
 
     @catch_mantik_exceptions

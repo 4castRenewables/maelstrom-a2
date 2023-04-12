@@ -100,8 +100,8 @@ class HuggingFaceTrainerClass:
     def get_trainer(
         self,
         dataset: t.Union[datasets.Dataset, datasets.DatasetDict],
-        hyper_parameters: HyperParametersDebertaClassifier = None,
-        tokenizer: t.Optional[transformers.DebertaTokenizer] = None,
+        hyper_parameters: HyperParametersDebertaClassifier | None = None,
+        tokenizer: t.Optional[transformers.DebertaTokenizer] | None = None,
         folder_output: str = "output/",
         hyper_tuning: bool = False,
         fp16: bool = True,
@@ -132,6 +132,10 @@ class HuggingFaceTrainerClass:
               instead of 32-bit training.
         evaluate: Whether trainer only used for evaluation
         mantik: Whether using mantik for tracking
+        disable_tqdm: Whether to disable progress bar used by `Transformer`
+        callbacks: Callbacks during training
+        base_model_trainable: Whether base model weights are trainable (not fixed)
+        trainer_class: Trainer class compatible with `transformer.Trainer`
         logging_steps: Number of steps before hugging face prints
         evaluation_strategy: When to evaluate, after "steps" or "epoch"
         eval_steps: Number of steps between evaluation (only used if `evaluation_strategy`="steps")
