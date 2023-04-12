@@ -17,6 +17,7 @@
         ```
 
 *Note*, Nvidia setup is based on Cuda Version 11.7, which is the most up to date version present on JUWELS/E4.
+*Note2*, benchmarks were run with python package a2 version 0.3.
 ## Submit training
 1. Make sure module JUBE (jube) is loaded
 
