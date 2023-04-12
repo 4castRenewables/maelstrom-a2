@@ -29,6 +29,8 @@ def current_time():
 
 
 class Timer:
+    """Interface has analagous implementation to deep500 timer. Therefore not all variables used"""
+
     def __init__(self, print_all_single_time_stats=True, debug=True):
         self.times_archive = {}
         self.times_running = {}
@@ -57,8 +59,6 @@ class Timer:
             logging.warning(f"Attempting to finish timer type {time_type}, which was never started!")
 
     def complete_all(self):
-        # for _type in self.times_running.copy().keys():
-        #     self.end(_type)
         pass
 
     def print_all_time_stats(self):

@@ -1,3 +1,4 @@
+import logging
 import os
 
 import a2.training.dataset_hugging
@@ -43,9 +44,10 @@ def test_HuggingFaceTrainerClass_get_trainer(
         fp16=False,
         mantik=False,
         folder_output=folder_output,
+        evaluation_strategy="epoch",
     )
 
-    tracker = a2.training.tracking.Tracker()
+    tracker = a2.training.tracking.Tracker(ignore=False)
 
     def get_raw_parameters():
         run = tracker.active_run()
@@ -62,6 +64,7 @@ def test_HuggingFaceTrainerClass_get_trainer(
 
     tracker.set_tracking_uri("file://" + folder_tracking.__str__() + "/")
     experiment_id = tracker.create_experiment("experiment1")
+    print(f"{experiment_id=}")
     with tracker.start_run(experiment_id=experiment_id):
         tracker.log_params(trainer_object.hyper_parameters.__dict__)
         parameters = get_raw_parameters()
@@ -87,6 +90,7 @@ def test_HuggingFaceTrainerClass_get_trainer(
         truth = ds_test.raining.values
         a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=1)
         assert np.array_equal(predictions, np.array([1, 1, 1, 1]))
+    logging.debug(f'{os.listdir(folder_output + "checkpoint-1/")=}')
     (truth, predictions, prediction_probabilities,) = a2.training.evaluate_hugging.make_predictions_loaded_model(
         ds,
         indices_validate,

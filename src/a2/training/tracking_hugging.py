@@ -6,7 +6,7 @@ from . import tracking
 
 
 class LogCallback(transformers.TrainerCallback):
-    def __init__(self, tracker: tracking.Tracker, log_to_stdout=True):
+    def __init__(self, tracker: tracking.Tracker | None = None, log_to_stdout=True):
         self.tracker = tracker
         self.log_to_stdout = log_to_stdout
         self.steps_logged = {"train": [], "evaluate": []}
@@ -29,7 +29,8 @@ class LogCallback(transformers.TrainerCallback):
             if step in self.steps_logged:
                 # do not log same step twice: may occur as `on_log` also called during evaluation
                 return
-            self.tracker.log_metrics({k: v for k, v in current_log.items() if k != "step"}, step=step)
+            if self.tracker is not None:
+                self.tracker.log_metrics({k: v for k, v in current_log.items() if k != "step"}, step=step)
             self.steps_logged[which].append(step)
 
     def on_evaluate(self, args, state, control, logs=None, **kwargs):
