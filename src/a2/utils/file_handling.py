@@ -300,7 +300,7 @@ def check_folder_exists(path, check_is_empty=False, raise_exception=False):
         if raise_exception:
             raise ValueError(f"{path=} doesn't exist!")
         return False
-    if check_is_empty and not os.path.getsize(path):
+    if check_is_empty and os.path.getsize(path) <= 4096:
         if raise_exception:
             raise ValueError(f"{path=} is empty!")
         return False
