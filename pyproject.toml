@@ -39,6 +39,8 @@ seaborn = "^0.12.1"
 geopy = "^2.3.0"
 click = "^8.1.3"
 ipython = "^8.7.0"
+llvmlite = "^0.39.1"
+datasets = "^2.11.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^22.6.0"}
@@ -68,23 +70,29 @@ pytest-mock = "^3.10.0"
 [tool.poetry.group.parallel.dependencies]
 p-tqdm = "^1.4.0"
 
-
+[tool.poetry.group.train]
+optional = true
 [tool.poetry.group.train.dependencies]
 xgboost = "^1.6.2"
 catboost = "^1.1"
 nltk = "^3.7"
 sentence-transformers = "^2.2.2"
-datasets = "^2.7.1"
-transformers = {extras = ["torch"], version = "^4.25.1"}
-sentencepiece = "^0.1.97"
 ray = {extras = ["tune"], version = "^2.2.0"}
 tensorboard = "^2.11.0"
 
 
+[tool.poetry.group.benchmarking]
+optional = true
 [tool.poetry.group.benchmarking.dependencies]
-onnx = "^1.13.0"
 optimum = {extras = ["onnxruntime"], version = "^1.7.1", optional = true}
-transformers = {extras = ["onnx"], version = "^4.27.1"}
+
+
+[tool.poetry.group.llama-chatbot.dependencies]
+transformers = {git = "https://github.com/huggingface/transformers", branch = "main" }
+
+
+[tool.poetry.group.torch.dependencies]
+torch = "^2.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -143,10 +151,10 @@ per-file-ignores = [
     "training_deep500.py:F403,F405",
 ]
 
-[tool.poetry.extras]
-extend-exclude = [
-    "notebooks/training/helper_deep500.py"
-]
+# [tool.poetry.extras]
+# extend-exclude = [
+#     "notebooks/training/helper_deep500.py"
+# ]
 
 [tool.pytest.ini_options]
 log_cli = true
