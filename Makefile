@@ -14,11 +14,15 @@ JSC_PROJECT = ${MANTIK_UNICORE_PROJECT}
 JSC_SSH = $(JSC_USER)@juwels-cluster.fz-juelich.de
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 
-IMAGE_TYPE = llama
-
+IMAGE_TYPE = llamachat
+KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 ifeq ($(IMAGE_TYPE), llama)
 	POETRY_GROUPS := llama-chatbot torch
 	IMAGE_NAME := ap2python3p10llama
+else ifeq ($(IMAGE_TYPE), llamachat)
+	POETRY_GROUPS := ""
+	IMAGE_NAME := llama-chat
+	KERNEL_IMAGE_DEFINITION_FILENAME := llama-chat
 else
 	POETRY_GROUPS := TRAIN
 	IMAGE_NAME := ap2python3p10
@@ -32,7 +36,7 @@ build-python:
 	# rm -rf dist/
 	# poetry build -f wheel
 	rm requirements.txt
-	poetry export --with "${POETRY_GROUPS}" > requirements.txt
+	poetry export -f requirements.txt --without-hashes --output requirements.txt --extras "${POETRY_GROUPS}"
 
 build-conda-env: build-python
 	conda create -n $(IMAGE_NAME) python=3.10
@@ -62,17 +66,17 @@ deploy: build upload
 
 build-jsc-kernel: build-python
 	sudo apptainer build --force \
-		$(JSC_DIR)/jupyter-kernel.sif \
-		$(JSC_DIR)/jupyter_kernel_recipe.def
+		$(JSC_DIR)/$(IMAGE_NAME).sif \
+		$(JSC_DIR)/$(KERNEL_IMAGE_DEFINITION_FILENAME).def
 
 build-certain-transformer-image: build-python
 	sudo apptainer build --force \
-		$(CERTAIN_TRANSFORMER_DIR)/jupyter-kernel.sif \
-		$(CERTAIN_TRANSFORMER_DIR)/jupyter_kernel_recipe.def
+		$(CERTAIN_TRANSFORMER_DIR)/$(IMAGE_NAME).sif \
+		$(CERTAIN_TRANSFORMER_DIR)/$(KERNEL_IMAGE_DEFINITION_FILENAME).def
 
 upload-certain-transformer-image:
 	rsync -Pvra \
-		$(CERTAIN_TRANSFORMER_DIR)/jupyter-kernel.sif \
+		$(CERTAIN_TRANSFORMER_DIR)/$(IMAGE_NAME).sif \
 		$(JSC_SSH):/p/scratch/$(JSC_PROJECT)/maelstrom/maelstrom_data/ap2/singularity_images/$(CERTAIN_TRANSFORMER_JSC_DIR)/	.sif
 
 define JSC_KERNEL_JSON
@@ -82,7 +86,7 @@ define JSC_KERNEL_JSON
    "exec",
    "--nv",
    "--cleanenv",
-   "/p/scratch/$(JSC_PROJECT)/maelstrom/maelstrom_data/ap2/singularity_images/jupyter-kernel.sif",
+   "/p/scratch/$(JSC_PROJECT)/maelstrom/maelstrom_data/ap2/singularity_images/$(IMAGE_NAME).sif",
    "python3",
    "-m",
    "ipykernel",
@@ -99,8 +103,8 @@ export JSC_KERNEL_JSON
 upload-jsc-kernel:
 	# Copy kernel image file
 	rsync -Pvra \
-		$(JSC_DIR)/jupyter-kernel.sif \
-		$(JSC_SSH):/p/scratch/$(JSC_PROJECT)/maelstrom/maelstrom_data/ap2/singularity_images/jupyter-kernel.sif
+		$(JSC_DIR)/$(IMAGE_NAME).sif \
+		$(JSC_SSH):/p/scratch/$(JSC_PROJECT)/maelstrom/maelstrom_data/ap2/singularity_images/$(IMAGE_NAME).sif
 
 	# Create kernel.json file
 	$(eval KERNEL_FILE := $(JSC_DIR)/kernel.json)
