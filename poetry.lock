@@ -166,15 +166,19 @@ frozenlist = ">=1.1.0"
 
 [[package]]
 name = "aiosqlite"
-version = "0.18.0"
+version = "0.19.0"
 description = "asyncio bridge to the standard sqlite3 module"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "aiosqlite-0.18.0-py3-none-any.whl", hash = "sha256:c3511b841e3a2c5614900ba1d179f366826857586f78abd75e7cbeb88e75a557"},
-    {file = "aiosqlite-0.18.0.tar.gz", hash = "sha256:faa843ef5fb08bafe9a9b3859012d3d9d6f77ce3637899de20606b7fc39aa213"},
+    {file = "aiosqlite-0.19.0-py3-none-any.whl", hash = "sha256:edba222e03453e094a3ce605db1b970c4b3376264e56f32e2a4959f948d66a96"},
+    {file = "aiosqlite-0.19.0.tar.gz", hash = "sha256:95ee77b91c8d2808bd08a59fbebf66270e9090c3d92ffbf260dc0db0b979577d"},
 ]
+
+[package.extras]
+dev = ["aiounittest (==1.4.1)", "attribution (==1.6.2)", "black (==23.3.0)", "coverage[toml] (==7.2.3)", "flake8 (==5.0.4)", "flake8-bugbear (==23.3.12)", "flit (==3.7.1)", "mypy (==1.2.0)", "ufmt (==2.1.0)", "usort (==1.0.6)"]
+docs = ["sphinx (==6.1.3)", "sphinx-mdinclude (==0.5.3)"]
 
 [[package]]
 name = "alembic"
@@ -349,22 +353,22 @@ files = [
 
 [[package]]
 name = "attrs"
-version = "22.2.0"
+version = "23.1.0"
 description = "Classes Without Boilerplate"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "attrs-22.2.0-py3-none-any.whl", hash = "sha256:29e95c7f6778868dbd49170f98f8818f78f3dc5e0e37c0b1f474e3561b240836"},
-    {file = "attrs-22.2.0.tar.gz", hash = "sha256:c9227bfc2f01993c03f68db37d1d15c9690188323c067c641f1a35ca58185f99"},
+    {file = "attrs-23.1.0-py3-none-any.whl", hash = "sha256:1f28b4522cdc2fb4256ac1a020c78acf9cba2c6b461ccd2c126f3aa8e8335d04"},
+    {file = "attrs-23.1.0.tar.gz", hash = "sha256:6279836d581513a26f1bf235f9acd333bc9115683f14f7e8fae46c98fc50e015"},
 ]
 
 [package.extras]
-cov = ["attrs[tests]", "coverage-enable-subprocess", "coverage[toml] (>=5.3)"]
-dev = ["attrs[docs,tests]"]
-docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope.interface"]
-tests = ["attrs[tests-no-zope]", "zope.interface"]
-tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy (>=0.971,<0.990)", "mypy (>=0.971,<0.990)", "pympler", "pympler", "pytest (>=4.3.0)", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-mypy-plugins", "pytest-xdist[psutil]", "pytest-xdist[psutil]"]
+cov = ["attrs[tests]", "coverage[toml] (>=5.3)"]
+dev = ["attrs[docs,tests]", "pre-commit"]
+docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope-interface"]
+tests = ["attrs[tests-no-zope]", "zope-interface"]
+tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
 
 [[package]]
 name = "babel"
@@ -508,18 +512,18 @@ numpy = ">=1.15.0"
 
 [[package]]
 name = "boto3"
-version = "1.26.112"
+version = "1.26.114"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.26.112-py3-none-any.whl", hash = "sha256:03c2e1ddd29d993a6ab9b8a8fe184027957fc32bd405c496ad0c30311445925f"},
-    {file = "boto3-1.26.112.tar.gz", hash = "sha256:4ea3319bba2e8ff7cd9560259ae64f073c7fb6312158aa375777687231cabe69"},
+    {file = "boto3-1.26.114-py3-none-any.whl", hash = "sha256:e32977256470b4de3a25a43acdf6c8e6375e762656ace292ad2ceba446203615"},
+    {file = "boto3-1.26.114.tar.gz", hash = "sha256:b10324d452fe677d6e1005b650ae11158cf21310e0c0062b00d184b352f4196b"},
 ]
 
 [package.dependencies]
-botocore = ">=1.29.112,<1.30.0"
+botocore = ">=1.29.114,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -528,14 +532,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.112"
+version = "1.29.114"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.29.112-py3-none-any.whl", hash = "sha256:2cbaddb09b46dcb0a05490724d51acb224d3a8df433c347f995b4d78bfb02c8a"},
-    {file = "botocore-1.29.112.tar.gz", hash = "sha256:1f52d9371d7b5ee30a53dcef7954c3cf22e04b131cfab5268035f3299ccde9e1"},
+    {file = "botocore-1.29.114-py3-none-any.whl", hash = "sha256:dd61f445eb53fe906dbde86405915cce61ffa13824a1bb7b826bfc7869a3e628"},
+    {file = "botocore-1.29.114.tar.gz", hash = "sha256:aeacb03303d6babb0490247158647346d27900fcf89bfb9713db41f1ce1cc93f"},
 ]
 
 [package.dependencies]
@@ -903,7 +907,7 @@ files = [
 name = "cmake"
 version = "3.26.3"
 description = "CMake is an open-source, cross-platform family of tools designed to build, test and package software"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -1628,7 +1632,7 @@ torch = ["torch"]
 name = "exceptiongroup"
 version = "1.1.1"
 description = "Backport of PEP 654 (exception groups)"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1643,7 +1647,7 @@ test = ["pytest (>=6)"]
 name = "execnet"
 version = "1.9.0"
 description = "execnet: rapid multi-Python deployment"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
@@ -2539,7 +2543,7 @@ testing = ["flake8 (<5)", "flufl.flake8", "importlib-resources (>=1.3)", "packag
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2816,14 +2820,14 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jupyter-client"
-version = "8.1.0"
+version = "8.2.0"
 description = "Jupyter protocol implementation and client libraries"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "jupyter_client-8.1.0-py3-none-any.whl", hash = "sha256:d5b8e739d7816944be50f81121a109788a3d92732ecf1ad1e4dadebc948818fe"},
-    {file = "jupyter_client-8.1.0.tar.gz", hash = "sha256:3fbab64100a0dcac7701b1e0f1a4412f1ccb45546ff2ad9bc4fcbe4e19804811"},
+    {file = "jupyter_client-8.2.0-py3-none-any.whl", hash = "sha256:b18219aa695d39e2ad570533e0d71fb7881d35a873051054a84ee2a17c4b7389"},
+    {file = "jupyter_client-8.2.0.tar.gz", hash = "sha256:9fe233834edd0e6c0aa5f05ca2ab4bdea1842bfd2d8a932878212fc5301ddaf0"},
 ]
 
 [package.dependencies]
@@ -2835,7 +2839,7 @@ traitlets = ">=5.3"
 
 [package.extras]
 docs = ["ipykernel", "myst-parser", "pydata-sphinx-theme", "sphinx (>=4)", "sphinx-autodoc-typehints", "sphinxcontrib-github-alt", "sphinxcontrib-spelling"]
-test = ["codecov", "coverage", "ipykernel (>=6.14)", "mypy", "paramiko", "pre-commit", "pytest", "pytest-cov", "pytest-jupyter[client] (>=0.4.1)", "pytest-timeout"]
+test = ["coverage", "ipykernel (>=6.14)", "mypy", "paramiko", "pre-commit", "pytest", "pytest-cov", "pytest-jupyter[client] (>=0.4.1)", "pytest-timeout"]
 
 [[package]]
 name = "jupyter-core"
@@ -3041,14 +3045,14 @@ files = [
 
 [[package]]
 name = "jupyterlab-server"
-version = "2.22.0"
+version = "2.22.1"
 description = "A set of server components for JupyterLab and JupyterLab like applications."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "jupyterlab_server-2.22.0-py3-none-any.whl", hash = "sha256:f4a7263ada89958854631a64bed45285caeac482925233159709f643c5871490"},
-    {file = "jupyterlab_server-2.22.0.tar.gz", hash = "sha256:0f9f6752b0c534a7b22a6542b984fa6a2c18ab4d4e0a4c79f191138506a9a75f"},
+    {file = "jupyterlab_server-2.22.1-py3-none-any.whl", hash = "sha256:1c8eb55c7cd70a50a51fef42a7b4e26ef2f7fc48728f0290604bd89b1dd156e6"},
+    {file = "jupyterlab_server-2.22.1.tar.gz", hash = "sha256:dfaaf898af84b9d01ae9583b813f378b96ee90c3a66f24c5186ea5d1bbdb2089"},
 ]
 
 [package.dependencies]
@@ -3063,7 +3067,7 @@ requests = ">=2.28"
 [package.extras]
 docs = ["autodoc-traits", "docutils (<0.20)", "jinja2 (<3.2.0)", "mistune (<3)", "myst-parser", "pydata-sphinx-theme", "sphinx", "sphinx-copybutton", "sphinxcontrib-openapi"]
 openapi = ["openapi-core (>=0.16.1,<0.17.0)", "ruamel-yaml"]
-test = ["codecov", "hatch", "ipykernel", "jupyterlab-server[openapi]", "openapi-spec-validator (>=0.5.1,<0.6.0)", "pytest (>=7.0)", "pytest-console-scripts", "pytest-cov", "pytest-jupyter[server] (>=0.6.2)", "pytest-timeout", "requests-mock", "sphinxcontrib-spelling", "strict-rfc3339", "werkzeug"]
+test = ["hatch", "ipykernel", "jupyterlab-server[openapi]", "openapi-spec-validator (>=0.5.1,<0.6.0)", "pytest (>=7.0)", "pytest-console-scripts", "pytest-cov", "pytest-jupyter[server] (>=0.6.2)", "pytest-timeout", "requests-mock", "sphinxcontrib-spelling", "strict-rfc3339", "werkzeug"]
 
 [[package]]
 name = "jupyterlab-widgets"
@@ -3255,7 +3259,7 @@ tests = ["IPython (>=0.13)", "IPython (>=0.13,<7.17.0)", "coverage[toml] (>=5.3)
 name = "lit"
 version = "16.0.1"
 description = "A Software Testing Tool"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -3595,7 +3599,7 @@ sqlserver = ["mlflow-dbstore"]
 name = "mpmath"
 version = "1.3.0"
 description = "Python library for arbitrary-precision floating-point arithmetic"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -4062,7 +4066,7 @@ numpy = "*"
 name = "networkx"
 version = "3.1"
 description = "Python package for creating and manipulating graphs and networks"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
@@ -4256,7 +4260,7 @@ files = [
 name = "nvidia-cublas-cu11"
 version = "11.10.3.66"
 description = "CUBLAS native runtime libraries"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4272,7 +4276,7 @@ wheel = "*"
 name = "nvidia-cuda-cupti-cu11"
 version = "11.7.101"
 description = "CUDA profiling tools runtime libs."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4288,7 +4292,7 @@ wheel = "*"
 name = "nvidia-cuda-nvrtc-cu11"
 version = "11.7.99"
 description = "NVRTC native runtime libraries"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4305,7 +4309,7 @@ wheel = "*"
 name = "nvidia-cuda-runtime-cu11"
 version = "11.7.99"
 description = "CUDA Runtime native Libraries"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4321,7 +4325,7 @@ wheel = "*"
 name = "nvidia-cudnn-cu11"
 version = "8.5.0.96"
 description = "cuDNN runtime libraries"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4337,7 +4341,7 @@ wheel = "*"
 name = "nvidia-cufft-cu11"
 version = "10.9.0.58"
 description = "CUFFT native runtime libraries"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4349,7 +4353,7 @@ files = [
 name = "nvidia-curand-cu11"
 version = "10.2.10.91"
 description = "CURAND native runtime libraries"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4365,7 +4369,7 @@ wheel = "*"
 name = "nvidia-cusolver-cu11"
 version = "11.4.0.1"
 description = "CUDA solver native runtime libraries"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4382,7 +4386,7 @@ wheel = "*"
 name = "nvidia-cusparse-cu11"
 version = "11.7.4.91"
 description = "CUSPARSE native runtime libraries"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4398,7 +4402,7 @@ wheel = "*"
 name = "nvidia-nccl-cu11"
 version = "2.14.3"
 description = "NVIDIA Collective Communication Library (NCCL) Runtime"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4409,7 +4413,7 @@ files = [
 name = "nvidia-nvtx-cu11"
 version = "11.7.91"
 description = "NVIDIA Tools Extension"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3"
 files = [
@@ -4570,14 +4574,14 @@ pynndescent = ["pynndescent (>=0.5.0,<0.6.0)"]
 
 [[package]]
 name = "optimum"
-version = "1.7.3"
+version = "1.8.0"
 description = "Optimum Library is an extension of the Hugging Face Transformers library, providing a framework to integrate third-party libraries from Hardware Partners and interface with their specific functionality."
 category = "dev"
 optional = true
 python-versions = ">=3.7.0"
 files = [
-    {file = "optimum-1.7.3-py3-none-any.whl", hash = "sha256:143eef7532b43e0ce9c7d41ed8d81d29126a11833ce3125e4654d8b64572a0a4"},
-    {file = "optimum-1.7.3.tar.gz", hash = "sha256:c4cecafb6d84a01da894bc70876e565c212158d24396038eb868c1f9fba97849"},
+    {file = "optimum-1.8.0-py3-none-any.whl", hash = "sha256:e6a9cd7f412218f6e8c778b84d9eecb0f36fc312ee8c1ef144288ef4fefc2597"},
+    {file = "optimum-1.8.0.tar.gz", hash = "sha256:628f07c5a6e65f986a48dff090652507db9ed9c0ac0e22f58be3e88af896eb15"},
 ]
 
 [package.dependencies]
@@ -4967,7 +4971,7 @@ tenacity = ">=6.2.0"
 name = "pluggy"
 version = "1.0.0"
 description = "plugin and hook calling mechanisms for python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -5203,7 +5207,7 @@ tests = ["pytest"]
 name = "py"
 version = "1.11.0"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
@@ -5518,14 +5522,14 @@ files = [
 
 [[package]]
 name = "pytest"
-version = "7.3.0"
+version = "7.3.1"
 description = "pytest: simple powerful testing with Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pytest-7.3.0-py3-none-any.whl", hash = "sha256:933051fa1bfbd38a21e73c3960cebdad4cf59483ddba7696c48509727e17f201"},
-    {file = "pytest-7.3.0.tar.gz", hash = "sha256:58ecc27ebf0ea643ebfdf7fb1249335da761a00c9f955bcd922349bcb68ee57d"},
+    {file = "pytest-7.3.1-py3-none-any.whl", hash = "sha256:3799fa815351fea3a5e96ac7e503a96fa51cc9942c3753cda7651b93c1cfa362"},
+    {file = "pytest-7.3.1.tar.gz", hash = "sha256:434afafd78b1d78ed0addf160ad2b77a30d35d4bdf8af234fe621919d9ed15e3"},
 ]
 
 [package.dependencies]
@@ -5578,7 +5582,7 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtuale
 name = "pytest-forked"
 version = "1.6.0"
 description = "run tests in isolated forked subprocesses"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -5634,7 +5638,7 @@ test = ["pytest-cov"]
 name = "pytest-recording"
 version = "0.12.2"
 description = "A pytest plugin that allows you recording of network interactions via VCR.py"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.5"
 files = [
@@ -5651,7 +5655,7 @@ vcrpy = ">=2.0.1"
 name = "pytest-xdist"
 version = "2.5.0"
 description = "pytest xdist plugin for distributed testing and loop-on-failing modes"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -6086,7 +6090,7 @@ tune = ["pandas", "requests", "tabulate", "tensorboardX (>=1.9)"]
 name = "regex"
 version = "2023.3.23"
 description = "Alternative regular expression module, to replace re."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
@@ -6478,7 +6482,7 @@ transformers = ">=4.6.0,<5.0.0"
 name = "sentencepiece"
 version = "0.1.98"
 description = "SentencePiece python wrapper"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -6682,14 +6686,14 @@ test = ["hypothesis", "pytest"]
 
 [[package]]
 name = "soupsieve"
-version = "2.4"
+version = "2.4.1"
 description = "A modern CSS selector implementation for Beautiful Soup."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "soupsieve-2.4-py3-none-any.whl", hash = "sha256:49e5368c2cda80ee7e84da9dbe3e110b70a4575f196efb74e51b94549d921955"},
-    {file = "soupsieve-2.4.tar.gz", hash = "sha256:e28dba9ca6c7c00173e34e4ba57448f0688bb681b7c5e8bf4971daafc093d69a"},
+    {file = "soupsieve-2.4.1-py3-none-any.whl", hash = "sha256:1c1bfee6819544a3447586c889157365a27e10d88cde3ad3da0cf0ddf646feb8"},
+    {file = "soupsieve-2.4.1.tar.gz", hash = "sha256:89d12b2d5dfcd2c9e8c22326da9d9aa9cb3dfab0a83a024f05704076ee8d35ea"},
 ]
 
 [[package]]
@@ -6989,7 +6993,7 @@ full = ["itsdangerous", "jinja2", "python-multipart", "pyyaml", "requests"]
 name = "sympy"
 version = "1.11.1"
 description = "Computer algebra system (CAS) in Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
@@ -7032,13 +7036,13 @@ doc = ["reno", "sphinx", "tornado (>=4.5)"]
 
 [[package]]
 name = "tensorboard"
-version = "2.12.1"
+version = "2.12.2"
 description = "TensorBoard lets you watch Tensors Flow"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "tensorboard-2.12.1-py3-none-any.whl", hash = "sha256:58f1c2a25b4829b9c48d2b1ec951dedc9325dcd1ea4b0f601d241d2887d0ed65"},
+    {file = "tensorboard-2.12.2-py3-none-any.whl", hash = "sha256:811ab0d27a139445836db9fd4f974424602c3dce12379364d379bcba7c783a68"},
 ]
 
 [package.dependencies]
@@ -7241,7 +7245,7 @@ files = [
 name = "tokenizers"
 version = "0.13.3"
 description = "Fast and Customizable Tokenizers"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -7320,7 +7324,7 @@ files = [
 name = "torch"
 version = "2.0.0"
 description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8.0"
 files = [
@@ -7484,7 +7488,7 @@ test = ["argcomplete (>=2.0)", "pre-commit", "pytest", "pytest-mock"]
 name = "transformers"
 version = "4.29.0.dev0"
 description = "State-of-the-art Machine Learning for JAX, PyTorch and TensorFlow"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7.0"
 files = []
@@ -7552,13 +7556,13 @@ vision = ["Pillow"]
 type = "git"
 url = "https://github.com/huggingface/transformers"
 reference = "main"
-resolved_reference = "95e7057507c9eca8e997abb98645eee2621a5aea"
+resolved_reference = "28f26c107b4a1c5c7e32ed4d9575622da0627a40"
 
 [[package]]
 name = "triton"
 version = "2.0.0"
 description = "A language and compiler for custom Deep Learning operations"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -7854,7 +7858,7 @@ test = ["Cython (>=0.29.32,<0.30.0)", "aiohttp", "flake8 (>=3.9.2,<3.10.0)", "my
 name = "vcrpy"
 version = "4.2.1"
 description = "Automatically mock your HTTP interactions to simplify and speed up testing"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -8105,7 +8109,7 @@ files = [
 name = "wheel"
 version = "0.40.0"
 description = "A built-package format for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -8198,7 +8202,7 @@ pillow = "*"
 name = "wrapt"
 version = "1.15.0"
 description = "Module for decorators, wrappers and monkey patching."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 files = [
@@ -8688,7 +8692,11 @@ docs = ["Sphinx", "repoze.sphinx.autointerface"]
 test = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
+[extras]
+llama-chatbot = ["sentencepiece", "transformers"]
+torch = ["torch"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "474176275815f031756ecc24497d59ec9340793017cbb09eebdc7e0f870b8cd5"
+content-hash = "a6dd55b9cf834c4939096fc2b3dfd7b70b65674f1cb4948fc7f345b5e08b89bf"
