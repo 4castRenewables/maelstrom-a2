@@ -20,7 +20,8 @@ logging.basicConfig(
 
 def main(args):
     os.environ["MLFLOW_EXPERIMENT_NAME"] = "maelstrom-a2-eval"
-    if args.log_gpu_memory:
+    os.environ["GIT_PYTHON_REFRESH"] = "quiet"
+    if args.log_gpu_memory != "off":
         timer.init_cuda()
         timer.reset_cuda_memory_monitoring()
     os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
@@ -52,7 +53,7 @@ def main(args):
     path_figures = os.path.join(args.output_dir, args.figure_folder)
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     tracker.end_run()
-    if args.log_gpu_memory:
+    if args.log_gpu_memory != "off":
         timer.reset_cuda_memory_monitoring()
     with tracker.start_run(run_name=args.run_name):
         tracker.log_params(
@@ -63,8 +64,8 @@ def main(args):
             }
         )
         tmr.start(timer.TimeType.RUN)
-        if args.log_gpu_memory:
-            timer.get_cuda_memory_usage("Starting run")
+        if args.log_gpu_memory != "off":
+            timer.get_cuda_memory_usage("Starting run", style=args.log_gpu_memory)
         dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
         tmr.start(timer.TimeType.IO)
         test_ds = dataset_object.build(ds_raw, indices_train, indices_test, train=False)
@@ -73,7 +74,7 @@ def main(args):
         trainer = trainer_object.get_trainer(
             test_ds,
             tokenizer=dataset_object.tokenizer,
-            disable_tqdm=True,
+            disable_tqdm=False,
             callbacks=[
                 a2.training.training_deep500.TimerCallback(tmr, gpu=True),
                 a2.training.tracking_hugging.LogCallback(tracker),
@@ -86,8 +87,8 @@ def main(args):
             predictions,
             prediction_probabilities,
         ) = a2.training.evaluate_hugging.predict_dataset(test_ds, trainer)
-        if args.log_gpu_memory:
-            timer.get_cuda_memory_usage("Finished training")
+        if args.log_gpu_memory != "off":
+            timer.get_cuda_memory_usage("Finished training", style=args.log_gpu_memory)
         tmr.end(timer.TimeType.EVALUATION)
         tmr.end(timer.TimeType.RUN)
 
@@ -116,8 +117,8 @@ def main(args):
         )
         tracker.log_artifact(filename_roc_plot)
         logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
-        if args.log_gpu_memory:
-            timer.get_cuda_memory_usage("Finished run")
+        if args.log_gpu_memory != "off":
+            timer.get_cuda_memory_usage("Finished run", style=args.log_gpu_memory)
 
 
 if __name__ == "__main__":
@@ -179,9 +180,7 @@ if __name__ == "__main__":
     parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
     parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
     parser.add_argument(
-        "--log_gpu_memory",
-        action="store_true",
-        help="Monitor Cuda memory usage.",
+        "--log_gpu_memory", "-lgpu", choices=['off', 'minimal', 'verbose'], default="minimal", help="Monitor Cuda memory usage.",
     )
     parser.add_argument(
         "--ignore_tracking",
