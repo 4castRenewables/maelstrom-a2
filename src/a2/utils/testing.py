@@ -112,7 +112,7 @@ def check_python_version():
     return python_version()
 
 
-def print_copy_paste_fake_dataset(ds, name="fake_dataset"):
+def print_copy_paste_fake_dataset(ds, name="fake_dataset", delimeter="    "):
     print(f"def {name}():")
 
     def print_array(values, dtype):
@@ -141,16 +141,16 @@ def print_copy_paste_fake_dataset(ds, name="fake_dataset"):
 
     for k, v in ds.variables.items():
         value_array = np.array(v.values, dtype=v.values.dtype)
-        print(f"{k} = {print_array(value_array, dtype=v.values.dtype)}")
-    print("return xarray.Dataset(")
-    print("\tdata_vars=dict(")
+        print(f"{delimeter}{k} = {print_array(value_array, dtype=v.values.dtype)}")
+    print(f"{delimeter}return xarray.Dataset(")
+    print(f"{delimeter}{delimeter}data_vars=dict(")
     for k, v in ds.variables.items():
         if k == "index":
             continue
-        print(f'\t\t{k}=(["index"], {k}),')
-    print("\t),")
-    print("\tcoords=dict(index=index),")
-    print(")")
+        print(f'{3*delimeter}{k}=(["index"], {k}),')
+    print(f"{2*delimeter}),")
+    print(f"{2*delimeter}coords=dict(index=index),")
+    print(f"{delimeter})")
 
 
 def print_debug(x):
