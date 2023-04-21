@@ -30,7 +30,7 @@ def remove_non_ascii_characters(text: str) -> str:
     return text.encode("ascii", errors="ignore").decode()
 
 
-def remove_unwanted_unicode(text: str) -> str:
+def remove_unwanted_unicode(text: str, keep_emojis: str) -> str:
     """
     remove emojis, symbols, flags and further unicode characters
 
@@ -44,10 +44,19 @@ def remove_unwanted_unicode(text: str) -> str:
     -------
     cleaned text
     """
+    if keep_emojis == "none":
+        emoji_string = """
+                        \U0001F600-\U0001F64F
+                        \U00010000-\U0010ffff
+                        \U0001F300-\U0001F5FF
+                        """  # emoticons
+    elif keep_emojis == "all":
+        emoji_string = ""
+    else:
+        raise NotImplementedError(f"Option {keep_emojis} not found!")
     emoj = re.compile(
         "["
-        "\U0001F600-\U0001F64F"  # emoticons
-        "\U0001F300-\U0001F5FF"  # symbols & pictographs
+        f"{emoji_string}"
         "\U0001F680-\U0001F6FF"  # transport & map symbols
         "\U0001F1E0-\U0001F1FF"  # flags (iOS)
         "\U00002500-\U00002BEF"  # chinese char
@@ -56,7 +65,6 @@ def remove_unwanted_unicode(text: str) -> str:
         "\U00002702-\U000027B0"
         "\U000024C2-\U0001F251"
         "\U0001f926-\U0001f937"
-        "\U00010000-\U0010ffff"
         "\u2640-\u2642"
         "\u2600-\u2B55"
         "\u200d"
@@ -533,6 +541,7 @@ class Normalizer:
         source: t.Optional[str] = None,
         ignore_non_ascii: bool = True,
         replace_keyword_emojis: bool = True,
+        keep_emojis: str = "none",
         remove_punctuations: str = "keep_basic_punctuations",
         reduce_punctuations: bool = True,
         use_lower_case: bool = False,
@@ -553,6 +562,12 @@ class Normalizer:
                           some punctuations
         replace_keyword_emojis: Replaces emojis whose name contains keywords
                                 with that keyword
+        keep_emojis: Whether to keep emojis based on unicode representation.
+                    `all`: all removed
+                    `none`: all kept
+                    `keywords`: only emojis which have a name that contains a keyword
+                                are kept
+                    Note, this step occurs after emojis are replaced (see `replace_keyword_emojis`).
         remove_punctuations: 'keep_basic_punctuations' or 'all'
         reduce_punctuations: Convert multiple occurence of same punctuation
                              character to single character.
@@ -564,6 +579,8 @@ class Normalizer:
         normalized sentence
         -------
         """
+        if replace_keyword_emojis and keep_emojis == "all":
+            raise ValueError(f"Combination {replace_keyword_emojis=} and {keep_emojis=} not allowed!")
         try:
             if source is not None and source == "Instagram":
                 sentence = remove_instagram_atsign(sentence)
@@ -581,7 +598,7 @@ class Normalizer:
             )
             sentence = remove_hashtags(sentence)
             sentence = normalize_slang_stopwords(sentence, replace_underscore=True)
-            sentence = remove_unwanted_unicode(sentence)
+            sentence = remove_unwanted_unicode(sentence, keep_emojis=keep_emojis)
             sentence = remove_newlines(sentence)
             sentence = remove_urls(sentence)
             if remove_punctuations:
