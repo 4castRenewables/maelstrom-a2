@@ -232,7 +232,7 @@ def remove_existing_files(files_wildcards: t.Union[str, list[str]], include_subd
 
 def file_exists_and_not_empty(filename: t.Union[str, pathlib.Path]) -> bool:
     """Check if file exists and is not empty"""
-    return os.path.exists(filename) and not os.path.getsize(filename)
+    return os.path.exists(filename) and os.path.getsize(filename) != 0
 
 
 def sort_filenames_by_pattern(file_list: list, pattern_extraction_function: t.Callable) -> list:

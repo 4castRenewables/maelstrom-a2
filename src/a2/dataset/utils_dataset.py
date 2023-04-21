@@ -82,10 +82,14 @@ def print_tweet_sample(
     n: int | None = None,
     fancy: bool = True,
     field_name_tweets: str = "text",
+    additional_fields: list | None = [],
 ):
     """load tweets in filename and print random n_sample or n tweets from
     beginning of file"""
-    print_sample(ds[field_name_tweets].values, n_sample=n_sample, n=n, fancy=fancy)
+    fields = [field_name_tweets]
+    if additional_fields is not None:
+        fields += additional_fields
+    print_sample(np.array([ds[key].values for key in fields]).T, n_sample=n_sample, n=n, fancy=fancy)
 
 
 def print_sample(
@@ -428,7 +432,7 @@ def add_variable(
     ds: xarray.Dataset,
     key: t.Hashable,
     values: np.ndarray,
-    coordinate: list = None,
+    coordinate: list | None = None,
 ) -> xarray.Dataset:
     if coordinate is None:
         coordinate = ["index"]
