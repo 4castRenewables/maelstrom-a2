@@ -628,6 +628,7 @@ def normalize_text_dataset(
     key_text_backup: t.Optional[str] = None,
     ignore_non_ascii: bool = True,
     replace_keyword_emojis: bool = True,
+    keep_emojis: str = "none",
     remove_punctuations: str = "keep_basic_punctuations",
     reduce_punctuations: bool = True,
     use_lower_case: bool = False,
@@ -685,6 +686,7 @@ def normalize_text_dataset(
         "reduce_punctuations": reduce_punctuations,
         "use_lower_case": use_lower_case,
         "do_split_punctuation_text": do_split_punctuation_text,
+        "keep_emojis": keep_emojis,
     }
     normalized_text = a2.utils.utils.parallelize(
         function=normalizer.normalize,
@@ -775,6 +777,7 @@ def normalize_filter_dataset(
     key_text_backup: t.Optional[str] = None,
     ignore_non_ascii: bool = True,
     replace_keyword_emojis: bool = True,
+    keep_emojis: str = "none",
     remove_punctuations: str = "keep_basic_punctuations",
     reduce_punctuations: bool = True,
     use_lower_case: bool = False,
@@ -841,6 +844,7 @@ def normalize_filter_dataset(
         key_text_backup=key_text_backup,
         ignore_non_ascii=ignore_non_ascii,
         replace_keyword_emojis=replace_keyword_emojis,
+        keep_emojis=keep_emojis,
         remove_punctuations=remove_punctuations,
         reduce_punctuations=reduce_punctuations,
         use_lower_case=use_lower_case,
