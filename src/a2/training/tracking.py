@@ -3,7 +3,7 @@ import logging
 import typing as t
 import warnings
 
-import a2.plotting
+import a2.plotting.analysis
 import mantik
 import mlflow
 
