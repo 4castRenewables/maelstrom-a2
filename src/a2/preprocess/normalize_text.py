@@ -45,11 +45,17 @@ def remove_unwanted_unicode(text: str, keep_emojis: str) -> str:
     cleaned text
     """
     if keep_emojis == "none":
-        emoji_string = """
-                        \U0001F600-\U0001F64F
-                        \U00010000-\U0010ffff
-                        \U0001F300-\U0001F5FF
-                        """  # emoticons
+        emoji_string = (
+            "\U0001F600-\U0001F64F"
+            "\U00010000-\U0010ffff"
+            "\U00002500-\U00002BEF"
+            "\U000024C2-\U0001F251"
+            "\U00002702-\U000027B0"
+            "\u2600-\u2B55"
+            "\ufe0f"
+        )
+        # dingbats
+        # emoticons
     elif keep_emojis == "all":
         emoji_string = ""
     else:
@@ -59,19 +65,13 @@ def remove_unwanted_unicode(text: str, keep_emojis: str) -> str:
         f"{emoji_string}"
         "\U0001F680-\U0001F6FF"  # transport & map symbols
         "\U0001F1E0-\U0001F1FF"  # flags (iOS)
-        "\U00002500-\U00002BEF"  # chinese char
         "\U00002460-\U000024FF"  # alpha numerics
-        "\U00002702-\U000027B0"
-        "\U00002702-\U000027B0"
-        "\U000024C2-\U0001F251"
         "\U0001f926-\U0001f937"
         "\u2640-\u2642"
-        "\u2600-\u2B55"
         "\u200d"
         "\u23cf"
         "\u23e9"
         "\u231a"
-        "\ufe0f"  # dingbats
         "\u3030"
         "]+",
         re.UNICODE,
