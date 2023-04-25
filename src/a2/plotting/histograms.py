@@ -112,6 +112,10 @@ def plot_histogram_2d(
     -------
     axes, histogram values
     """
+    if label_x is None and isinstance(x, str):
+        label_x = x
+    if label_y is None and isinstance(y, str):
+        label_y = y
     marginal_x, marginal_y = _resolve_defaults(facet_column, facet_row, marginal_x, marginal_y)
     _check_histogram_parameter_consistency(facet_column, facet_row, marginal_x, marginal_y, ds)
 
@@ -407,7 +411,8 @@ def _plot_histogram_2d(
     a2.plotting.utils_plotting.set_y_log(ax, log[1], linear_thresh=linear_thresh[1])
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
-
+    a2.plotting.utils_plotting.set_xlabel(ax, label_x)
+    a2.plotting.utils_plotting.set_ylabel(ax, label_y)
     a2.plotting.utils_plotting.set_title(ax, title)
 
     if marginal_x == "histogram":
@@ -588,7 +593,7 @@ def plot_histogram(
     -------
     axes
     """
-    if all([isinstance(i, str) for i in x]):
+    if annotatations_bars is not None and all([isinstance(i, str) for i in x]):
         labels_bars, x, counts = np.unique(x, return_inverse=True, return_counts=True)
         n_bins = len(labels_bars)
         annotatations_bars = [_la if c >= min_counts else "" for _la, c in zip(labels_bars, counts)]
@@ -642,7 +647,6 @@ def plot_histogram(
         annotate_histogram(ax, plot, labels=annotatations_bars, as_label="x", fontsize=font_size)
     fig.tight_layout()
     a2.plotting.utils_plotting.save_figure(fig, filename)
-    print(f"{log=}")
     if return_plot:
         return ax, plot
     return ax

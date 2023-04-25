@@ -106,6 +106,16 @@ def set_title(ax, title):
             ax.set_title(title)
 
 
+def set_xlabel(ax, label):
+    if label is not None:
+        ax.set_xlabel(label)
+
+
+def set_ylabel(ax, label):
+    if label is not None:
+        ax.set_ylabel(label)
+
+
 def create_figure_axes(
     fig: t.Optional[plt.figure] = None,
     ax: t.Optional[plt.axes] = None,
@@ -293,14 +303,12 @@ def create_axes_grid(
             )
             axes_colorbar[i_row][i_col] = plt.axes([colorbar_left, colorbar_bottom, colorbar_width, colorbar_height])
     axes, axes_colorbar = np.array(axes, dtype=object), np.array(axes_colorbar, dtype=object)
-    print(f"{axes=}")
     if unravel:
         axes = a2.utils.utils.flatten_list(axes)
         axes_colorbar = a2.utils.utils.flatten_list(axes_colorbar)
         if n_cols * n_rows == 1:
             axes = axes[0]
             axes_colorbar = axes_colorbar[0]
-    print(f"{axes=}")
     return fig, axes, axes_colorbar
 
 
