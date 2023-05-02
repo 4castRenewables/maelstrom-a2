@@ -69,6 +69,18 @@ pytest-mpl = "^0.16.1"
 responses = "0.18"
 pytest-mock = "^3.10.0"
 
+
+[tool.poetry.group.eradata.dependencies]
+cdsapi = "^0.6.1"
+
+
+[tool.poetry.group.maelstrom.dependencies]
+climetlab = "^0.14.23"
+climetlab-plugin-tools = "^0.0.5"
+setuptools = "^67.7.2"
+wheel = "^0.40.0"
+twine = "^4.0.2"
+
 [tool.poetry.extras]
 llama-chatbot = ["transformers", "sentencepiece"]
 torch = ["torch"]
