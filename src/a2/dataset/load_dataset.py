@@ -254,6 +254,11 @@ def load_weather_stations(filename: str, drop_columns: str | list = "Unnamed: 0"
     return df
 
 
-def load_radar_dataset(files):
+def load_multifile_dataset(files):
     """load multiple netcdf radar files converted from nimrod"""
     return xarray.open_mfdataset(files, combine_attrs="drop_conflicts")
+
+
+def load_radar_dataset(files):
+    """load multiple netcdf radar files converted from nimrod"""
+    return load_multifile_dataset(files)
