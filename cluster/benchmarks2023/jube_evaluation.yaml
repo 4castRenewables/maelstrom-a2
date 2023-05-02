@@ -171,7 +171,7 @@ parameterset:
       - name: gres
         _: gpu:$n_gpu
       - name: executable
-        _: python -u $jube_benchmark_home/../scripts/evaluate_deberta.py
+        _: python -u $jube_benchmark_home/../../scripts/evaluate_deberta.py
       - name: submit_cmd
         _: sbatch
       - name: job_file
@@ -191,7 +191,7 @@ parameterset:
       - name: args_exec
         mode: text
         _: >
-          --log_gpu_memory
+          --log_gpu_memory verbose
           --run_name ${run_name}
           --data_filename ${data_filename}
           --data_dir ${indir}
@@ -253,20 +253,20 @@ result:
       column:
         - {title: "JobID", _: jobid}
         - {title: "#tweets", _: ntweets}
-        - {title: "#steps", _: nsteps_last}
+        # - {title: "#steps", _: nsteps_last}
         - {title: "devices", _: ndevices}
         - {title: "queue", _: queue}
-        - {title: "#nodes", _: nodes}
-        - {title: "#gpu", _: n_gpu}
-        - {title: "BS", _: batch_size}
+        # - {title: "#nodes", _: nodes}
+        # - {title: "#gpu", _: n_gpu}
+        # - {title: "BS", _: batch_size}
         - {title: "T. run", format: ".4f", _: run_time_last}
         - {title: "T. IO", format: ".4f", _: io_time_sum}
         - {title: "Ev. time", format: ".4f", _: evaluation_time_max}
-        - {title: "First epoch", format: ".4f", _: epoch_time_first}
-        - {title: "Min epoch", format: ".4f", _: epoch_time_min}
-        - {title: "Max epoch", format: ".4f", _: epoch_time_max}
+        #- {title: "First epoch", format: ".4f", _: epoch_time_first}
+        # - {title: "Min epoch", format: ".4f", _: epoch_time_min}
+        # - {title: "Max epoch", format: ".4f", _: epoch_time_max}
         - {title: "M. eval loss", format: ".4f", _: eval_loss_min}
-        - {title: "Saving time", format: ".4f", _: saving_model_time_last}
+        #- {title: "Saving time", format: ".4f", _: saving_model_time_last}
         - {title: "l. rate", _: lr}
         - {title: "min loss", format: ".4f", _: loss_min}
         - {title: "Mem", format: ".4f",  _: max_memory}
@@ -274,14 +274,14 @@ result:
         - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
         - {title: "Job_Time", _: timelimit}
         - {title: "Node(s)", _: label_pat}
-        - {title: "Tstart", _: time_pat_first}
-        - {title: "Tend", _: time_pat_last}
-        - {title: "Ma.W", format: ".2f", _: watt_pat_max}
-        - {title: "A.W", format: ".2f", _: watt_pat_avg}
-        - {title: "Mi.W", format: ".4f", _: watt_pat_min}
-        - {title: "Ma.VA", format: ".2f", _: va_pat_max}
-        - {title: "A.VA", format: ".2f", _: va_pat_avg}
-        - {title: "Mi.VA", format: ".4f", _: va_pat_min}
+        # - {title: "Tstart", _: time_pat_first}
+        # - {title: "Tend", _: time_pat_last}
+        #- {title: "Ma.W", format: ".2f", _: watt_pat_max}
+        #- {title: "A.W", format: ".2f", _: watt_pat_avg}
+        #- {title: "Mi.W", format: ".4f", _: watt_pat_min}
+        #- {title: "Ma.VA", format: ".2f", _: va_pat_max}
+        #- {title: "A.VA", format: ".2f", _: va_pat_avg}
+        #- {title: "Mi.VA", format: ".4f", _: va_pat_min}
 
 #Load jobfile
 fileset:
