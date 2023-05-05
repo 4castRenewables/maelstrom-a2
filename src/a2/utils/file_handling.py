@@ -300,7 +300,7 @@ def folder_exists(path: str | pathlib.Path, check_if_empty: bool = False, raise_
         if raise_exception:
             raise ValueError(f"{path=} doesn't exist!")
         return False
-    if check_is_empty and os.path.getsize(path) <= 4096:
+    if check_if_empty and os.path.getsize(path) <= 4096:
         if raise_exception:
             raise ValueError(f"{path=} is empty!")
         return False

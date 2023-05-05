@@ -32,7 +32,7 @@ def main(args):
     ds_raw["text"] = (["index"], ds_raw[args.key_text].values.copy())
     ds_raw["raining"] = (["index"], np.array(ds_raw[args.key_rain].values > args.threshold_rain, dtype=int))
 
-    indices_train, indices_test = sklearn.model_selection.train_test_split(
+    indices_train, _, indices_test = sklearn.model_selection.train_test_split(
         np.arange(ds_raw["index"].shape[0]),
         test_size=args.test_size,
         random_state=args.random_seed,
