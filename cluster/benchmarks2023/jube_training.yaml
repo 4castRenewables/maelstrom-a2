@@ -128,7 +128,7 @@ parameterset:
       - name: preprocess
         mode: text
         separator: |
-        _: >
+        _: |
           ${power_measure_setup};
           source ~/.bashrc;
           ${modules};
@@ -139,7 +139,7 @@ parameterset:
         tag: e4
         mode: text
         separator: |
-        _: >
+        _: |
           label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh);
           echo "POWERMEASUREMENT: Label = $$label";
           /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &;
