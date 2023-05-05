@@ -158,7 +158,7 @@ def _assert_same_type(variable, type_from_variable):
             raise TypeError(f"Variable {variable=} different type than expected {type_from_variable=}")
 
 
-def assert_same_type_as(variable, type_from_variable, alternative=None):
+def assert_same_type_as(variable: object, type_from_variable: object, alternative: object = None):
     """Check if `variable` is same type as `type_from_variable` unless `variable` is `alternative`"""
     if variable is alternative:
         return
@@ -168,7 +168,7 @@ def assert_same_type_as(variable, type_from_variable, alternative=None):
         raise TypeError(f"Variable {variable} not of expected type {type_from_variable}")
 
 
-def all_same_type(variable_list, type_):
+def all_same_type(variable_list: t.Iterable, type_: type):
     for var in variable_list:
         if not isinstance(var, type_):
             raise ValueError(f"{var} not of type {type_.__name__}!")

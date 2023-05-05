@@ -145,7 +145,7 @@ per-file-ignores = [
 
 [tool.poetry.extras]
 extend-exclude = [
-    "notebooks/training/helper_deep500.py"
+    "helper_deep500.py"
 ]
 
 [tool.pytest.ini_options]
