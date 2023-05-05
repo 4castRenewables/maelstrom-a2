@@ -212,6 +212,46 @@ class HuggingFaceTrainerClass:
 def split_training_set(
     ds: xarray.Dataset,
     key_stratify: str = "raining",
+    test_size: float = 0.2,
+    random_state: int = 42,
+    shuffle: bool = True,
+):
+    """
+    Returns indices of training and validation set
+
+    Parameters:
+    ----------
+    ds: Xarray dataset
+    key_stratify: Stratified based on this key, `None` if not required
+    validation_size: Fraction of validation set; 1 - validation_size - test_size > 0
+    test_size: Fraction of test set; 1 - validation_size - test_size > 0
+    random_state: Random seed to initialize selection
+    shuffle: Whether or not to shuffle the data before splitting.
+             If shuffle=False then stratify must be None.
+
+    Returns
+    -------
+    Indices of training, validation and test set
+    """
+    print(ds)
+
+    if key_stratify is not None:
+        stratify = ds[key_stratify].values
+    else:
+        stratify = None
+    indices_train, indices_test = sklearn.model_selection.train_test_split(
+        np.arange(ds[a2.dataset.utils_dataset.get_variable_name_first(ds)].shape[0]),
+        test_size=test_size,
+        random_state=random_state,
+        shuffle=shuffle,
+        stratify=stratify,
+    )
+    return indices_train, indices_test
+
+
+def split_training_set_tripple(
+    ds: xarray.Dataset,
+    key_stratify: str = "raining",
     validation_size: float | None = None,
     test_size: float = 0.2,
     random_state: int = 42,
@@ -232,31 +272,28 @@ def split_training_set(
 
     Returns
     -------
-    Indices of training and test set
+    Indices of training, validation and test set
     """
+    ds = a2.dataset.load_dataset.reset_index_coordinate(ds.copy())
     train_size = 1 - test_size
     if validation_size is not None:
         train_size -= validation_size
     if train_size < 0:
         raise ValueError(f"{train_size=} is below zero! (Decrease {validation_size=} and/or {test_size=})")
-    if key_stratify is None:
-        stratify = ds[key_stratify].values
-    else:
-        stratify = None
-    indices_train, indices_validate = sklearn.model_selection.train_test_split(
-        np.arange(ds[a2.dataset.utils_dataset.get_variable_name_first(ds)].shape[0]),
+    indices_train, indices_test = split_training_set(
+        ds=ds,
+        key_stratify=key_stratify,
         test_size=test_size,
         random_state=random_state,
         shuffle=shuffle,
-        stratify=stratify,
     )
-    indices_test = np.array([], dtype=int)
+    indices_validate = np.array([], dtype=int)
     if validation_size is not None:
-        indices_train, indices_test = sklearn.model_selection.train_test_split(
-            indices_train,
+        indices_train, indices_validate = split_training_set(
+            ds=ds.sel(index=indices_train),
+            key_stratify=key_stratify,
             test_size=validation_size / (1 - test_size),
             random_state=random_state,
             shuffle=shuffle,
-            stratify=stratify,
         )
     return indices_train, indices_validate, indices_test

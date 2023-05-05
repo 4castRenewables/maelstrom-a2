@@ -69,7 +69,7 @@ def test_check_acess_rights_folder(chmod_flag, expected_rights, tmp_path):
 
 
 @parametrize(
-    "folder_name, check_is_empty, raise_exception, expected",
+    "folder_name, check_if_empty, raise_exception, expected",
     [
         (
             "fake_folder",
@@ -97,13 +97,13 @@ def test_check_acess_rights_folder(chmod_flag, expected_rights, tmp_path):
         ),
     ],
 )
-def test_check_folder_exists(folder_name, expected, tmp_path, check_is_empty, raise_exception):
-    directory = tmp_path / "test_check_folder_exists/"
+def test_folder_exists(folder_name, expected, tmp_path, check_if_empty, raise_exception):
+    directory = tmp_path / "test_folder_exists/"
     directory.mkdir()
     if folder_name == "tmp":
         folder_name = directory
     with pytest.raises(type(expected)) if isinstance(expected, Exception) else doesnotraise():
-        exists = a2.utils.file_handling.check_folder_exists(
-            folder_name, check_is_empty=check_is_empty, raise_exception=raise_exception
+        exists = a2.utils.file_handling.folder_exists(
+            folder_name, check_if_empty=check_if_empty, raise_exception=raise_exception
         )
         assert exists == expected
