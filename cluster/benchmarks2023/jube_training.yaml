@@ -129,12 +129,12 @@ parameterset:
         mode: text
         separator: |
         _: |
-          ${power_measure_setup};
-          source ~/.bashrc;
-          ${modules};
-          conda activate ${conda_env};
-          which python;
-          pip list;
+          ${power_measure_setup}
+          source ~/.bashrc
+          ${modules}
+          conda activate ${conda_env}
+          which python
+          pip list
       - name: power_measure_setup
         tag: e4
         mode: text
