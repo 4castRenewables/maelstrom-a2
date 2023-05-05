@@ -128,21 +128,21 @@ parameterset:
       - name: preprocess
         mode: text
         separator: |
-        _:
-          ${power_measure_setup}
-          source ~/.bashrc
+        _: >
+          ${power_measure_setup};
+          source ~/.bashrc;
           ${modules};
-          conda activate ${conda_env}
-          which python
-          pip list
+          conda activate ${conda_env};
+          which python;
+          pip list;
       - name: power_measure_setup
         tag: e4
         mode: text
         separator: |
-        _: |
-          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
-          echo "POWERMEASUREMENT: Label = $$label"
-          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
+        _: >
+          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh);
+          echo "POWERMEASUREMENT: Label = $$label";
+          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &;
       - name: power_measure_setup
         tag: "jwb|jwc"
         _: ""
