@@ -5,6 +5,7 @@ import typing as t
 import a2.dataset
 import a2.plotting.utils_plotting
 import a2.utils.constants
+import matplotlib.figure
 import matplotlib.offsetbox
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,7 +27,6 @@ def plot_histogram_2d(
     ax_colorbar: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
     log: t.Union[bool, t.List[bool]] = False,
     filename: str | pathlib.Path | None = None,
-    fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
     n_bins: t.Union[int, t.List[int]] = 60,
     norm: str | None = None,
     linear_thresh: t.Union[float, t.List[float]] = 1e-9,
@@ -118,56 +118,15 @@ def plot_histogram_2d(
     facet_column_values, column_masks, n_facet_column_values, facet_column_title = prepare_facet(ds, facet_column)
     facet_row_values, row_masks, n_facet_row_values, facet_row_title = prepare_facet(ds, facet_row)
 
-    n_columns = 1
-    if n_facet_column_values:
-        n_columns = n_facet_column_values
-    elif marginal_x is not None:
-        n_columns = 2
+    n_columns, n_rows = _set_number_rows_and_columns(marginal_x, marginal_y, n_facet_column_values, n_facet_row_values)
 
-    n_rows = 1
-    if n_facet_row_values:
-        n_rows = n_facet_row_values
-    elif marginal_y is not None:
-        n_rows = 2
+    masks = _set_masks(column_masks, row_masks, n_columns, n_rows)
 
-    def add_masks(mask, to_add):
-        if to_add is None:
-            return mask
-        if mask is None:
-            return to_add
-        else:
-            return mask & to_add
+    titles = _set_axes_titles(facet_column, facet_row, title, facet_column_title, facet_row_title, n_columns, n_rows)
 
-    masks = np.full((n_rows, n_columns), None, dtype=object)
-    for i_row in range(n_rows):
-        for i_column in range(n_columns):
-            if column_masks is not None:
-                masks[i_row, i_column] = add_masks(masks[i_row, i_column], column_masks[i_column])
-            if row_masks is not None:
-                masks[i_row, i_column] = add_masks(masks[i_row, i_column], row_masks[i_row])
-
-    def add_titles(titles, delimeter=", "):
-        return f"{delimeter}".join([t for t in titles if len(t)])
-
-    titles = np.full((n_rows, n_columns), title, dtype=object)
-    for i_row in range(n_rows):
-        for i_column in range(n_columns):
-            if facet_row:
-                titles[i_row, i_column] = add_titles([titles[i_row, i_column], facet_row_title[i_row]])
-            if facet_column:
-                titles[i_row, i_column] = add_titles([titles[i_row, i_column], facet_column_title[i_column]])
-
-    skip_row_col = None
-    widths_along_x = None
-    heights_along_y = None
-    colorbar_include_row_col = None
-
-    colorbar_off = False
-    if marginal_x is not None and marginal_y is not None:
-        skip_row_col = [[0, 1]]
-        widths_along_x = [0.2, 0.1]
-        heights_along_y = [0.1, 0.2]
-        colorbar_include_row_col = [[1, 1]]
+    skip_row_col, widths_along_x, heights_along_y, colorbar_include_row_col, colorbar_off = _prepare_axes_grid_creation(
+        marginal_x, marginal_y
+    )
 
     fig, axes, axes_colorbar = a2.plotting.utils_plotting.create_axes_grid(
         n_cols=n_columns,
@@ -183,6 +142,7 @@ def plot_histogram_2d(
         spacing_colorbar=spacing_colorbar,
         colorbar_off=colorbar_off,
     )
+
     if font_size is not None:
         a2.plotting.utils_plotting.set_font(font_size=font_size)
 
@@ -242,6 +202,71 @@ def plot_histogram_2d(
                 break
     a2.plotting.utils_plotting.save_figure(fig, filename)
     return results_dic
+
+
+def _prepare_axes_grid_creation(marginal_x, marginal_y):
+    skip_row_col = None
+    widths_along_x = None
+    heights_along_y = None
+    colorbar_include_row_col = None
+
+    colorbar_off = False
+    if marginal_x is not None and marginal_y is not None:
+        skip_row_col = [[0, 1]]
+        widths_along_x = [0.2, 0.1]
+        heights_along_y = [0.1, 0.2]
+        colorbar_include_row_col = [[1, 1]]
+    return skip_row_col, widths_along_x, heights_along_y, colorbar_include_row_col, colorbar_off
+
+
+def _set_axes_titles(facet_column, facet_row, title, facet_column_title, facet_row_title, n_columns, n_rows):
+    titles = np.full((n_rows, n_columns), title, dtype=object)
+    for i_row in range(n_rows):
+        for i_column in range(n_columns):
+            if facet_row:
+                titles[i_row, i_column] = _add_titles([titles[i_row, i_column], facet_row_title[i_row]])
+            if facet_column:
+                titles[i_row, i_column] = _add_titles([titles[i_row, i_column], facet_column_title[i_column]])
+    return titles
+
+
+def _add_titles(titles, delimeter=", "):
+    return f"{delimeter}".join([t for t in titles if len(t)])
+
+
+def _set_masks(column_masks, row_masks, n_columns, n_rows):
+    masks = np.full((n_rows, n_columns), None, dtype=object)
+    for i_row in range(n_rows):
+        for i_column in range(n_columns):
+            if column_masks is not None:
+                masks[i_row, i_column] = _add_masks(masks[i_row, i_column], column_masks[i_column])
+            if row_masks is not None:
+                masks[i_row, i_column] = _add_masks(masks[i_row, i_column], row_masks[i_row])
+    return masks
+
+
+def _add_masks(mask, to_add):
+    if to_add is None:
+        return mask
+    if mask is None:
+        return to_add
+    else:
+        return mask & to_add
+
+
+def _set_number_rows_and_columns(marginal_x, marginal_y, n_facet_column_values, n_facet_row_values):
+    n_columns = 1
+    if n_facet_column_values:
+        n_columns = n_facet_column_values
+    elif marginal_x is not None:
+        n_columns = 2
+
+    n_rows = 1
+    if n_facet_row_values:
+        n_rows = n_facet_row_values
+    elif marginal_y is not None:
+        n_rows = 2
+    return n_columns, n_rows
 
 
 def _resolve_defaults(facet_column, facet_row, marginal_x, marginal_y):
