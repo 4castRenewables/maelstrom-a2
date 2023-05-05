@@ -212,6 +212,7 @@ class HuggingFaceTrainerClass:
 def split_training_set(
     ds: xarray.Dataset,
     key_stratify: str = "raining",
+    validation_size: float | None = None,
     test_size: float = 0.2,
     random_state: int = 42,
     shuffle: bool = True,
@@ -223,7 +224,8 @@ def split_training_set(
     ----------
     ds: Xarray dataset
     key_stratify: Stratified based on this key, `None` if not required
-    test_size: Fraction of validation set [0-1]
+    validation_size: Fraction of validation set; 1 - validation_size - test_size > 0
+    test_size: Fraction of test set; 1 - validation_size - test_size > 0
     random_state: Random seed to initialize selection
     shuffle: Whether or not to shuffle the data before splitting.
              If shuffle=False then stratify must be None.
@@ -232,6 +234,11 @@ def split_training_set(
     -------
     Indices of training and test set
     """
+    train_size = 1 - test_size
+    if validation_size is not None:
+        train_size -= validation_size
+    if train_size < 0:
+        raise ValueError(f"{train_size=} is below zero! (Decrease {validation_size=} and/or {test_size=})")
     if key_stratify is None:
         stratify = ds[key_stratify].values
     else:
@@ -243,4 +250,13 @@ def split_training_set(
         shuffle=shuffle,
         stratify=stratify,
     )
-    return indices_train, indices_validate
+    indices_test = np.array([], dtype=int)
+    if validation_size is not None:
+        indices_train, indices_test = sklearn.model_selection.train_test_split(
+            indices_train,
+            test_size=validation_size / (1 - test_size),
+            random_state=random_state,
+            shuffle=shuffle,
+            stratify=stratify,
+        )
+    return indices_train, indices_validate, indices_test
