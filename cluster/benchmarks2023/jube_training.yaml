@@ -132,7 +132,7 @@ parameterset:
           ${power_measure_setup}
           source ~/.bashrc
           ${modules}
-          ${visible_devices}
+          export ${visible_devices}
           conda activate ${conda_env}
           which python
           pip list
