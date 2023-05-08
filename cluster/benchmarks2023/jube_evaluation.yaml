@@ -317,7 +317,7 @@ step:
         $modules;
   - name:   submit
     use:
-      - appParameter
+    - appParameter
       - globalParameter
       - systemParameter
       - executeset

@@ -19,7 +19,6 @@ logging.basicConfig(
 
 
 def main(args):
-    os.environ["MLFLOW_EXPERIMENT_NAME"] = "maelstrom-a2-train"
     memory_tracker = a2.training.benchmarks.CudaMemoryMonitor()
     if args.log_gpu_memory:
         memory_tracker.reset_cuda_memory_monitoring()
@@ -63,10 +62,11 @@ def main(args):
     path_run = os.path.join(args.output_dir, args.run_folder)
     path_figures = os.path.join(path_run, args.figure_folder)
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
+    experiment_id = tracker.create_experiment(args.mlflow_experiment_name)
     tracker.end_run()
     if args.log_gpu_memory:
         memory_tracker.reset_cuda_memory_monitoring()
-    with tracker.start_run(run_name=args.run_name):
+    with tracker.start_run(run_name=args.run_name, experiment_id=experiment_id):
         tmr = timer.Timer()
         tracker.log_params(
             {
@@ -183,6 +183,12 @@ if __name__ == "__main__":
         "--run_folder", type=str, required=True, help="Output folder where model is saved in `output_dir`."
     )
     parser.add_argument("--run_name", type=str, default="era5 whole dataset", help="Name of run used for logging only.")
+    parser.add_argument(
+        "--mlflow_experiment_name",
+        type=str,
+        default="maelstrom-a2-train",
+        help="Name MLflow experiment where results are logged.",
+    )
 
     parser.add_argument(
         "--figure_folder", type=str, default="figures/", help="Directory where input netCDF-files are stored."
