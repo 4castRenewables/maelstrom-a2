@@ -19,6 +19,7 @@ logging.basicConfig(
 
 
 def main(args):
+    os.environ["MLFLOW_EXPERIMENT_NAME"] = "maelstrom-a2-train"
     memory_tracker = a2.training.benchmarks.CudaMemoryMonitor()
     if args.log_gpu_memory:
         memory_tracker.reset_cuda_memory_monitoring()
