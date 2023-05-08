@@ -200,7 +200,6 @@ parameterset:
           --model_path ${model_path}
           --output_dir ${outdir}
           --iteration ${iteration}
-          --ignore_tracking
           --test_size ${test_size}
 
 patternset:
