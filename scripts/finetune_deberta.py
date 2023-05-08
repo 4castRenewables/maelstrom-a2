@@ -66,7 +66,7 @@ def main(args):
     tracker.end_run()
     if args.log_gpu_memory:
         memory_tracker.reset_cuda_memory_monitoring()
-    with tracker.start_run(run_name=args.run_name, experiment_id=experiment_id):
+    with tracker.start_run(run_name=args.run_name, experiment_id=experiment_id.experiment_id):
         tmr = timer.Timer()
         tracker.log_params(
             {
