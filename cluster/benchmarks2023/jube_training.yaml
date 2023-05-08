@@ -342,6 +342,6 @@ step:
       _:
         $modules;
         source ~/.bashrc;
-        source $jube_benchmark_home/{env_file};
+        source $jube_benchmark_home/$env_file;
         conda activate $conda_env;
         $submit $submit_script;
