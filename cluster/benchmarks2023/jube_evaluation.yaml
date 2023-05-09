@@ -65,6 +65,13 @@ parameterset:
       - name: run_folder
         type: string
         _: $run_name
+      - name: env_file
+        type: string
+        _: env.sh
+      - name: env_file
+        type: string
+        tag: dev
+        _: env_dev.sh
   - name: globalParameter
     parameter:
       - name: modules
@@ -300,6 +307,6 @@ step:
       _:
         $modules;
         source ~/.bashrc;
-        source $jube_benchmark_home/env.sh;
+        source $jube_benchmark_home/$env_file;
         conda activate $conda_env;
         $submit $submit_script;
