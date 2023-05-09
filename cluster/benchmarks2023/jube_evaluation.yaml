@@ -100,18 +100,26 @@ parameterset:
     parameter:
       - name: preprocess
         mode: text
-        tag: "jwb|jwc"
         separator: |
-        _:
-          ${modules};
-      - name: preprocess
+        _: |
+          ${power_measure_setup}
+          source ~/.bashrc
+          ${modules}
+          export ${visible_devices}
+          conda activate ${conda_env}
+          which python
+          pip list
+      - name: power_measure_setup
         tag: e4
         mode: text
         separator: |
         _: |
-          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
-          echo "POWERMEASUREMENT: Label = $$label"
-          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
+          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh);
+          echo "POWERMEASUREMENT: Label = $$label";
+          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &;
+      - name: power_measure_setup
+        tag: "jwb|jwc"
+        _: ""
       - name: postprocess
         tag: "jwb|jwc"
         _: ""
@@ -122,20 +130,18 @@ parameterset:
         _: |
           kill -9 $$(cat ~/powerout.$$label.pid)
           awk '{print "POWERMEASUREMENT: " $0}' ~/powerout.$$label.csv
+      - name: job_name
+        _: $jube_benchmark_name-$jube_benchmark_padid-$jube_wp_padid-$jube_step_name
       - name: threadspertask
         _: 1
       - name: nodes
         _: 1
-      - name: ready_file
-        _: ready
-      - name: ngpus
+      - name: gpus
         tag: e4
         _: 1
-      - name: ngpus
+      - name: gpus
         tag: "jwc|jwb"
         _: 4
-      - name: taskspernode
-        _: $ngpus
       - name: timelimit
         tag: test
         _: "01:00:00"
@@ -166,20 +172,12 @@ parameterset:
       - name: queue
         tag: jwc+test
         _: develgpus
-      - name: mail_type
-        _: BEGIN
       - name: gres
-        _: gpu:$n_gpu
+        _: gpu:$gpus
       - name: executable
-        _: python -u $jube_benchmark_home/../scripts/evaluate_deberta.py
+        _: python -u $jube_benchmark_home/../../scripts/evaluate_deberta.py
       - name: submit_cmd
         _: sbatch
-      - name: job_file
-        tag: jwc|jwb
-        _: $jube_benchmark_home/job.run
-      - name: job_file
-        tag: e4
-        _: $jube_benchmark_home/job.run.e4
       - name: visible_devices
         type: string
         separator: ";"
@@ -241,6 +239,8 @@ analyser:
         - slurm-err.*
         - slurm.out
         - slurm.err
+        - job.err
+        - job.out
         - stdout
 
 result:
@@ -282,40 +282,8 @@ result:
         - {title: "A.VA", format: ".2f", _: va_pat_avg}
         - {title: "Mi.VA", format: ".4f", _: va_pat_min}
 
-#Load jobfile
-fileset:
-  name: files
-  copy: ${job_file}.in
-
-substituteset:
-  name: sub_job
-  iofile: {in: "${job_file}.in", out: $job_file} #attributes with {} must be quoted
-  sub:
-    - {source: "#NODES#", dest: $nodes}
-    - {source: "#PROCS_PER_NODE#", dest: $taskspernode}
-    - {source: "#WALLTIME#", dest: $timelimit}
-    - {source: "#MAIL_TYPE#", dest: $mail_type}
-    - {source: "#ACCOUNT#", dest: $account}
-    - {source: "#PARTITION#", dest: $queue}
-    - {source: "#NGPUS#", dest: $ngpus}
-    - {source: "#SLURMOUTPUT#", dest: $slurm_output}
-    - {source: "#SLURMERROR#", dest: $slurm_error}
-    - {source: "#MODULES#", dest: "${modules}"}
-    - {source: "#EXEC#", dest: "${visible_devices} ${executable} ${args_exec}"}
-    - {source: "#EXECCONDA#", dest: "conda activate ${conda_env}"}
-    - {source: "#PREPROCESS#", dest: "${preprocess}"}
-    - {source: "#POSTPROCESS#", dest: "${postprocess}"}
-    - {source: "#READY#", _: $ready_file }
-
 step:
-  - name:   setup_venv
-    use:
-      - globalParameter
-      - systemParameter
-    do:
-      _:
-        $modules;
-  - name:   submit
+  - name: submit
     use:
     - appParameter
       - globalParameter
@@ -334,4 +302,4 @@ step:
         source ~/.bashrc;
         source $jube_benchmark_home/env.sh;
         conda activate $conda_env;
-        $submit_cmd $job_file;
+        $submit $submit_script;
