@@ -277,6 +277,8 @@ analyser:
         - slurm-err.*
         - slurm.out
         - slurm.err
+        - job.err
+        - job.out
         - stdout
 
 result:
