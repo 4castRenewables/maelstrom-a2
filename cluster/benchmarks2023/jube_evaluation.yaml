@@ -293,14 +293,13 @@ step:
   - name: submit
     use:
     - appParameter
-      - globalParameter
-      - systemParameter
-      - executeset
-      - sub_job
-      - from: platform.xml
-        _: jobfiles
-      - from: platform.xml
-        _: executesub
+    - globalParameter
+    - systemParameter
+    - executeset
+    - from: platform.xml
+      _: jobfiles
+    - from: platform.xml
+      _: executesub
     do:
       done_file: $ready_file
       error_file: $error_file
