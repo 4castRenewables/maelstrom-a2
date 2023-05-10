@@ -76,13 +76,14 @@ class Timer:
                     logging.info(f"{_type} still running for {elapsed_time}s.")
 
 
+def get_max_memory_usage():
+    """Max RAM memory used in bytes"""
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1000
+
+
 class CudaMemoryMonitor:
     def __init__(self) -> None:
         self.init_cuda()
-
-    def get_max_memory_usage(self):
-        """In bytes"""
-        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1000
 
     def init_cuda(self):
         if torch.cuda.is_available():
