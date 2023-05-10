@@ -87,7 +87,7 @@ def main(args):
             prediction_probabilities,
         ) = a2.training.evaluate_hugging.predict_dataset(test_ds, trainer)
         if args.log_gpu_memory:
-            timer.get_cuda_memory_usage("Finished training")
+            memory_tracker.get_cuda_memory_usage("Finished training")
         tmr.end(timer.TimeType.EVALUATION)
         tmr.end(timer.TimeType.RUN)
 
