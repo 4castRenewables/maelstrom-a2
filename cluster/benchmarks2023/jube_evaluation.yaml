@@ -262,8 +262,7 @@ result:
         - {title: "devices", _: ndevices}
         - {title: "queue", _: queue}
         - {title: "#nodes", _: nodes}
-        - {title: "#gpu", _: n_gpu}
-        - {title: "BS", _: batch_size}
+        - {title: "#gpu", _: gpus}
         - {title: "T. run", format: ".4f", _: run_time_last}
         - {title: "T. IO", format: ".4f", _: io_time_sum}
         - {title: "Ev. time", format: ".4f", _: evaluation_time_max}
@@ -272,8 +271,6 @@ result:
         - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
         - {title: "Job_Time", _: timelimit}
         - {title: "Node(s)", _: label_pat}
-        - {title: "Tstart", _: time_pat_first}
-        - {title: "Tend", _: time_pat_last}
         - {title: "Ma.W", format: ".2f", _: watt_pat_max}
         - {title: "A.W", format: ".2f", _: watt_pat_avg}
         - {title: "Mi.W", format: ".4f", _: watt_pat_min}
