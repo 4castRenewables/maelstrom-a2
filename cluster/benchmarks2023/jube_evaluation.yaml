@@ -65,6 +65,13 @@ parameterset:
       - name: run_folder
         type: string
         _: $run_name
+      - name: env_file
+        type: string
+        _: env.sh
+      - name: env_file
+        type: string
+        tag: dev
+        _: env_dev.sh
   - name: globalParameter
     parameter:
       - name: modules
@@ -100,18 +107,26 @@ parameterset:
     parameter:
       - name: preprocess
         mode: text
-        tag: "jwb|jwc"
         separator: |
-        _:
-          ${modules};
-      - name: preprocess
+        _: |
+          ${power_measure_setup}
+          source ~/.bashrc
+          ${modules}
+          export ${visible_devices}
+          conda activate ${conda_env}
+          which python
+          pip list
+      - name: power_measure_setup
         tag: e4
         mode: text
         separator: |
         _: |
-          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
-          echo "POWERMEASUREMENT: Label = $$label"
-          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
+          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh);
+          echo "POWERMEASUREMENT: Label = $$label";
+          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &;
+      - name: power_measure_setup
+        tag: "jwb|jwc"
+        _: ""
       - name: postprocess
         tag: "jwb|jwc"
         _: ""
@@ -122,20 +137,18 @@ parameterset:
         _: |
           kill -9 $$(cat ~/powerout.$$label.pid)
           awk '{print "POWERMEASUREMENT: " $0}' ~/powerout.$$label.csv
+      - name: job_name
+        _: $jube_benchmark_name-$jube_benchmark_padid-$jube_wp_padid-$jube_step_name
       - name: threadspertask
         _: 1
       - name: nodes
         _: 1
-      - name: ready_file
-        _: ready
-      - name: ngpus
+      - name: gpus
         tag: e4
         _: 1
-      - name: ngpus
+      - name: gpus
         tag: "jwc|jwb"
         _: 4
-      - name: taskspernode
-        _: $ngpus
       - name: timelimit
         tag: test
         _: "01:00:00"
@@ -166,20 +179,12 @@ parameterset:
       - name: queue
         tag: jwc+test
         _: develgpus
-      - name: mail_type
-        _: BEGIN
       - name: gres
-        _: gpu:$n_gpu
+        _: gpu:$gpus
       - name: executable
         _: python -u $jube_benchmark_home/../../scripts/evaluate_deberta.py
       - name: submit_cmd
         _: sbatch
-      - name: job_file
-        tag: jwc|jwb
-        _: $jube_benchmark_home/job.run
-      - name: job_file
-        tag: e4
-        _: $jube_benchmark_home/job.run.e4
       - name: visible_devices
         type: string
         separator: ";"
@@ -200,7 +205,6 @@ parameterset:
           --model_path ${model_path}
           --output_dir ${outdir}
           --iteration ${iteration}
-          --ignore_tracking
           --test_size ${test_size}
 
 patternset:
@@ -242,6 +246,8 @@ analyser:
         - slurm-err.*
         - slurm.out
         - slurm.err
+        - job.err
+        - job.out
         - stdout
 
 result:
@@ -253,86 +259,42 @@ result:
       column:
         - {title: "JobID", _: jobid}
         - {title: "#tweets", _: ntweets}
-        # - {title: "#steps", _: nsteps_last}
         - {title: "devices", _: ndevices}
         - {title: "queue", _: queue}
-        # - {title: "#nodes", _: nodes}
-        # - {title: "#gpu", _: n_gpu}
-        # - {title: "BS", _: batch_size}
+        - {title: "#nodes", _: nodes}
+        - {title: "#gpu", _: gpus}
         - {title: "T. run", format: ".4f", _: run_time_last}
         - {title: "T. IO", format: ".4f", _: io_time_sum}
         - {title: "Ev. time", format: ".4f", _: evaluation_time_max}
-        #- {title: "First epoch", format: ".4f", _: epoch_time_first}
-        # - {title: "Min epoch", format: ".4f", _: epoch_time_min}
-        # - {title: "Max epoch", format: ".4f", _: epoch_time_max}
-        - {title: "M. eval loss", format: ".4f", _: eval_loss_min}
-        #- {title: "Saving time", format: ".4f", _: saving_model_time_last}
-        - {title: "l. rate", _: lr}
-        - {title: "min loss", format: ".4f", _: loss_min}
         - {title: "Mem", format: ".4f",  _: max_memory}
         - {title: "MaxMemAlloc", format: ".4f", _: gpu_max_mem_allocated_max}
         - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
         - {title: "Job_Time", _: timelimit}
         - {title: "Node(s)", _: label_pat}
-        # - {title: "Tstart", _: time_pat_first}
-        # - {title: "Tend", _: time_pat_last}
-        #- {title: "Ma.W", format: ".2f", _: watt_pat_max}
-        #- {title: "A.W", format: ".2f", _: watt_pat_avg}
-        #- {title: "Mi.W", format: ".4f", _: watt_pat_min}
-        #- {title: "Ma.VA", format: ".2f", _: va_pat_max}
-        #- {title: "A.VA", format: ".2f", _: va_pat_avg}
-        #- {title: "Mi.VA", format: ".4f", _: va_pat_min}
-
-#Load jobfile
-fileset:
-  name: files
-  copy: ${job_file}.in
-
-substituteset:
-  name: sub_job
-  iofile: {in: "${job_file}.in", out: $job_file} #attributes with {} must be quoted
-  sub:
-    - {source: "#NODES#", dest: $nodes}
-    - {source: "#PROCS_PER_NODE#", dest: $taskspernode}
-    - {source: "#WALLTIME#", dest: $timelimit}
-    - {source: "#MAIL_TYPE#", dest: $mail_type}
-    - {source: "#ACCOUNT#", dest: $account}
-    - {source: "#PARTITION#", dest: $queue}
-    - {source: "#NGPUS#", dest: $ngpus}
-    - {source: "#SLURMOUTPUT#", dest: $slurm_output}
-    - {source: "#SLURMERROR#", dest: $slurm_error}
-    - {source: "#MODULES#", dest: "${modules}"}
-    - {source: "#EXEC#", dest: "${visible_devices} ${executable} ${args_exec}"}
-    - {source: "#EXECCONDA#", dest: "conda activate ${conda_env}"}
-    - {source: "#PREPROCESS#", dest: "${preprocess}"}
-    - {source: "#POSTPROCESS#", dest: "${postprocess}"}
-    - {source: "#READY#", _: $ready_file }
+        - {title: "Ma.W", format: ".2f", _: watt_pat_max}
+        - {title: "A.W", format: ".2f", _: watt_pat_avg}
+        - {title: "Mi.W", format: ".4f", _: watt_pat_min}
+        - {title: "Ma.VA", format: ".2f", _: va_pat_max}
+        - {title: "A.VA", format: ".2f", _: va_pat_avg}
+        - {title: "Mi.VA", format: ".4f", _: va_pat_min}
 
 step:
-  - name:   setup_venv
+  - name: submit
     use:
-      - globalParameter
-      - systemParameter
-    do:
-      _:
-        $modules;
-  - name:   submit
-    use:
-      - appParameter
-      - globalParameter
-      - systemParameter
-      - executeset
-      - sub_job
-      - from: platform.xml
-        _: jobfiles
-      - from: platform.xml
-        _: executesub
+    - appParameter
+    - globalParameter
+    - systemParameter
+    - executeset
+    - from: platform.xml
+      _: jobfiles
+    - from: platform.xml
+      _: executesub
     do:
       done_file: $ready_file
       error_file: $error_file
       _:
         $modules;
         source ~/.bashrc;
-        source $jube_benchmark_home/env.sh;
+        source $jube_benchmark_home/$env_file;
         conda activate $conda_env;
-        $submit_cmd $job_file;
+        $submit $submit_script;

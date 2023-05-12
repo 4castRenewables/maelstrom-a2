@@ -1,11 +1,14 @@
 import logging
 import os
+from contextlib import nullcontext as doesnotraise
 
 import a2.training.dataset_hugging
 import a2.training.evaluate_hugging
 import a2.training.training_hugging
 import a2.utils
 import numpy as np
+import pytest
+import pytest_cases
 import sklearn.model_selection
 
 
@@ -110,5 +113,46 @@ def test_split_training_set(fake_dataset_training):
         random_state=42,
         shuffle=True,
     )
-    np.testing.assert_array_equal(indices_train, np.array([0, 7, 2, 4, 3, 6]))
-    np.testing.assert_array_equal(indices_validate, np.array([1, 5]))
+    np.testing.assert_array_equal(indices_train, np.array([0, 2, 3, 7, 1, 6]))
+    np.testing.assert_array_equal(indices_validate, np.array([4, 5]))
+
+
+@pytest_cases.parametrize(
+    "validation_size, test_size, key_stratify, shuffle, expected",
+    [
+        (
+            0.1,
+            0.1,
+            None,
+            False,
+            (np.array([0, 1, 2, 3, 4, 5]), np.array([6]), np.array([7])),
+        ),
+        (
+            0.6,
+            0.5,
+            "raining",
+            False,
+            ValueError(),
+        ),
+        (
+            None,
+            0.2,
+            "raining",
+            True,
+            (np.array([0, 2, 3, 7, 1, 6]), np.array([]), np.array([4, 5])),
+        ),
+    ],
+)
+def test_split_training_set_tripple(fake_dataset_training, validation_size, test_size, key_stratify, shuffle, expected):
+    with pytest.raises(type(expected)) if isinstance(expected, Exception) else doesnotraise():
+        indices_train, indices_validate, indices_test = a2.training.training_hugging.split_training_set_tripple(
+            fake_dataset_training,
+            key_stratify=key_stratify,
+            validation_size=validation_size,
+            test_size=test_size,
+            random_state=42,
+            shuffle=shuffle,
+        )
+        np.testing.assert_array_equal(indices_train, expected[0])
+        np.testing.assert_array_equal(indices_validate, expected[1])
+        np.testing.assert_array_equal(indices_test, expected[2])

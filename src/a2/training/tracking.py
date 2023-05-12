@@ -94,6 +94,8 @@ class Tracker:
         if not experiment_id:
             experiment_id = mlflow.create_experiment(name, **kwargs)
             logging.info(f"create new: {experiment_id}")
+        if experiment_id is not None:
+            experiment_id = experiment_id.experiment_id
         return experiment_id
 
     @catch_mantik_exceptions
