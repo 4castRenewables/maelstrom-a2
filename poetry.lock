@@ -9304,10 +9304,11 @@ test = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [extras]
+extend-exclude = []
 llama-chatbot = ["sentencepiece"]
 torch = ["torch"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "2a64540a200f78d8d5965341d397c816907a20808e6033c50508c5567adfa772"
+content-hash = "b109a75685f45aaf2e81162503d4f284e2ed3692fed5a93da2d205ac53cdc63e"
