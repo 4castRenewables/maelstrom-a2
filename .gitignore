@@ -1,5 +1,10 @@
 .idea/
 data/tweets/
+data/old/
+dist/
+data/precipitation/
+data/weather_stations/
+data/embeddings/
 **.ipynb_checkpoints/
 **/__pycache__
 *.pyc
@@ -22,10 +27,14 @@ bootcamp2022_data/
 notebooks/fonts/
 \#*\#
 *.png
+*.jpg
 *.pickle
 *.nc
 *.npy
 *.pdf
 *.html
+*.pt
+*.onnx
+cachedir/
 notebooks/tmp/
 src/tests/unit/twitter/cassettes

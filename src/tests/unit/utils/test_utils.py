@@ -1,4 +1,4 @@
-import a2.utils
+import a2.utils.utils
 import numpy as np
 
 
@@ -13,3 +13,13 @@ def test_parallelize(vectors_for_cross_product, results_cross_product):
         kwargs_as_dict=kwargs_as_dict,
     )
     assert np.array_equal(cross_product, results_cross_product)
+
+
+def test_timing(caplog):
+    @a2.utils.utils.timing
+    def f(x):
+        return x
+
+    f(1)
+    for record in caplog.records:
+        assert len(record.msg) > 40 and len(record.msg) < 50
