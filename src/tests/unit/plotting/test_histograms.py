@@ -80,9 +80,10 @@ def test_annotate_histogram(fake_keywords):
 
 @pytest.mark.mpl_image_compare(BASELINE_DIR=BASELINE_DIR, tolerance=0)
 def test_plot_histogram_2d_dataset(fake_prediction_dataset):
-    ax = a2.plotting.histograms.plot_histogram_2d(
+    dic = a2.plotting.histograms.plot_histogram_2d(
         x="truth",
         y="predictions",
         ds=fake_prediction_dataset,
     )
+    ax = dic["axes"][0]
     return ax.get_figure()

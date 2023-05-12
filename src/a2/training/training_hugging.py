@@ -1,10 +1,12 @@
 import dataclasses
 import functools
+import logging
 import typing as t
 
 import a2.dataset
 import a2.plotting.analysis
 import a2.training.tracking
+import a2.training.utils_training
 import datasets
 import numpy as np
 import sklearn.model_selection
@@ -22,7 +24,8 @@ class HyperParametersDebertaClassifier:
     batch_size: int = 32
     weight_decay: float = 0.01
     epochs: int = 1
-    warmup_ratio: float = 0.4480456499617466
+    warmup_ratio: float = 0  # 0.4480456499617466
+    warmup_steps: float = 500  # 0
     hidden_dropout_prob: float = 0.1
     attention_probs_dropout_prob: float = 0.1
     cls_dropout: float = 0.1
@@ -97,16 +100,22 @@ class HuggingFaceTrainerClass:
     def get_trainer(
         self,
         dataset: t.Union[datasets.Dataset, datasets.DatasetDict],
-        hyper_parameters: HyperParametersDebertaClassifier = None,
-        tokenizer: t.Optional[transformers.DebertaTokenizer] = None,
+        hyper_parameters: HyperParametersDebertaClassifier | None = None,
+        tokenizer: t.Optional[transformers.DebertaTokenizer] | None = None,
         folder_output: str = "output/",
         hyper_tuning: bool = False,
         fp16: bool = True,
         evaluate: bool = False,
         mantik: bool = True,
+        disable_tqdm: bool = False,
         callbacks: list | None = None,
         base_model_trainable: bool = True,
         trainer_class=transformers.Trainer,
+        logging_steps: int = 500,
+        evaluation_strategy: str = "steps",
+        eval_steps: int | None = 100,
+        save_strategy: str = "epoch",
+        load_best_model_at_end: bool = True,
     ):
         """
         Returns Hugging Face trainer object
@@ -123,42 +132,62 @@ class HuggingFaceTrainerClass:
               instead of 32-bit training.
         evaluate: Whether trainer only used for evaluation
         mantik: Whether using mantik for tracking
+        disable_tqdm: Whether to disable progress bar used by `Transformer`
+        callbacks: Callbacks during training
+        base_model_trainable: Whether base model weights are trainable (not fixed)
+        trainer_class: Trainer class compatible with `transformer.Trainer`
+        logging_steps: Number of steps before hugging face prints
+        evaluation_strategy: When to evaluate, after "steps" or "epoch"
+        eval_steps: Number of steps between evaluation (only used if `evaluation_strategy`="steps")
+        save_strategy: When to save best model "steps" or "epoch"
+        load_best_model_at_end: Load best model at end of training
 
         Returns
         -------
         Hugging Face Trainer
         """
+        if not a2.training.utils_training.gpu_available():
+            fp16 = False
         if hyper_parameters is None:
             hyper_parameters = HyperParametersDebertaClassifier()
         self.hyper_parameters = hyper_parameters
         if tokenizer is None:
             tokenizer = transformers.AutoTokenizer.from_pretrained(self.model_folder)
+        if load_best_model_at_end and save_strategy != evaluation_strategy:
+            logging.info(
+                f"Setting {save_strategy=} equal to {evaluation_strategy=} "
+                f"(required when {load_best_model_at_end=} = True)"
+            )
+            save_strategy = evaluation_strategy
         if not hyper_tuning:
             args = transformers.TrainingArguments(
                 folder_output,
                 learning_rate=hyper_parameters.learning_rate,
                 warmup_ratio=hyper_parameters.warmup_ratio,
+                warmup_steps=hyper_parameters.warmup_steps,
                 lr_scheduler_type=hyper_parameters.lr_scheduler_type,
-                disable_tqdm=False,
+                disable_tqdm=disable_tqdm,
                 fp16=fp16,
-                evaluation_strategy="epoch",
+                evaluation_strategy=evaluation_strategy,
                 per_device_train_batch_size=hyper_parameters.batch_size,
                 per_device_eval_batch_size=hyper_parameters.batch_size,
                 num_train_epochs=hyper_parameters.epochs,
                 weight_decay=hyper_parameters.weight_decay,
                 report_to=None,
-                save_strategy="epoch",
-                load_best_model_at_end=True,
+                eval_steps=eval_steps,
+                save_strategy=save_strategy,
+                load_best_model_at_end=load_best_model_at_end,
+                logging_steps=logging_steps,
             )
         else:
             args = transformers.TrainingArguments(
                 folder_output,
                 disable_tqdm=True,
                 fp16=fp16,
-                evaluation_strategy="epoch",
+                evaluation_strategy=evaluation_strategy,
                 report_to=None,
-                save_strategy="epoch",
-                load_best_model_at_end=True,
+                save_strategy=save_strategy,
+                load_best_model_at_end=load_best_model_at_end,
             )
         model_init = functools.partial(self.get_model, mantik=mantik, base_model_trainable=base_model_trainable)
         if evaluate:
@@ -167,6 +196,7 @@ class HuggingFaceTrainerClass:
                 args=args,
                 tokenizer=tokenizer,
                 compute_metrics=_compute_metrics,
+                callbacks=callbacks,
             )
         return trainer_class(
             model_init=model_init,
@@ -193,24 +223,77 @@ def split_training_set(
     ----------
     ds: Xarray dataset
     key_stratify: Stratified based on this key, `None` if not required
-    test_size: Fraction of validation set [0-1]
+    validation_size: Fraction of validation set; 1 - validation_size - test_size > 0
+    test_size: Fraction of test set; 1 - validation_size - test_size > 0
     random_state: Random seed to initialize selection
     shuffle: Whether or not to shuffle the data before splitting.
              If shuffle=False then stratify must be None.
 
     Returns
     -------
-    Indices of training and test set
+    Indices of training, validation and test set
     """
-    if key_stratify is None:
+    print(ds)
+
+    if key_stratify is not None:
         stratify = ds[key_stratify].values
     else:
         stratify = None
-    indices_train, indices_validate = sklearn.model_selection.train_test_split(
+    indices_train, indices_test = sklearn.model_selection.train_test_split(
         np.arange(ds[a2.dataset.utils_dataset.get_variable_name_first(ds)].shape[0]),
         test_size=test_size,
         random_state=random_state,
         shuffle=shuffle,
         stratify=stratify,
     )
-    return indices_train, indices_validate
+    return indices_train, indices_test
+
+
+def split_training_set_tripple(
+    ds: xarray.Dataset,
+    key_stratify: str = "raining",
+    validation_size: float | None = None,
+    test_size: float = 0.2,
+    random_state: int = 42,
+    shuffle: bool = True,
+):
+    """
+    Returns indices of training and validation set
+
+    Parameters:
+    ----------
+    ds: Xarray dataset
+    key_stratify: Stratified based on this key, `None` if not required
+    validation_size: Fraction of validation set; 1 - validation_size - test_size > 0
+    test_size: Fraction of test set; 1 - validation_size - test_size > 0
+    random_state: Random seed to initialize selection
+    shuffle: Whether or not to shuffle the data before splitting.
+             If shuffle=False then stratify must be None.
+
+    Returns
+    -------
+    Indices of training, validation and test set
+    """
+    ds = a2.dataset.load_dataset.reset_index_coordinate(ds.copy())
+    train_size = 1 - test_size
+    if validation_size is not None:
+        train_size -= validation_size
+    if train_size < 0:
+        raise ValueError(f"{train_size=} is below zero! (Decrease {validation_size=} and/or {test_size=})")
+    indices_train, indices_test = split_training_set(
+        ds=ds,
+        key_stratify=key_stratify,
+        test_size=test_size,
+        random_state=random_state,
+        shuffle=shuffle,
+    )
+    indices_validate = np.array([], dtype=int)
+    if validation_size is not None:
+        indices_train, indices_validate = split_training_set(
+            ds=ds.sel(index=indices_train),
+            key_stratify=key_stratify,
+            test_size=validation_size / (1 - test_size),
+            random_state=random_state,
+            shuffle=shuffle,
+        )
+    return indices_train, indices_validate, indices_test

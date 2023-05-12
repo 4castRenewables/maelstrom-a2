@@ -8,6 +8,7 @@ import os
 import pathlib
 import tarfile
 import typing as t
+import warnings
 import zipfile
 
 import requests
@@ -253,7 +254,7 @@ def get_folder_data():
     else:
         folder_data = pathlib.Path("/home/kristian/Projects/a2/data/")
     if not os.path.isdir(folder_data):
-        raise ValueError(f"{folder_data=} does not exist!")
+        warnings.warn(f"{folder_data=} does not exist!")
     return folder_data
 
 
@@ -264,7 +265,7 @@ def get_folder_models():
     else:
         folder_models = pathlib.Path("/home/kristian/Projects/a2/models/")
     if not os.path.isdir(folder_models):
-        raise ValueError(f"{folder_models=} does not exist!")
+        warnings.warn(f"{folder_models=} does not exist!")
     return folder_models
 
 
@@ -292,3 +293,15 @@ def check_acess_rights_folder(file_or_folder):
         print(f"User can read {description} {file_or_folder}")
     else:
         print(f"User cannot read {description} {file_or_folder}")
+
+
+def folder_exists(path: str | pathlib.Path, check_if_empty: bool = False, raise_exception: bool = False) -> bool:
+    if not os.path.isdir(path):
+        if raise_exception:
+            raise ValueError(f"{path=} doesn't exist!")
+        return False
+    if check_if_empty and os.path.getsize(path) <= 4096:
+        if raise_exception:
+            raise ValueError(f"{path=} is empty!")
+        return False
+    return True

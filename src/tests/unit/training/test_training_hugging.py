@@ -1,11 +1,14 @@
+import logging
 import os
+from contextlib import nullcontext as doesnotraise
 
 import a2.training.dataset_hugging
 import a2.training.evaluate_hugging
 import a2.training.training_hugging
 import a2.utils
-import mlflow
 import numpy as np
+import pytest
+import pytest_cases
 import sklearn.model_selection
 
 
@@ -44,12 +47,16 @@ def test_HuggingFaceTrainerClass_get_trainer(
         fp16=False,
         mantik=False,
         folder_output=folder_output,
+        evaluation_strategy="epoch",
     )
 
+    tracker = a2.training.tracking.Tracker(ignore=False)
+
     def get_raw_parameters():
-        run = mlflow.active_run()
-        _tracking_uri = mlflow.get_tracking_uri()
-        _run_artifact_dir = mlflow.utils.file_utils.local_file_uri_to_path(_tracking_uri)
+        run = tracker.active_run()
+        _tracking_uri = tracker.get_tracking_uri()
+        print(f"{_tracking_uri=}")
+        _run_artifact_dir = tracker.local_file_uri_to_path(_tracking_uri)
         folder_params = _run_artifact_dir + f"0/{run.info.run_id}/params/"
         parameters = {}
         for file in os.listdir(folder_params):
@@ -58,10 +65,11 @@ def test_HuggingFaceTrainerClass_get_trainer(
                 parameters[file] = a2.utils.utils.evaluate_string(content)  # if isinstance(content, str) else content
         return parameters
 
-    mlflow.set_tracking_uri("file://" + folder_tracking.__str__() + "/")
-    experiment_id = mlflow.create_experiment("experiment1")
-    with mlflow.start_run(experiment_id=experiment_id):
-        mlflow.log_params(trainer_object.hyper_parameters.__dict__)
+    tracker.set_tracking_uri("file://" + folder_tracking.__str__() + "/")
+    experiment_id = tracker.create_experiment("experiment1")
+    print(f"{experiment_id=}")
+    with tracker.start_run(experiment_id=experiment_id):
+        tracker.log_params(trainer_object.hyper_parameters.__dict__)
         parameters = get_raw_parameters()
         assert parameters == trainer_object.hyper_parameters.__dict__
         trainer.train()
@@ -83,8 +91,9 @@ def test_HuggingFaceTrainerClass_get_trainer(
             prediction_probabilities=prediction_probabilities,
         )
         truth = ds_test.raining.values
-        a2.training.tracking.log_metric_classification_report(truth, predictions, step=1)
+        a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=1)
         assert np.array_equal(predictions, np.array([1, 1, 1, 1]))
+    logging.debug(f'{os.listdir(folder_output + "checkpoint-1/")=}')
     (truth, predictions, prediction_probabilities,) = a2.training.evaluate_hugging.make_predictions_loaded_model(
         ds,
         indices_validate,
@@ -104,5 +113,46 @@ def test_split_training_set(fake_dataset_training):
         random_state=42,
         shuffle=True,
     )
-    np.testing.assert_array_equal(indices_train, np.array([0, 7, 2, 4, 3, 6]))
-    np.testing.assert_array_equal(indices_validate, np.array([1, 5]))
+    np.testing.assert_array_equal(indices_train, np.array([0, 2, 3, 7, 1, 6]))
+    np.testing.assert_array_equal(indices_validate, np.array([4, 5]))
+
+
+@pytest_cases.parametrize(
+    "validation_size, test_size, key_stratify, shuffle, expected",
+    [
+        (
+            0.1,
+            0.1,
+            None,
+            False,
+            (np.array([0, 1, 2, 3, 4, 5]), np.array([6]), np.array([7])),
+        ),
+        (
+            0.6,
+            0.5,
+            "raining",
+            False,
+            ValueError(),
+        ),
+        (
+            None,
+            0.2,
+            "raining",
+            True,
+            (np.array([0, 2, 3, 7, 1, 6]), np.array([]), np.array([4, 5])),
+        ),
+    ],
+)
+def test_split_training_set_tripple(fake_dataset_training, validation_size, test_size, key_stratify, shuffle, expected):
+    with pytest.raises(type(expected)) if isinstance(expected, Exception) else doesnotraise():
+        indices_train, indices_validate, indices_test = a2.training.training_hugging.split_training_set_tripple(
+            fake_dataset_training,
+            key_stratify=key_stratify,
+            validation_size=validation_size,
+            test_size=test_size,
+            random_state=42,
+            shuffle=shuffle,
+        )
+        np.testing.assert_array_equal(indices_train, expected[0])
+        np.testing.assert_array_equal(indices_validate, expected[1])
+        np.testing.assert_array_equal(indices_test, expected[2])
