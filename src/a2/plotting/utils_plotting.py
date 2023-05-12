@@ -6,6 +6,7 @@ import typing as t
 
 import a2.utils.utils
 import matplotlib.colors
+import matplotlib.figure
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -434,7 +435,9 @@ def remove_tick_labels(ax: plt.axes, axis: str = "x"):
     set_axis_tick_labels(ax=ax, values=[], labels=[], axis=axis)
 
 
-def save_figure(fig: plt.figure, filename: t.Union[str, pathlib.Path] = None, dpi: int = 450) -> None:
+def save_figure(
+    fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES, filename: str | pathlib.Path | None = None, dpi: int = 450
+) -> None:
     """Save figure to filename"""
     if filename is not None:
         logging.info(f"... saving {filename}")
