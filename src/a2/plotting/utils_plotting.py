@@ -6,6 +6,7 @@ import typing as t
 
 import a2.utils.utils
 import matplotlib.colors
+import matplotlib.figure
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -87,8 +88,23 @@ def _create_figure(figure_size):
 
 
 def set_font(font_size=10):
-    font = {"family": "DejaVu Sans", "weight": "normal", "size": font_size}
-    matplotlib.rc("font", **font)
+    SMALL_SIZE = font_size
+    MEDIUM_SIZE = font_size
+    BIGGER_SIZE = font_size
+
+    plt.rc("font", size=SMALL_SIZE)  # controls default text sizes
+    plt.rc("axes", titlesize=SMALL_SIZE)  # fontsize of the axes title
+    plt.rc("axes", labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+    plt.rc("xtick", labelsize=SMALL_SIZE)  # fontsize of the tick labels
+    plt.rc("ytick", labelsize=SMALL_SIZE)  # fontsize of the tick labels
+    plt.rc("legend", fontsize=SMALL_SIZE)  # legend fontsize
+    plt.rc("figure", titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
+
+def set_title(ax, title):
+    if title is not None:
+        if isinstance(title, str) and len(title) > 0:
+            ax.set_title(title)
 
 
 def create_figure_axes(
@@ -185,9 +201,13 @@ def create_axes_grid(
     if colorbar_off and colorbar_include_row_col is None and colorbar_skip_row_col is None:
         colorbar_skip_row_col = [[j, i] for i in range(n_cols) for j in range(n_rows)]
     fig = _create_figure(figure_size)
-    a2.utils.utils.assert_same_type(skip_row_col, [[]])
-    a2.utils.utils.assert_same_type(colorbar_skip_row_col, [[]])
-    a2.utils.utils.assert_same_type(colorbar_include_row_col, [[]])
+    a2.utils.utils.all_same_type([n_cols, n_rows], int)
+    a2.utils.utils.all_same_type(
+        [top, bottom, right, left, spacing_x, spacing_y, spacing_colorbar, colorbar_width], float
+    )
+    a2.utils.utils.assert_same_type_as(skip_row_col, [[]])
+    a2.utils.utils.assert_same_type_as(colorbar_skip_row_col, [[]])
+    a2.utils.utils.assert_same_type_as(colorbar_include_row_col, [[]])
     a2.utils.utils.assert_shape(widths_along_x, (n_cols,), "widths_along_x")
     a2.utils.utils.assert_shape(heights_along_y, (n_rows,), "heights_along_y")
 
@@ -407,7 +427,9 @@ def remove_tick_labels(ax: plt.axes, axis: str = "x"):
     set_axis_tick_labels(ax=ax, values=[], labels=[], axis=axis)
 
 
-def save_figure(fig: plt.figure, filename: t.Union[str, pathlib.Path] = None, dpi: int = 450) -> None:
+def save_figure(
+    fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES, filename: str | pathlib.Path | None = None, dpi: int = 450
+) -> None:
     """Save figure to filename"""
     if filename is not None:
         logging.info(f"... saving {filename}")

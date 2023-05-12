@@ -68,6 +68,8 @@ def parallelize(
         with multiprocessing.Pool(processes=processes) as pool:
             results = pool.map(function, args_zipped)
     else:
+        if single_arg:
+            args_zipped = ((arg,) for arg in args_zipped)
         if kwargs_as_dict is not None:
             kwargs_iter = itertools.repeat(kwargs_as_dict)
         else:
@@ -156,7 +158,7 @@ def _assert_same_type(variable, type_from_variable):
             raise TypeError(f"Variable {variable=} different type than expected {type_from_variable=}")
 
 
-def assert_same_type(variable, type_from_variable, alternative=None):
+def assert_same_type_as(variable: object, type_from_variable: object, alternative: object = None):
     """Check if `variable` is same type as `type_from_variable` unless `variable` is `alternative`"""
     if variable is alternative:
         return
@@ -164,6 +166,12 @@ def assert_same_type(variable, type_from_variable, alternative=None):
         _assert_same_type(variable, type_from_variable)
     except TypeError:
         raise TypeError(f"Variable {variable} not of expected type {type_from_variable}")
+
+
+def all_same_type(variable_list: t.Iterable, type_: type):
+    for var in variable_list:
+        if not isinstance(var, type_):
+            raise ValueError(f"{var} not of type {type_.__name__}!")
 
 
 def assert_shape(variable, shape: t.Tuple, name: str = None, ignore_none: bool = True):

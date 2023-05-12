@@ -1,6 +1,7 @@
 import os
 import pathlib
 import stat
+from contextlib import nullcontext as doesnotraise
 
 import a2.utils.file_handling
 import a2.utils.testing
@@ -65,3 +66,44 @@ def test_check_acess_rights_folder(chmod_flag, expected_rights, tmp_path):
     assert printed == expected_print
     # make accessible to everyone so can be cleaned up by pytest
     os.chmod(directory, 0o777)
+
+
+@parametrize(
+    "folder_name, check_if_empty, raise_exception, expected",
+    [
+        (
+            "fake_folder",
+            False,
+            True,
+            ValueError(),
+        ),
+        (
+            "tmp",
+            True,
+            True,
+            ValueError(),
+        ),
+        (
+            "tmp",
+            False,
+            False,
+            True,
+        ),
+        (
+            "tmp",
+            True,
+            False,
+            False,
+        ),
+    ],
+)
+def test_folder_exists(folder_name, expected, tmp_path, check_if_empty, raise_exception):
+    directory = tmp_path / "test_folder_exists/"
+    directory.mkdir()
+    if folder_name == "tmp":
+        folder_name = directory
+    with pytest.raises(type(expected)) if isinstance(expected, Exception) else doesnotraise():
+        exists = a2.utils.file_handling.folder_exists(
+            folder_name, check_if_empty=check_if_empty, raise_exception=raise_exception
+        )
+        assert exists == expected
