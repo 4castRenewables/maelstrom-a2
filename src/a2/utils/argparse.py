@@ -1,7 +1,14 @@
+import argparse
+
 import a2.utils
 
 
-def dataset(parser):
+def get_parser(formatter_class=argparse.ArgumentDefaultsHelpFormatter):
+    parser = argparse.ArgumentParser(formatter_class=formatter_class)
+    return parser
+
+
+def dataset_basic(parser):
     parser.add_argument(
         "--tweets_dir",
         "-inpath",
@@ -9,6 +16,11 @@ def dataset(parser):
         default=a2.utils.file_handling.get_folder_data() / "tweets/",
         help="Directory where input netCDF-files are stored.",
     )
+    parser.add_argument("--test_size", "-ts", type=float, default=0.2, help="Fraction of test set.")
+    parser.add_argument("--validation_size", "-vs", type=float, default=0.2, help="Fraction of validation set.")
+
+
+def dataset(parser):
     parser.add_argument(
         "--data_filename",
         "-infile",
@@ -23,8 +35,6 @@ def dataset(parser):
         default="tweets 2017-2020, keywords emojis as description, keywords only",
         help="Data description purely used for logging.",
     )
-    parser.add_argument("--test_size", "-ts", type=float, default=0.2, help="Fraction of test set.")
-    parser.add_argument("--validation_size", "-vs", type=float, default=0.2, help="Fraction of validation set.")
 
     parser.add_argument(
         "--evaluation_strategy", "-estrat", type=str, default="epoch", help="When to evaluate steps/epoch/no"
@@ -147,6 +157,10 @@ def mlflow(parser):
     )
 
 
+def hyperparameter_basic(parser):
+    parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
+
+
 def hyperparameter(parser):
     parser.add_argument("--number_epochs", "-nepochs", type=int, default=1, help="Numer of epochs to train.")
     parser.add_argument("--batch_size", "-bs", type=int, default=32, help="Number of samples per mini-batch.")
@@ -160,7 +174,6 @@ def hyperparameter(parser):
     parser.add_argument("--cls_dropout", "-cd", type=float, default=0.1, help="Dropout probability in classifier head.")
     parser.add_argument("--lr_scheduler_type", "-lst", type=str, default="linear", help="Learning rate scheduler type.")
 
-    parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
     parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
     parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
     parser.add_argument(

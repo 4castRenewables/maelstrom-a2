@@ -305,3 +305,9 @@ def folder_exists(path: str | pathlib.Path, check_if_empty: bool = False, raise_
             raise ValueError(f"{path=} is empty!")
         return False
     return True
+
+
+def make_directories(path: str | pathlib.Path):
+    if not os.path.isdir(path):
+        logging.info(f"... making {path=}")
+        os.makedirs(path)

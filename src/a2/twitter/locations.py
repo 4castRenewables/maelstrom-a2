@@ -113,7 +113,7 @@ def save_location_to_file(
         queried += 1
         try:
             location = api.geo_id(place_id=p_id)
-            print(f"{location=}")
+            logging.info(f"{location=}")
         except Exception as e:
             _append_not_found(p_id, filename_location_not_found)
             logging.info(f"couldn't query: {p_id}")
