@@ -497,6 +497,11 @@ def construct_dataset(ds, data_vars, time=None):
 
 def merge_datasets_along_index(ds_top: xarray.Dataset, ds_bottom: xarray.Dataset) -> xarray.Dataset:
     ds_bottom_reindexed = ds_bottom.copy()
+    ds_top = ds_top.copy()
+
+    ds_top = a2.dataset.load_dataset.reset_index_coordinate(ds_top)
+    ds_bottom_reindexed = a2.dataset.load_dataset.reset_index_coordinate(ds_bottom_reindexed)
+
     start_index = ds_top.index.shape[0]
     ds_bottom_reindexed["index"] = range(start_index, start_index + ds_bottom_reindexed.index.shape[0])
     return xarray.merge([ds_top, ds_bottom_reindexed])

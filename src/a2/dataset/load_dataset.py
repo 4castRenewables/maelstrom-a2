@@ -172,6 +172,8 @@ def save_dataset(
     no_conversion: bool = True,
     encode_time: bool = True,
     reset_index: bool = False,
+    engine: str | None = "h5netcdf",
+    replace_nan_in_string_field: str = "nan",
 ) -> None:
     """
     saves xarray dataset to file.
@@ -193,6 +195,7 @@ def save_dataset(
     if reset_index:
         ds = reset_index_coordinate(ds.copy())
     types_to_convert = [dict, list]
+
     if not no_conversion:
         for k, v in ds.variables.items():
             if any_type_present(ds[k].values, types_to_check=types_to_convert):
@@ -211,7 +214,8 @@ def save_dataset(
     if encode_time:
         keys_time = get_time_variables(ds)
         encoding = {k: {"units": "seconds since 1900-01-01"} for k in keys_time}
-    ds.to_netcdf(filename, encoding=encoding)
+    logging.info(f"... saving dataset as {filename}")
+    ds.to_netcdf(filename, encoding=encoding, engine=engine)
 
 
 def get_time_variables(ds):
