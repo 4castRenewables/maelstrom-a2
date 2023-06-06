@@ -79,8 +79,9 @@ def load_tweets_dataset(
     Parameters:
     ----------
     filename: Filename of cn file
-    reset_index: Reset index coordinate
     raw: Just load file, no conversions
+    reset_index: Reset index coordinate
+    reset_index_raw: Reset index coordinate even when `raw="true"`
     drop_variables: List of variables to drop
     convert_bounding_box: Convert bounding box coordinates from string to dictionary
     open_dataset: Open the dataset instead of loading it in memory
