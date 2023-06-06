@@ -119,8 +119,8 @@ def dataset_relevance(parser):
     )
     parser.add_argument(
         "--n_tweets_irrelevant",
-        type=tuple[int, str],
-        default="all",
+        type=int,
+        default=-1,
         help='Number of irrelevant tweets used to create dataset, use all irrelevant tweets by default ("all").',
     )
 
