@@ -198,15 +198,28 @@ class HuggingFaceTrainerClass:
                 compute_metrics=_compute_metrics,
                 callbacks=callbacks,
             )
+        train_dataset, eval_dataset = _get_training_evaluation_datasets(dataset)
         return trainer_class(
             model_init=model_init,
             args=args,
-            train_dataset=dataset["train"],
-            eval_dataset=dataset["test"],
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
             tokenizer=tokenizer,
             compute_metrics=_compute_metrics,
             callbacks=callbacks,
         )
+
+
+def _get_training_evaluation_datasets(dataset):
+    if isinstance(dataset, datasets.DatasetDict):
+        train_dataset = dataset["train"]
+        eval_dataset = dataset["test"]
+    elif isinstance(dataset, tuple) and len(dataset) == 2:
+        train_dataset = dataset[0]
+        eval_dataset = dataset[1]
+    else:
+        raise TypeError(f"Couldn't parse {dataset=}!")
+    return train_dataset, eval_dataset
 
 
 def split_training_set(

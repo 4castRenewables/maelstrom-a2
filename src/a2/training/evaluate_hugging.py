@@ -14,7 +14,7 @@ import xarray
 
 def build_ds_test(
     ds: xarray.Dataset,
-    indices_test: np.ndarray,
+    indices_test: np.ndarray | None,
     predictions: np.ndarray,
     prediction_probabilities: np.ndarray,
 ) -> xarray.Dataset:
@@ -34,7 +34,10 @@ def build_ds_test(
     -------
     xarray.Dataset
     """
-    ds_test = ds.sel(index=indices_test)
+    if indices_test is not None:
+        ds_test = ds.sel(index=indices_test)
+    else:
+        ds_test = ds.copy()
     ds_test["prediction"] = (["index"], predictions)
     ds_test["prediction_probability_not_raining"] = (
         ["index"],

@@ -35,8 +35,8 @@ class DatasetHuggingFace:
     def build(
         self,
         ds: xarray.Dataset,
-        indices_train: np.ndarray,
-        indices_validate: np.ndarray,
+        indices_train: np.ndarray | None,
+        indices_validate: np.ndarray | None,
         train: bool = True,
         key_inputs: str = "text",
         key_label: str = "raining",
@@ -59,22 +59,24 @@ class DatasetHuggingFace:
         -------
         datasets.DatasetDict
         """
+        if train and (sum([indices_train is None, indices_validate is None]) == 1):
+            raise ValueError(f"{indices_train=} and {indices_validate} can either be both None or have to be set!")
         a2.dataset.utils_dataset.assert_keys_in_dataset(ds, [key_inputs, key_label])
         if reset_index:
             ds = a2.dataset.load_dataset.reset_index_coordinate(ds)
-        if not train:
+        if not train and indices_validate is not None:
             ds = ds.sel(index=indices_validate)
         df = ds[[key_inputs, key_label]].to_pandas()
         columns: t.Mapping = {key_inputs: "inputs", key_label: "label"}
         df = df.rename(columns=columns)  # type: ignore
         datasets_ds = datasets.Dataset.from_pandas(df)
         tok_ds = datasets_ds.map(self._tok_func, batched=True)
-        if train:
+        if not train or (indices_train is None and indices_validate is None):
+            return tok_ds
+        else:
             return datasets.DatasetDict(
                 {
                     "train": tok_ds.select(indices_train),
                     "test": tok_ds.select(indices_validate),
                 }
             )
-        else:
-            return tok_ds
