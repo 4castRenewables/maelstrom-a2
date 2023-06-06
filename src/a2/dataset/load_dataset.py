@@ -171,6 +171,7 @@ def save_dataset(
     add_attributes: str = "",
     no_conversion: bool = True,
     encode_time: bool = True,
+    reset_index: bool = False,
 ) -> None:
     """
     saves xarray dataset to file.
@@ -179,11 +180,18 @@ def save_dataset(
     Therefore, they are converted to strings before the file is saved.
     Parameters:
     ----------
+    ds: Dataset to be saved
     filename: name of file dataset is saved to
+    add_attributes: Add string to attributes of `ds`
+    no_conversion: Whether variables are converted
+    encode_time: Whether time variable is converted
+    reset_index: Whether "index" field variable is reset
 
     Returns
     -------
     """
+    if reset_index:
+        ds = reset_index_coordinate(ds.copy())
     types_to_convert = [dict, list]
     if not no_conversion:
         for k, v in ds.variables.items():
