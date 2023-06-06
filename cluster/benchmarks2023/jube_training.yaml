@@ -210,6 +210,9 @@ parameterset:
         _: gpu:$gpus
       - name: executable
         _: python -u $jube_benchmark_home/../../scripts/finetune_deberta.py
+      - name: executable
+        tag: relevance
+        _: python -u $jube_benchmark_home/../../scripts/finetune_deberta_relevance_classifier.py
       - name: submit_cmd
         _: sbatch
       - name: visible_devices
@@ -221,6 +224,26 @@ parameterset:
         tag: e4
         _: ""
       - name: args_exec
+        tag: relevance
+        mode: text
+        _: >
+          --run_folder ${run_folder}
+          --log_gpu_memory
+          --run_name ${run_name}
+          --data_filename ${data_filename}
+          -lr ${lr}
+          -nepochs ${nepochs}
+          --data_dir ${indir}
+          -jid $${SLURM_JOBID}
+          --batch_size ${batch_size}
+          --key_rain ${key_rain}
+          --model_path ${model_path}
+          --output_dir ${outdir}
+          --weight_decay ${weight_decay}
+          --iteration ${iteration}
+          ${weightsfixed}
+      - name: args_exec
+        tag: relevance
         mode: text
         _: >
           --run_folder ${run_folder}
