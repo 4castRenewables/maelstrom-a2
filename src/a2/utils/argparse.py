@@ -8,7 +8,7 @@ def get_parser(formatter_class=argparse.ArgumentDefaultsHelpFormatter):
     return parser
 
 
-def dataset_basic(parser):
+def dataset_tweets(parser):
     parser.add_argument(
         "--tweets_dir",
         "-inpath",
@@ -22,11 +22,10 @@ def dataset_basic(parser):
 
 def dataset(parser):
     parser.add_argument(
-        "--data_filename",
-        "-infile",
+        "--dataset_prefix",
         type=str,
-        default="2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered.nc",
-        help="Filename of training data.",
+        default="2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar",  # noqa: E501
+        help="Dataset prefix determined during split of dataset.",
     )
     parser.add_argument(
         "--data_description",
@@ -36,6 +35,8 @@ def dataset(parser):
         help="Data description purely used for logging.",
     )
 
+
+def evaluation(parser):
     parser.add_argument(
         "--evaluation_strategy", "-estrat", type=str, default="epoch", help="When to evaluate steps/epoch/no"
     )
@@ -48,17 +49,52 @@ def dataset(parser):
     )
 
 
+def classifier(parser):
+    parser.add_argument("--key_text", type=str, default="text_normalized", help="Key for text in input file.")
+    parser.add_argument(
+        "--classifier_domain", choices=["rain", "relevance"], type=str, required=True, help="Domain of classifier"
+    )
+    parser.add_argument(
+        "--key_input",
+        type=str,
+        default="text",
+        choices=["rain"],
+        help="Column name of dataset that corresponds to input of classifier.",
+    )
+    parser.add_argument(
+        "--key_output",
+        type=str,
+        default="rain",
+        choices=["relevance"],
+        help="Column name of dataset that corresponds to output of classifier.",
+    )
+    parser.add_argument(
+        "--filename_dataset_train", required=True, type=str, help="Filename of dataset used for training."
+    )
+    parser.add_argument(
+        "--filename_dataset_validate", required=True, type=str, help="Filename of dataset used for validation."
+    )
+    parser.add_argument(
+        "--filename_dataset_test", required=True, type=str, help="Filename of dataset used for testing."
+    )
+
+
 def output(parser):
     parser.add_argument(
         "--output_dir",
         type=str,
-        default=a2.utils.file_handling.get_folder_data() / "dataset_splits/",
-        help="Folder to save split datasets.",
+        default="output/",
+        help="Folder to save results.",
+    )
+    parser.add_argument(
+        "--task_name",
+        type=str,
+        required=True,
+        help="Name of task, results will be saved in this subdirectory of output.",
     )
 
 
 def dataset_rain(parser):
-    parser.add_argument("--key_text", type=str, default="text_normalized", help="Key for text in input file.")
     parser.add_argument("--key_rain", type=str, default="tp_h", help="Key for rain data in input file.")
     parser.add_argument(
         "--threshold_rain",
@@ -79,6 +115,12 @@ def dataset_relevance(parser):
         "--data_filename_irrelevant",
         type=str,
         default="2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered.nc",
+        help="Filename of training data.",
+    )
+    parser.add_argument(
+        "--key_relevance",
+        type=str,
+        default="relevant",
         help="Filename of training data.",
     )
 
@@ -194,4 +236,12 @@ def benchmarks(parser):
         "--ignore_tracking",
         action="store_true",
         help="Use mantik tracking.",
+    )
+
+
+def debug(parser):
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Whether to toggle debug mode.",
     )
