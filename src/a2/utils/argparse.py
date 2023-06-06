@@ -1,0 +1,184 @@
+import a2.utils
+
+
+def dataset(parser):
+    parser.add_argument(
+        "--tweets_dir",
+        "-inpath",
+        type=str,
+        default=a2.utils.file_handling.get_folder_data() / "tweets/",
+        help="Directory where input netCDF-files are stored.",
+    )
+    parser.add_argument(
+        "--data_filename",
+        "-infile",
+        type=str,
+        default="2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered.nc",
+        help="Filename of training data.",
+    )
+    parser.add_argument(
+        "--data_description",
+        "-datad",
+        type=str,
+        default="tweets 2017-2020, keywords emojis as description, keywords only",
+        help="Data description purely used for logging.",
+    )
+    parser.add_argument("--test_size", "-ts", type=float, default=0.2, help="Fraction of test set.")
+    parser.add_argument("--validation_size", "-vs", type=float, default=0.2, help="Fraction of validation set.")
+
+    parser.add_argument(
+        "--evaluation_strategy", "-estrat", type=str, default="epoch", help="When to evaluate steps/epoch/no"
+    )
+    parser.add_argument(
+        "--eval_steps",
+        "-esteps",
+        type=int,
+        default=None,
+        help="Number of steps between evaluations if evaluation strategy is set to steps.",
+    )
+
+
+def output(parser):
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default=a2.utils.file_handling.get_folder_data() / "dataset_splits/",
+        help="Folder to save split datasets.",
+    )
+
+
+def dataset_rain(parser):
+    parser.add_argument("--key_text", type=str, default="text_normalized", help="Key for text in input file.")
+    parser.add_argument("--key_rain", type=str, default="tp_h", help="Key for rain data in input file.")
+    parser.add_argument(
+        "--threshold_rain",
+        type=float,
+        default=1e-8,
+        help="Threshold above which precipitation is considered raining in input file.",
+    )
+
+
+def dataset_relevance(parser):
+    parser.add_argument(
+        "--filename_tweets_with_keywords",
+        type=str,
+        default="2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered.nc",
+        help="Filename of training data.",
+    )
+    parser.add_argument(
+        "--data_filename_irrelevant",
+        type=str,
+        default="2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered.nc",
+        help="Filename of training data.",
+    )
+
+
+def dataset_relevance_split(parser):
+    parser.add_argument(
+        "--split_dir",
+        type=str,
+        default="split_relevance",
+        help="Folder to save split datasets.",
+    )
+    parser.add_argument(
+        "--kms_within_station",
+        "-kms",
+        type=float,
+        default=1,
+        help="Distance to weather station. Used to create weather station dataset.",
+    )
+    parser.add_argument(
+        "--key_distance_weather_station",
+        type=str,
+        default="station_distance_km",
+        help="Key in dataset that shows distance to weather station. Used to create weather station dataset.",
+    )
+    parser.add_argument(
+        "--weather_station_dataset_prefix",
+        type=str,
+        default="WeatherStationDataset",
+        help="Prefix of weather station dataset.",
+    )
+    parser.add_argument(
+        "--raining_classifier_dataset_prefix",
+        type=str,
+        default="RainingClassifierDataset",
+        help="Prefix of raining classifier dataset.",
+    )
+    parser.add_argument(
+        "--relevance_classifier_dataset_prefix",
+        type=str,
+        default="RelevanceClassifierDataset",
+        help="Prefix of relevance classifier dataset.",
+    )
+
+
+def model(parser):
+    parser.add_argument(
+        "--model_path",
+        "-in",
+        type=str,
+        default="/p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/",
+        help="Directory where input netCDF-files are stored.",
+    )
+    parser.add_argument(
+        "--output_dir_model",
+        "-outdir",
+        type=str,
+        default=a2.utils.file_handling.get_folder_models(),
+        help="Output directory where model is saved.",
+    )
+
+
+def mlflow(parser):
+    parser.add_argument(
+        "--run_folder", type=str, required=True, help="Output folder where model is saved in `output_dir`."
+    )
+    parser.add_argument("--run_name", type=str, default="era5 whole dataset", help="Name of run used for logging only.")
+    parser.add_argument(
+        "--mlflow_experiment_name",
+        type=str,
+        default="maelstrom-a2-train",
+        help="Name MLflow experiment where results are logged.",
+    )
+
+    parser.add_argument(
+        "--figure_folder", type=str, default="figures/", help="Directory where input netCDF-files are stored."
+    )
+
+
+def hyperparameter(parser):
+    parser.add_argument("--number_epochs", "-nepochs", type=int, default=1, help="Numer of epochs to train.")
+    parser.add_argument("--batch_size", "-bs", type=int, default=32, help="Number of samples per mini-batch.")
+    parser.add_argument("--learning_rate", "-lr", type=float, default=3e-05, help="Learning rate to train model.")
+    parser.add_argument("--weight_decay", "-wd", type=float, default=0, help="Weight decay rate to train model.")
+    parser.add_argument("--warmup_ratio", "-wr", type=float, default=0, help="Warmup ratio to train model.")
+    parser.add_argument("--warmup_steps", "-ws", type=float, default=500, help="Warmup steps to train model.")
+    parser.add_argument(
+        "--hidden_dropout_prob", "-hdp", type=float, default=0.1, help="Probability of hidden droup out layer."
+    )
+    parser.add_argument("--cls_dropout", "-cd", type=float, default=0.1, help="Dropout probability in classifier head.")
+    parser.add_argument("--lr_scheduler_type", "-lst", type=str, default="linear", help="Learning rate scheduler type.")
+
+    parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
+    parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
+    parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
+    parser.add_argument(
+        "--base_model_weights_fixed",
+        "-weightsfixed",
+        action="store_true",
+        help="Weights of base model (without classification head) are fixed (not trainable).",
+    )
+
+
+def benchmarks(parser):
+    parser.add_argument(
+        "--log_gpu_memory",
+        action="store_true",
+        help="Monitor Cuda memory usage.",
+    )
+    parser.add_argument(
+        "--ignore_tracking",
+        action="store_true",
+        help="Use mantik tracking.",
+    )

@@ -56,6 +56,8 @@ def plot_histogram_2d(
     spacing_x: float = 0.03,
     spacing_y: float = 0.03,
     spacing_colorbar: float = 0.03,
+    bottom: float = 0.1,
+    left: float = 0.1,
     title: str = "",
 ):
     """
@@ -145,6 +147,8 @@ def plot_histogram_2d(
         colorbar_include_row_col=colorbar_include_row_col,
         spacing_colorbar=spacing_colorbar,
         colorbar_off=colorbar_off,
+        bottom=bottom,
+        left=left,
     )
 
     if font_size is not None:
@@ -783,6 +787,7 @@ def get_bin_edges(
     -------
     bin edges
     """
+    print(f"{vmin=}, {vmax=}")
     if data is not None and vmin is None:
         vmin = data.min()
     if data is not None and vmax is None:
@@ -800,6 +805,7 @@ def get_bin_edges(
         bins = _get_bin_edges_symlog(vmin, vmax, linear_thresh, n_bins=n_bins)
     else:
         bins = 10 ** np.linspace(np.log10(vmin), np.log10(vmax), n_bins)
+    print(f"{vmin=}, {vmax=}")
 
     if return_linear_thresh:
         return bins, linear_thresh
