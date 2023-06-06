@@ -10,6 +10,7 @@ import a2.utils
 import numpy as np
 import sklearn.metrics
 import sklearn.model_selection
+import utils_scripts
 
 # from deep500.utils import timer_torch as timer
 
@@ -19,11 +20,11 @@ logging.basicConfig(
 
 
 def main(args):
-    """ "Split Tweets (matched by keywords) into "relevant" Tweets used for relevance classifier,
+    """ "Split Tweets (matched by keywords) into args.key_relevance Tweets used for relevance classifier,
     excluding Tweets near weather station (<1km),
     remaining Tweets are used for training the "raining" classifier"""
     dataset_prefix = _determine_dataset_prefix(args)
-    path_output = _determine_path_output(args)
+    path_output = utils_scripts._determine_path_output(args)
 
     ds_relevant_raw = _prepare_relevant_tweets(args, dataset_prefix, path_output)
 
@@ -54,8 +55,8 @@ def main(args):
         filename=f"{path_output}{args.raining_classifier_dataset_prefix}{dataset_prefix}.nc",
     )
 
-    ds_relevant["relevant"] = (["index"], np.ones(ds_relevant.index.shape[0], dtype=bool))
-    ds_irrelevant["relevant"] = (["index"], np.zeros(ds_irrelevant.index.shape[0], dtype=bool))
+    ds_relevant[args.key_relevance] = (["index"], np.ones(ds_relevant.index.shape[0], dtype=bool))
+    ds_irrelevant[args.key_relevance] = (["index"], np.zeros(ds_irrelevant.index.shape[0], dtype=bool))
     ds_relevance_dataset = a2.dataset.utils_dataset.merge_datasets_along_index(ds_relevant, ds_irrelevant)
     ds_relevance_dataset = a2.dataset.load_dataset.reset_index_coordinate(ds_relevance_dataset)
     (
@@ -66,7 +67,7 @@ def main(args):
         ds_relevance_dataset,
         validation_size=args.validation_size,
         test_size=args.test_size,
-        key_stratify="relevant",
+        key_stratify=args.key_relevance,
         random_state=args.random_seed,
     )
     logging.info(
@@ -75,7 +76,7 @@ def main(args):
         f"{len(indices_train_relevance)} for training."
     )
     for suffix, inidices in zip(
-        ["train", "validation", "test"], [indices_train_relevance, indices_validate_relevance, indices_test_relevance]
+        ["train", "validate", "test"], [indices_train_relevance, indices_validate_relevance, indices_test_relevance]
     ):
         save_subsection_dataset(
             ds=ds_relevance_dataset,
@@ -113,15 +114,9 @@ def _prepare_relevant_tweets(args, dataset_prefix, path_output):
     return ds_tweets_keywords_excluded
 
 
-def _determine_path_output(args):
-    path_output = f"{args.output_dir}/{args.split_dir}/"
-    logging.info(f".... using {path_output=}")
-    a2.utils.file_handling.make_directories(path_output)
-    return path_output
-
-
 def _determine_dataset_prefix(args):
     dataset_prefix, _ = os.path.splitext(args.filename_tweets_with_keywords)
+    logging.info(f"Determine {dataset_prefix=}")
     return dataset_prefix
 
 
@@ -152,7 +147,7 @@ def _initialize_tracking(args):
 
 if __name__ == "__main__":
     parser = a2.utils.argparse.get_parser()
-    a2.utils.argparse.dataset_basic(parser)
+    a2.utils.argparse.dataset_tweets(parser)
     a2.utils.argparse.dataset_rain(parser)
     a2.utils.argparse.dataset_relevance(parser)
     a2.utils.argparse.dataset_relevance_split(parser)

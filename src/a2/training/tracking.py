@@ -94,7 +94,7 @@ class Tracker:
         if not experiment_id:
             experiment_id = mlflow.create_experiment(name, **kwargs)
             logging.info(f"create new: {experiment_id}")
-        if experiment_id is not None:
+        if experiment_id is not None and not isinstance(experiment_id, str):
             experiment_id = experiment_id.experiment_id
         return experiment_id
 
