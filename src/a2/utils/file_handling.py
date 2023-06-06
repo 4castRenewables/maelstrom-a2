@@ -250,7 +250,7 @@ def is_jsc():
 def get_folder_data():
     """Get the name of the folder where data for this project is stored indepent of machine used"""
     if is_jsc():
-        folder_data = pathlib.Path("/p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/")
+        folder_data = pathlib.Path("/p/project/deepacf/maelstrom/ehlert1/data/")
     else:
         folder_data = pathlib.Path("/home/kristian/Projects/a2/data/")
     if not os.path.isdir(folder_data):

@@ -493,3 +493,10 @@ def construct_dataset(ds, data_vars, time=None):
     if time is not None:
         coords["time"] = time
     return xarray.Dataset(data_vars=data_vars, coords=coords)
+
+
+def merge_datasets_along_index(ds_top: xarray.Dataset, ds_bottom: xarray.Dataset) -> xarray.Dataset:
+    ds_bottom_reindexed = ds_bottom.copy()
+    start_index = ds_top.index.shape[0]
+    ds_bottom_reindexed["index"] = range(start_index, start_index + ds_bottom_reindexed.index.shape[0])
+    return xarray.merge([ds_top, ds_bottom_reindexed])

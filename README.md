@@ -131,3 +131,32 @@ Embed Tweets as RGB (or similar) on a grid (unstructured?!/average embeddings?!/
 
 * Use sentence embedding of the tweet, using universal sentence encoder or any more recent/fancy language model. I guess there are many models pre-trained already with Tweets.
 * Apply a PCA analysis on embeddings to extract only the relevant components, and then with those, you can train a simple binary classifier that can give you a relevance score.
+
+### Relevance Classifier -> Rain classifier
+* Relevance classifier:
+    * Used to classify tweets as "relevant" for identification of "raining"/"not raining" (could a human deduct this from the Tweet)
+    * Dataset:
+        * Labeling:
+            * "relevant":
+                * Tweets matching keyword
+                * ~250k Tweets (stratified by "raining")
+            * "irrelevant"
+                * Tweets are sample of Tweets only with location (no keyword matching applied).
+                * 2020-02-13T - 2020-02-15T
+                * 250k Tweets
+        * Splits:
+            * Dataset: 500k Tweets
+            * Train 60%, Validate 20%, Test 20%
+    * Model:
+        * Finetune DeBertA-v3-base classifier
+* Rain classifier:
+    * Classify Tweets as "raining" / "not raining" when above `rain_threshold` (e.g., 0.1 mm).
+    * Dataset:
+        * Include:
+            * Tweets classified as "relevant" by `relevance classifier`
+        * Exclude:
+            * Tweets used to train the `relevance classifier`
+            * Tweets near (e.g., 1km) weather station -> build seperate test set
+        * Splits:
+            * Dataset: ?? Tweets
+            * Train 60%, Validate 20%, Test 20%
