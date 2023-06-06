@@ -97,7 +97,7 @@ def _prepare_irrelevant_tweets(args):
         reset_index_raw=True,
     )
     if args.n_tweets_irrelevant != "all":
-        ds_tweets_random = ds_tweets_random.sel(index=slice(args.n_tweets_irrelevant))
+        ds_tweets_random = ds_tweets_random.sel(index=slice(int(args.n_tweets_irrelevant)))
     return ds_tweets_random
 
 
