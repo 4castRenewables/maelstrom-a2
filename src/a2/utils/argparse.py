@@ -118,6 +118,13 @@ def dataset_relevance(parser):
         help="Filename of training data.",
     )
     parser.add_argument(
+        "--n_tweets_irrelevant",
+        type=tuple[int, str],
+        default="all",
+        help='Number of irrelevant tweets used to create dataset, use all irrelevant tweets by default ("all").',
+    )
+
+    parser.add_argument(
         "--key_relevance",
         type=str,
         default="relevant",

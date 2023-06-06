@@ -92,9 +92,11 @@ def save_subsection_dataset(ds, filename, indices):
 
 def _prepare_irrelevant_tweets(args):
     ds_tweets_random = a2.dataset.load_dataset.load_tweets_dataset(
-        os.path.join(args.tweets_dir, args.data_filename_irrelevant)
+        os.path.join(args.tweets_dir, args.data_filename_irrelevant),
+        reset_index_raw=True,
     )
-
+    if args.n_tweets_irrelevant != "all":
+        ds_tweets_random = ds_tweets_random.sel(index=slice(args.n_tweets_irrelevant))
     return ds_tweets_random
 
 
