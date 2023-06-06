@@ -50,10 +50,6 @@ def main(args):
     ds_relevant = ds_relevant_raw.sel(index=indices_relevance_classifier)
 
     ds_raining_classifier = ds_relevant_raw.sel(index=indices_raining_classifier)
-    a2.dataset.load_dataset.save_dataset(
-        ds_raining_classifier,
-        filename=f"{path_output}{args.raining_classifier_dataset_prefix}{dataset_prefix}.nc",
-    )
 
     ds_relevant[args.key_relevance] = (["index"], np.ones(ds_relevant.index.shape[0], dtype=bool))
     ds_irrelevant[args.key_relevance] = (["index"], np.zeros(ds_irrelevant.index.shape[0], dtype=bool))
@@ -75,6 +71,11 @@ def main(args):
         f"{len(indices_test_relevance)} for testing and "
         f"{len(indices_train_relevance)} for training."
     )
+    a2.dataset.load_dataset.save_dataset(
+        ds_raining_classifier,
+        filename=f"{path_output}{args.raining_classifier_dataset_prefix}{dataset_prefix}.nc",
+    )
+
     for suffix, inidices in zip(
         ["train", "validate", "test"], [indices_train_relevance, indices_validate_relevance, indices_test_relevance]
     ):
