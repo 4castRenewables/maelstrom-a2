@@ -1,4 +1,3 @@
-import argparse
 import logging
 import os
 
@@ -46,6 +45,7 @@ def main(args):
         shuffle=True,
         stratify=ds_relevant_raw.raining.values,
     )
+    ds_relevant_raw = a2.dataset.load_dataset.reset_index_coordinate(ds_relevant_raw)
     ds_relevant = ds_relevant_raw.sel(index=indices_relevance_classifier)
 
     ds_raining_classifier = ds_relevant_raw.sel(index=indices_raining_classifier)
@@ -63,7 +63,11 @@ def main(args):
         indices_validate_relevance,
         indices_test_relevance,
     ) = a2.training.training_hugging.split_training_set_tripple(
-        ds_relevance_dataset, validation_size=args.validation_size, test_size=args.test_size, key_stratify="relevant"
+        ds_relevance_dataset,
+        validation_size=args.validation_size,
+        test_size=args.test_size,
+        key_stratify="relevant",
+        random_state=args.random_seed,
     )
     logging.info(
         f"Using {len(indices_validate_relevance)} for evaluation, "
@@ -82,12 +86,12 @@ def main(args):
 
 def save_subsection_dataset(ds, filename, indices):
     ds_subsection = ds.sel(index=indices)
-    a2.dataset.load_dataset.save_dataset(ds_subsection, filename=filename, reset_index=True)
+    a2.dataset.load_dataset.save_dataset(ds_subsection, filename=filename, reset_index=True, no_conversion=False)
 
 
 def _prepare_irrelevant_tweets(args):
     ds_tweets_random = a2.dataset.load_dataset.load_tweets_dataset(
-        os.path.join(args.tweets_dir, args.data_filename_irrelevant), raw=True
+        os.path.join(args.tweets_dir, args.data_filename_irrelevant)
     )
 
     return ds_tweets_random
@@ -95,7 +99,7 @@ def _prepare_irrelevant_tweets(args):
 
 def _prepare_relevant_tweets(args, dataset_prefix, path_output):
     ds_tweets_keywords = a2.dataset.load_dataset.load_tweets_dataset(
-        os.path.join(args.tweets_dir, args.filename_tweets_with_keywords), raw=True
+        os.path.join(args.tweets_dir, args.filename_tweets_with_keywords)
     )
 
     ds_tweets_keywords_excluded = _exclude_and_save_weather_stations_dataset(
@@ -110,8 +114,9 @@ def _prepare_relevant_tweets(args, dataset_prefix, path_output):
 
 
 def _determine_path_output(args):
-    path_output = f"{args.output_dir}/{args.split_dir}"
+    path_output = f"{args.output_dir}/{args.split_dir}/"
     logging.info(f".... using {path_output=}")
+    a2.utils.file_handling.make_directories(path_output)
     return path_output
 
 
@@ -122,14 +127,14 @@ def _determine_dataset_prefix(args):
 
 def _exclude_and_save_weather_stations_dataset(args, ds_tweets_keywords, path_output, filename_prefix):
     ds_weather_stations = ds_tweets_keywords.where(
-        ds_tweets_keywords[args.key_distance_weather_station <= args.kms_within_station], drop=True
+        ds_tweets_keywords[args.key_distance_weather_station] <= args.kms_within_station, drop=True
     )
     a2.dataset.load_dataset.save_dataset(
         ds_weather_stations,
         filename=f"{path_output}{args.weather_station_dataset_prefix}{filename_prefix}.nc",
     )
     ds_tweets_keywords_near_stations_excluded = ds_tweets_keywords.where(
-        ds_tweets_keywords[args.key_distance_weather_station > args.kms_within_station], drop=True
+        ds_tweets_keywords[args.key_distance_weather_station] > args.kms_within_station, drop=True
     )
     return ds_tweets_keywords_near_stations_excluded
 
@@ -146,9 +151,12 @@ def _initialize_tracking(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = a2.utils.argparse.get_parser()
+    a2.utils.argparse.dataset_basic(parser)
+    a2.utils.argparse.dataset_rain(parser)
     a2.utils.argparse.dataset_relevance(parser)
     a2.utils.argparse.dataset_relevance_split(parser)
+    a2.utils.argparse.hyperparameter_basic(parser)
     a2.utils.argparse.output(parser)
     args = parser.parse_args()
     main(args)

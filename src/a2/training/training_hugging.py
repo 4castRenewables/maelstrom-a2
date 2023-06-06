@@ -233,8 +233,6 @@ def split_training_set(
     -------
     Indices of training, validation and test set
     """
-    print(ds)
-
     if key_stratify is not None:
         stratify = ds[key_stratify].values
     else:
