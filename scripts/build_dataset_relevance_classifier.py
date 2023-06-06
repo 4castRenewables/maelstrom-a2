@@ -96,7 +96,7 @@ def _prepare_irrelevant_tweets(args):
         os.path.join(args.tweets_dir, args.data_filename_irrelevant),
         reset_index_raw=True,
     )
-    if args.n_tweets_irrelevant != "all":
+    if args.n_tweets_irrelevant != -1:
         ds_tweets_random = ds_tweets_random.sel(index=slice(int(args.n_tweets_irrelevant)))
     return ds_tweets_random
 
