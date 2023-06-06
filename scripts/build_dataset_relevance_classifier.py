@@ -6,7 +6,7 @@ import a2.dataset.utils_dataset
 import a2.plotting
 import a2.training.benchmarks
 import a2.training.training_hugging
-import a2.utils
+import a2.utils.argparse
 import numpy as np
 import sklearn.metrics
 import sklearn.model_selection
