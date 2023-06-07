@@ -190,10 +190,13 @@ def model(parser):
     )
 
 
-def mlflow(parser):
+def run(parser):
     parser.add_argument(
         "--run_folder", type=str, required=True, help="Output folder where model is saved in `output_dir`."
     )
+
+
+def mlflow(parser):
     parser.add_argument("--run_name", type=str, default="era5 whole dataset", help="Name of run used for logging only.")
     parser.add_argument(
         "--mlflow_experiment_name",

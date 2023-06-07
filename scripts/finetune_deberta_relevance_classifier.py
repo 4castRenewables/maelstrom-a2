@@ -73,8 +73,7 @@ def main(args):
 
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path)
 
-    path_run = os.path.join(path_output, args.run_folder)
-    path_figures = os.path.join(path_run, args.figure_folder)
+    path_figures = os.path.join(path_output, args.figure_folder)
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     experiment_id = tracker.create_experiment(args.mlflow_experiment_name)
     tracker.end_run()
@@ -99,7 +98,7 @@ def main(args):
             (dataset_train, dataset_validate),
             hyper_parameters=hyper_parameters,
             tokenizer=dataset_object.tokenizer,
-            folder_output=path_run,
+            folder_output=path_output,
             hyper_tuning=False,
             disable_tqdm=True,
             fp16=True if a2.training.utils_training.gpu_available() else False,
