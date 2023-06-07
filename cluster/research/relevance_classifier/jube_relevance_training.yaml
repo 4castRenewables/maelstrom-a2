@@ -78,6 +78,21 @@ parameterset:
         tag: "!medium+!large"
         type: string
         _: "tweets_2017_01_era5_normed_filtered_predicted_simpledeberta.nc"
+      - name: folder_split
+        type: string
+        _: /p/project/deepacf/maelstrom/ehlert1/data/dataset_split/2017-2020/
+      - name: filename_dataset_train
+        type: string
+        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_ra\
+dar_train.nc
+      - name: filename_dataset_validate
+        type: string
+        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta\
+_radar_validate.nc
+      - name: filename_dataset_test
+        type: string
+        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta\
+_radar_test.nc
       - name: slurm_output
         type: string
         _: "$jube_wp_abspath/slurm-out.%j"
@@ -227,18 +242,20 @@ parameterset:
         tag: relevance
         mode: text
         _: >
-          --run_folder ${run_folder}
+          --model_path ${model_path}
+          --filename_dataset_train ${filename_dataset_train}
+          --filename_dataset_validate ${filename_dataset_validate}
+          --filename_dataset_test ${filename_dataset_test}
+          --output_dir ${outdir}
           --log_gpu_memory
           --run_name ${run_name}
-          --data_filename ${data_filename}
+          -jid $${SLURM_JOBID}
+          --mlflow_experiment_name maelstrom-a2-relevance
           -lr ${lr}
           -nepochs ${nepochs}
-          --data_dir ${indir}
-          -jid $${SLURM_JOBID}
+          --task_name relevance_classification
+          --classifier_domain relevance
           --batch_size ${batch_size}
-          --key_rain ${key_rain}
-          --model_path ${model_path}
-          --output_dir ${outdir}
           --weight_decay ${weight_decay}
           --iteration ${iteration}
           ${weightsfixed}
