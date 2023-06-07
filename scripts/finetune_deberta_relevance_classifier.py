@@ -51,7 +51,7 @@ def main(args):
         else:
             raise NotImplementedError(f"{args.classifier_domain} not implemented!")
 
-        dataset = dataset_object.build(ds_raw, None, None)
+        dataset = dataset_object.build(ds_raw, None, None, key_inputs=args.key_input, key_label=args.key_output)
         return dataset, ds_raw
 
     path_output = utils_scripts._determine_path_output(args)

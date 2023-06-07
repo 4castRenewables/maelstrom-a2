@@ -65,7 +65,7 @@ def classifier(parser):
         "--key_output",
         type=str,
         default="rain",
-        choices=["relevance"],
+        choices=["rain", "relevant"],
         help="Column name of dataset that corresponds to output of classifier.",
     )
     parser.add_argument(

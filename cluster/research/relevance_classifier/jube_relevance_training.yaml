@@ -272,6 +272,7 @@ parameterset:
           -nepochs ${nepochs}
           --task_name relevance_classification
           --classifier_domain relevance
+          --key_output relevant
           --batch_size ${batch_size}
           --weight_decay ${weight_decay}
           --iteration ${iteration}
