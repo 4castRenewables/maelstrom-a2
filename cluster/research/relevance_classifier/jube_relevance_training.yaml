@@ -243,7 +243,6 @@ parameterset:
           --iteration ${iteration}
           ${weightsfixed}
       - name: args_exec
-        tag: relevance
         mode: text
         _: >
           --run_folder ${run_folder}
