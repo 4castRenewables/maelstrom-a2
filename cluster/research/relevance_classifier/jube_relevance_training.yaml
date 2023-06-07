@@ -20,7 +20,7 @@ parameterset:
       - name: conda_env
         tag: "!e4amd"
         type: string
-        _: a2-benchmarking
+        _: a2
       - name: batch_size
         tag: "!hps"
         type: int
