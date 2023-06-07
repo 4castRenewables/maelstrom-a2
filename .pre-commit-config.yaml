@@ -52,11 +52,8 @@ repos:
       - id: flake8
         additional_dependencies:
           - Flake8-pyproject
-  - repo: local
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.6.1
     hooks:
-      - id: jupyter-nb-clear-output
-        name: jupyter-nb-clear-output
-        stages: [commit]
-        language: system
-        files: \.ipynb$
-        entry: poetry run jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace
+      - id: nbstripout
