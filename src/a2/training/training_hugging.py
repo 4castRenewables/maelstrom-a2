@@ -32,7 +32,7 @@ class HyperParametersDebertaClassifier:
     lr_scheduler_type: str = "linear"
 
 
-def _compute_metrics(eval_pred):
+def _compute_metrics(eval_pred, label="raining"):
     """
     Adopt Hugging Face metric output to prefered metric
     (f1-score) for this project
@@ -40,6 +40,7 @@ def _compute_metrics(eval_pred):
     Parameters:
     ----------
     eval_pred: Predictions and labels of Hugging Face model while training
+    label: Label name of the classification
 
     Returns
     -------
@@ -50,16 +51,16 @@ def _compute_metrics(eval_pred):
     classification_report = a2.plotting.analysis.classification_report(
         labels,
         predictions,
-        target_names=["not raining", "raining"],
+        label=label,
         output_dict=True,
     )
     f1_weighted_average = classification_report["weighted avg"]["f1-score"]
     f1_macro_average = classification_report["macro avg"]["f1-score"]
-    f1_not_raining = classification_report["not raining"]["f1-score"]
-    f1_raining = classification_report["raining"]["f1-score"]
+    f1_not = classification_report[f"not {label}"]["f1-score"]
+    f1 = classification_report[label]["f1-score"]
     return {
-        "f1_not_raining": f1_not_raining,
-        "f1_raining": f1_raining,
+        f"f1_not_{label}": f1_not,
+        f"f1_{label}": f1,
         "f1_weighted_average": f1_weighted_average,
         "f1_macro_average": f1_macro_average,
     }
@@ -116,6 +117,7 @@ class HuggingFaceTrainerClass:
         eval_steps: int | None = 100,
         save_strategy: str = "epoch",
         load_best_model_at_end: bool = True,
+        label: str = "raining",
     ):
         """
         Returns Hugging Face trainer object
@@ -141,6 +143,7 @@ class HuggingFaceTrainerClass:
         eval_steps: Number of steps between evaluation (only used if `evaluation_strategy`="steps")
         save_strategy: When to save best model "steps" or "epoch"
         load_best_model_at_end: Load best model at end of training
+        label: Label name of the classification
 
         Returns
         -------
@@ -190,12 +193,13 @@ class HuggingFaceTrainerClass:
                 load_best_model_at_end=load_best_model_at_end,
             )
         model_init = functools.partial(self.get_model, mantik=mantik, base_model_trainable=base_model_trainable)
+        _partial_compute_metrics = functools.partial(_compute_metrics, label=label)
         if evaluate:
             return trainer_class(
                 model_init=model_init,
                 args=args,
                 tokenizer=tokenizer,
-                compute_metrics=_compute_metrics,
+                compute_metrics=_partial_compute_metrics,
                 callbacks=callbacks,
             )
         train_dataset, eval_dataset = _get_training_evaluation_datasets(dataset)
@@ -205,7 +209,7 @@ class HuggingFaceTrainerClass:
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
             tokenizer=tokenizer,
-            compute_metrics=_compute_metrics,
+            compute_metrics=_partial_compute_metrics,
             callbacks=callbacks,
         )
 

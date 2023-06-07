@@ -103,7 +103,9 @@ class Tracker:
         return mlflow.get_experiment_by_name(*args, **kwargs)
 
 
-def log_metric_classification_report(tracker: Tracker, truth: t.Sequence, predictions: t.Sequence, step: int = 1):
+def log_metric_classification_report(
+    tracker: Tracker, truth: t.Sequence, predictions: t.Sequence, step: int = 1, label: str = "raining"
+):
     """
     Compute f1 score and logs results to mlflow
 
@@ -113,6 +115,7 @@ def log_metric_classification_report(tracker: Tracker, truth: t.Sequence, predic
     predictions: Predicted labels
     prediction_probabilities: Prediction probability for both labels, shape = [n_tests, 2]
     Step: Current training stop (epoch)
+    label: Label name of the classification
 
     Returns
     -------
@@ -123,22 +126,23 @@ def log_metric_classification_report(tracker: Tracker, truth: t.Sequence, predic
         prediction=predictions,
         filename="confusion_matrix.pdf",
         output_dict=True,
+        label=label,
     )
     logging.info(classification_report)
-    log_classification_report(tracker, classification_report, step)
+    log_classification_report(tracker, classification_report, step, label)
     tracker.log_artifact("confusion_matrix.pdf")
 
 
-def log_classification_report(tracker, classification_report, step):
+def log_classification_report(tracker, classification_report, step, label):
     initialize_mantik()
     tracker.log_metric(
-        key="eval_f1_raining",
-        value=classification_report["raining"]["f1-score"],
+        key=f"eval_f1_{label}",
+        value=classification_report[label]["f1-score"],
         step=step,
     )
     tracker.log_metric(
-        key="eval_f1_not_raining",
-        value=classification_report["not raining"]["f1-score"],
+        key=f"eval_f1_not_{label}",
+        value=classification_report[f"not {label}"]["f1-score"],
         step=step,
     )
     tracker.log_metric(
