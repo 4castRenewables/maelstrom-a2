@@ -83,16 +83,13 @@ parameterset:
         _: /p/project/deepacf/maelstrom/ehlert1/data/dataset_split/2017-2020/
       - name: filename_dataset_train
         type: string
-        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_ra\
-dar_train.nc
+        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc
       - name: filename_dataset_validate
         type: string
-        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta\
-_radar_validate.nc
+        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc
       - name: filename_dataset_test
         type: string
-        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta\
-_radar_test.nc
+        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc
       - name: slurm_output
         type: string
         _: "$jube_wp_abspath/slurm-out.%j"
