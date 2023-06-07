@@ -75,10 +75,7 @@ def plot_prediction_certainty(
 
 
 def classification_report(
-    truth: t.Sequence,
-    prediction: t.Sequence,
-    target_names: t.Optional[t.Sequence[str]] = None,
-    output_dict: bool = True,
+    truth: t.Sequence, prediction: t.Sequence, output_dict: bool = True, label: str = "raining"
 ) -> t.Union[str, t.Mapping]:
     """
     Compute classification report, returns precision, recall, f1-score
@@ -89,15 +86,14 @@ def classification_report(
     ----------
     truth: true labels
     prediction: predicted labels
-    target_names: names of labels
     output_dict: return report as dictionary rather than string
+    label: Label name of the classification
 
     Returns
     -------
     report
     """
-    if target_names is None:
-        target_names = ["not raining", "raining"]
+    target_names = [f"not {label}", label]
     report = sklearn.metrics.classification_report(
         truth,
         prediction,
@@ -112,18 +108,21 @@ def check_prediction(
     prediction: t.Sequence,
     output_dict: bool = True,
     filename: t.Union[str, pathlib.Path] | None = None,
+    label: str = "raining",
 ):
     plot_confusion_matrix(
         truth,
         prediction,
         filename=filename,
         overplot_round_base=2,
+        tick_labels_x=(f"not {label}", f"{label}"),
+        tick_labels_y=(f"{label}", f"not {label}"),
     )
 
     report = classification_report(
         truth,
         prediction,
-        target_names=["not raining", "raining"],
+        label=label,
         output_dict=output_dict,
     )
     return report

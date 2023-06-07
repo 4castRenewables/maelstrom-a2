@@ -17,6 +17,7 @@ def build_ds_test(
     indices_test: np.ndarray | None,
     predictions: np.ndarray,
     prediction_probabilities: np.ndarray,
+    label: str = "raining",
 ) -> xarray.Dataset:
     """
     Construct test dataset where test data is defined by their indices
@@ -29,7 +30,7 @@ def build_ds_test(
     predictions: Predicted labels
     prediction_probabilities: Prediction probability for both labels,
                               shape = [n_tests, 2]
-
+    label: Label name of the classification
     Returns
     -------
     xarray.Dataset
@@ -39,11 +40,11 @@ def build_ds_test(
     else:
         ds_test = ds.copy()
     ds_test["prediction"] = (["index"], predictions)
-    ds_test["prediction_probability_not_raining"] = (
+    ds_test[f"prediction_probability_not_{label}"] = (
         ["index"],
         prediction_probabilities[:, 0],
     )
-    ds_test["prediction_probability_raining"] = (
+    ds_test[f"prediction_probability_{label}"] = (
         ["index"],
         prediction_probabilities[:, 1],
     )

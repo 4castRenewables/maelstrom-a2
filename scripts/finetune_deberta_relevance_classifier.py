@@ -5,6 +5,9 @@ import os
 import a2.dataset
 import a2.plotting
 import a2.training.benchmarks
+import a2.training.tracking
+import a2.training.tracking_hugging
+import a2.training.training_deep500
 import a2.utils
 import numpy as np
 import utils_scripts
@@ -34,6 +37,10 @@ def main(args):
 
     def get_dataset(filename, dataset_object):
         ds_raw = a2.dataset.load_dataset.load_tweets_dataset(filename, raw=True)
+        ds_raw.drop_vars(
+            ["prediction", "prediction_probability_not_raining", "prediction_probability_raining", "raining"],
+            errors="ignore",
+        )
         if args.debug:
             ds_raw = ds_raw.sel(index=slice(0, 100))
         ds_raw[args.key_input] = (["index"], ds_raw[args.key_text].values.copy())
@@ -111,6 +118,7 @@ def main(args):
             base_model_trainable=not args.base_model_weights_fixed,
             eval_steps=args.eval_steps,
             evaluation_strategy=args.evaluation_strategy,
+            label=args.key_output,
         )
         tracker.log_params(trainer_object.hyper_parameters.__dict__)
         tracker.log_params(args.__dict__)
@@ -133,22 +141,27 @@ def main(args):
             indices_test=None,
             predictions=predictions,
             prediction_probabilities=prediction_probabilities,
+            label=args.key_output,
         )
-        truth = ds_test_predicted.raining.values
+        truth = ds_test_predicted[args.key_output].values
 
-        a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=hyper_parameters.epochs)
+        a2.training.tracking.log_metric_classification_report(
+            tracker, truth, predictions, step=hyper_parameters.epochs, label=args.key_output
+        )
 
         filename_certainty_plot = os.path.join(path_figures, "plot_2d_predictions_truth.pdf")
         a2.plotting.analysis.plot_prediction_certainty(
-            truth=ds_test_predicted["raining"].values,
-            prediction_probabilities=ds_test_predicted["prediction_probability_raining"].values,
+            truth=ds_test_predicted[args.key_output].values,
+            prediction_probabilities=ds_test_predicted[f"prediction_probability_{args.key_output}"].values,
             filename=filename_certainty_plot,
+            label_x="True label",
+            label_y=f"Prediction probability for '{args.key_output}'",
         )
         tracker.log_artifact(filename_certainty_plot)
 
         filename_roc_plot = os.path.join(path_figures, "roc.pdf")
         a2.plotting.analysis.plot_roc(
-            ds_test_predicted.raining.values, prediction_probabilities[:, 1], filename=filename_roc_plot
+            ds_test_predicted[args.key_output].values, prediction_probabilities[:, 1], filename=filename_roc_plot
         )
         tracker.log_artifact(filename_roc_plot)
         logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
