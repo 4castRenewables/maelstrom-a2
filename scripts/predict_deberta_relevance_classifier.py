@@ -102,14 +102,13 @@ def main(args):
                 tracker,
                 memory_tracker,
             )
-
-        filename_prediction_histogram = os.path.join(path_figures, "prediction_histogram.pdf")
-        a2.plotting.histograms.plot_histogram(
-            f"prediction_{args.key_output}",
+        utils_scripts.plot_and_log_histogram(
             ds_test_predicted,
-            filename=filename_prediction_histogram,
+            f"prediction_{args.key_output}",
+            path_figures,
+            tracker=tracker,
+            filename="prediction_histogram.pdf",
         )
-        tracker.log_artifact(filename_prediction_histogram)
 
 
 if __name__ == "__main__":
