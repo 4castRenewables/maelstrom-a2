@@ -9,7 +9,6 @@ import a2.training.tracking
 import a2.training.tracking_hugging
 import a2.training.training_deep500
 import a2.utils
-import numpy as np
 import utils_scripts
 from a2.training import benchmarks as timer
 
@@ -35,36 +34,10 @@ def main(args):
 
     dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
 
-    def get_dataset(filename, dataset_object):
-        ds_raw = a2.dataset.load_dataset.load_tweets_dataset(filename, raw=True)
-        ds_raw.drop_vars(
-            ["prediction", "prediction_probability_not_raining", "prediction_probability_raining", "raining"],
-            errors="ignore",
-        )
-        if args.debug:
-            ds_raw = ds_raw.sel(index=slice(0, 100))
-        ds_raw[args.key_input] = (["index"], ds_raw[args.key_text].values.copy())
-
-        N_tweets = ds_raw.index.shape[0]
-        logging.info(f"loaded {N_tweets} tweets: from {filename}")
-
-        if args.classifier_domain == "rain":
-            ds_raw[args.key_output] = (
-                ["index"],
-                np.array(ds_raw[args.key_rain].values > args.threshold_rain, dtype=int),
-            )
-        elif args.classifier_domain == "relevance":
-            ds_raw[args.key_output] = (["index"], np.array(ds_raw[args.key_relevance].values, dtype=int))
-        else:
-            raise NotImplementedError(f"{args.classifier_domain} not implemented!")
-
-        dataset = dataset_object.build(ds_raw, None, None, key_inputs=args.key_input, key_label=args.key_output)
-        return dataset, ds_raw
-
     path_output = utils_scripts._determine_path_output(args)
-    dataset_train, _ = get_dataset(f"{args.filename_dataset_train}", dataset_object)
-    dataset_validate, _ = get_dataset(f"{args.filename_dataset_validate}", dataset_object)
-    dataset_test, ds_test = get_dataset(f"{args.filename_dataset_test}", dataset_object)
+    dataset_train, _ = utils_scripts.get_dataset(args, f"{args.filename_dataset_train}", dataset_object)
+    dataset_validate, _ = utils_scripts.get_dataset(args, f"{args.filename_dataset_validate}", dataset_object)
+    dataset_test, ds_test = utils_scripts.get_dataset(args, f"{args.filename_dataset_test}", dataset_object)
 
     hyper_parameters = a2.training.training_hugging.HyperParametersDebertaClassifier(
         learning_rate=args.learning_rate,
@@ -172,6 +145,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     a2.utils.argparse.dataset_relevance(parser)
+    a2.utils.argparse.dataset_training(parser)
     a2.utils.argparse.classifier(parser)
     a2.utils.argparse.mlflow(parser)
     a2.utils.argparse.hyperparameter(parser)
