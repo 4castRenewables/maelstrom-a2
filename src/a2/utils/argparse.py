@@ -241,6 +241,7 @@ def hyperparameter_basic(parser):
 
 
 def hyperparameter(parser):
+    hyperparameter_basic(parser)
     parser.add_argument("--number_epochs", "-nepochs", type=int, default=1, help="Numer of epochs to train.")
     parser.add_argument("--batch_size", "-bs", type=int, default=32, help="Number of samples per mini-batch.")
     parser.add_argument("--learning_rate", "-lr", type=float, default=3e-05, help="Learning rate to train model.")
