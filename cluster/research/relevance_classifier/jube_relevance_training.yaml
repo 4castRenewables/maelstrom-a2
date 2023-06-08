@@ -282,6 +282,7 @@ parameterset:
           --batch_size ${batch_size}
           --weight_decay ${weight_decay}
           --iteration ${iteration}
+          --ignore_tracking
           ${weightsfixed}
       - name: args_exec
         tag: relevanceprediction
