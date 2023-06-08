@@ -1,4 +1,5 @@
 import argparse
+import pathlib
 
 import a2.utils
 
@@ -68,6 +69,9 @@ def classifier(parser):
         choices=["rain", "relevant"],
         help="Column name of dataset that corresponds to output of classifier.",
     )
+
+
+def dataset_training(parser):
     parser.add_argument(
         "--filename_dataset_train", required=True, type=str, help="Filename of dataset used for training."
     )
@@ -124,7 +128,6 @@ def dataset_relevance(parser):
         help="Number of irrelevant tweets used to create dataset, "
         "use all irrelevant tweets by default (`n_tweets_irrelevant=-1`).",
     )
-
     parser.add_argument(
         "--key_relevance",
         type=str,
@@ -173,6 +176,27 @@ def dataset_relevance_split(parser):
     )
 
 
+def predict_model(parser):
+    parser.add_argument(
+        "--filename_dataset_predict",
+        required=True,
+        type=pathlib.Path,
+        help="Filename of dataset that predictions will be made for.",
+    )
+    parser.add_argument(
+        "--path_raw_model",
+        type=str,
+        required=True,
+        help="Directory where untrained model saved.",
+    )
+    parser.add_argument(
+        "--path_trained_model",
+        type=str,
+        required=True,
+        help="Directory where trained model saved.",
+    )
+
+
 def model(parser):
     parser.add_argument(
         "--model_path",
@@ -212,6 +236,8 @@ def mlflow(parser):
 
 def hyperparameter_basic(parser):
     parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
+    parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
+    parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
 
 
 def hyperparameter(parser):
@@ -227,8 +253,6 @@ def hyperparameter(parser):
     parser.add_argument("--cls_dropout", "-cd", type=float, default=0.1, help="Dropout probability in classifier head.")
     parser.add_argument("--lr_scheduler_type", "-lst", type=str, default="linear", help="Learning rate scheduler type.")
 
-    parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
-    parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
     parser.add_argument(
         "--base_model_weights_fixed",
         "-weightsfixed",

@@ -104,7 +104,7 @@ class Tracker:
 
 
 def log_metric_classification_report(
-    tracker: Tracker, truth: t.Sequence, predictions: t.Sequence, step: int = 1, label: str = "raining"
+    tracker: Tracker, truth: t.Sequence, predictions: t.Sequence, step: int | None = 1, label: str = "raining"
 ):
     """
     Compute f1 score and logs results to mlflow
