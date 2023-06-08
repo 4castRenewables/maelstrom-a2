@@ -39,7 +39,7 @@ def build_ds_test(
         ds_test = ds.sel(index=indices_test)
     else:
         ds_test = ds.copy()
-    ds_test["prediction"] = (["index"], predictions)
+    ds_test[f"prediction_{label}"] = (["index"], predictions)
     ds_test[f"prediction_probability_not_{label}"] = (
         ["index"],
         prediction_probabilities[:, 0],

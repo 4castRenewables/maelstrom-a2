@@ -60,6 +60,9 @@ parameterset:
       - name: model_path
         tag: e4
         _: /data/maelstrom/kehlert/models/deberta-v3-small
+      - name: path_trained_model
+        tag: "jwb|jwc"
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000006/000000_submit/work/output_model/relevance_classification/
       - name: indir
         type: string
         tag: "jwb|jwc"
@@ -90,6 +93,9 @@ parameterset:
       - name: filename_dataset_test
         type: string
         _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc
+      - name: filename_dataset_predict
+        type: string
+        _: ${folder_split}/RainingClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc
       - name: slurm_output
         type: string
         _: "$jube_wp_abspath/slurm-out.%j"
@@ -277,6 +283,17 @@ parameterset:
           --weight_decay ${weight_decay}
           --iteration ${iteration}
           ${weightsfixed}
+      - name: args_exec
+        tag: relevanceprediction
+        mode: text
+        _: >
+          --filename_dataset_predict ${filename_dataset_predict}
+          --path_raw_model ${model_path}
+          --path_trained_model ${path_trained_model}
+          --output_dir ${outdir}
+          --task_name relevance_prediction
+          --classifier_domain relevance
+          --key_output relevant
 
 patternset:
    - name: perf_patterns
