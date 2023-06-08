@@ -62,7 +62,7 @@ parameterset:
         _: /data/maelstrom/kehlert/models/deberta-v3-small
       - name: path_trained_model
         tag: "jwb|jwc"
-        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000006/000000_submit/work/output_model/relevance_classification/
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000006/000000_submit/work/output_model/relevance_classification/checkpoint-4365/
       - name: indir
         type: string
         tag: "jwb|jwc"
