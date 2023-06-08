@@ -17,8 +17,6 @@ def dataset_tweets(parser):
         default=a2.utils.file_handling.get_folder_data() / "tweets/",
         help="Directory where input netCDF-files are stored.",
     )
-    parser.add_argument("--test_size", "-ts", type=float, default=0.2, help="Fraction of test set.")
-    parser.add_argument("--validation_size", "-vs", type=float, default=0.2, help="Fraction of validation set.")
 
 
 def dataset(parser):
@@ -59,7 +57,7 @@ def classifier(parser):
         "--key_input",
         type=str,
         default="text",
-        choices=["rain"],
+        choices=["text"],
         help="Column name of dataset that corresponds to input of classifier.",
     )
     parser.add_argument(
@@ -176,6 +174,23 @@ def dataset_relevance_split(parser):
     )
 
 
+def dataset_split(parser):
+    parser.add_argument("--test_size", "-ts", type=float, default=0.2, help="Fraction of test set.")
+    parser.add_argument("--validation_size", "-vs", type=float, default=0.2, help="Fraction of validation set.")
+    parser.add_argument(
+        "--filename_dataset_to_split",
+        required=True,
+        type=pathlib.Path,
+        help="Filename of dataset that will be split.",
+    )
+    parser.add_argument(
+        "--key_stratify",
+        type=str,
+        default=None,
+        help="Key used to stratify dataset split.",
+    )
+
+
 def predict_model(parser):
     parser.add_argument(
         "--filename_dataset_predict",
@@ -221,6 +236,7 @@ def run(parser):
 
 
 def mlflow(parser):
+    figures(parser)
     parser.add_argument("--run_name", type=str, default="era5 whole dataset", help="Name of run used for logging only.")
     parser.add_argument(
         "--mlflow_experiment_name",
@@ -229,6 +245,8 @@ def mlflow(parser):
         help="Name MLflow experiment where results are logged.",
     )
 
+
+def figures(parser):
     parser.add_argument(
         "--figure_folder", type=str, default="figures/", help="Directory where input netCDF-files are stored."
     )

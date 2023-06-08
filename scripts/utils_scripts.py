@@ -15,7 +15,7 @@ def _determine_path_output(args):
     return path_output
 
 
-def get_dataset(args, filename, dataset_object, prediction_dataset=False):
+def get_dataset(args, filename, dataset_object, prediction_dataset=False, build_hugging_dataset=True):
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(filename, raw=True)
     if args.debug:
         ds_raw = ds_raw.sel(index=slice(0, 100))
@@ -33,9 +33,16 @@ def get_dataset(args, filename, dataset_object, prediction_dataset=False):
             ds_raw[args.key_output] = (["index"], np.array(ds_raw[args.key_relevance].values, dtype=int))
         else:
             raise NotImplementedError(f"{args.classifier_domain} not implemented!")
-    dataset = dataset_object.build(
-        ds_raw, None, None, key_inputs=args.key_input, key_label=args.key_output, prediction_dataset=prediction_dataset
-    )
+    dataset = None
+    if build_hugging_dataset:
+        dataset = dataset_object.build(
+            ds_raw,
+            None,
+            None,
+            key_inputs=args.key_input,
+            key_label=args.key_output,
+            prediction_dataset=prediction_dataset,
+        )
     return dataset, ds_raw
 
 
@@ -64,3 +71,14 @@ def evaluate_model(
     logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
     if args.log_gpu_memory:
         memory_tracker.get_cuda_memory_usage("Finished run")
+
+
+def plot_and_log_histogram(ds, key, path_figures, tracker=None, filename="prediction_histogram.pdf"):
+    filename_prediction_histogram = os.path.join(path_figures, filename)
+    a2.plotting.histograms.plot_histogram(
+        key,
+        ds,
+        filename=filename_prediction_histogram,
+    )
+    if tracker is not None:
+        tracker.log_artifact(filename_prediction_histogram)

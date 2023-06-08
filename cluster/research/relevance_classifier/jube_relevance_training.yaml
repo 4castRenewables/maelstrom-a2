@@ -297,6 +297,7 @@ parameterset:
           --task_name relevance_prediction
           --classifier_domain relevance
           --key_output relevant
+          --mlflow_experiment_name maelstrom-a2-relevance
 
 patternset:
    - name: perf_patterns
