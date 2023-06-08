@@ -228,10 +228,13 @@ parameterset:
         _: gpu:$gpus
       - name: executable
         tag: rain
-        _: python -u $jube_benchmark_home/../../scripts/finetune_deberta.py
+        _: python -u $jube_benchmark_home/../../../scripts/finetune_deberta.py
       - name: executable
         tag: relevance
         _: python -u $jube_benchmark_home/../../../scripts/finetune_deberta_relevance_classifier.py
+      - name: executable
+        tag: relevanceprediction
+        _: python -u $jube_benchmark_home/../../../scripts/predict_deberta_relevance_classifier.py
       - name: submit_cmd
         _: sbatch
       - name: visible_devices
