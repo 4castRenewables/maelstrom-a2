@@ -113,6 +113,7 @@ class HuggingFaceTrainerClass:
         base_model_trainable: bool = True,
         trainer_class=transformers.Trainer,
         logging_steps: int = 500,
+        save_steps: int = 500,
         evaluation_strategy: str = "steps",
         eval_steps: int | None = 100,
         save_strategy: str = "epoch",
@@ -162,6 +163,12 @@ class HuggingFaceTrainerClass:
                 f"(required when {load_best_model_at_end=} = True)"
             )
             save_strategy = evaluation_strategy
+            eval_steps, save_steps, logging_steps = set_evaluation_save_logging_steps(
+                evaluation_strategy=evaluation_strategy,
+                eval_steps=eval_steps,
+                logging_steps=logging_steps,
+                save_steps=save_steps,
+            )
         if not hyper_tuning:
             args = transformers.TrainingArguments(
                 folder_output,
@@ -178,9 +185,10 @@ class HuggingFaceTrainerClass:
                 weight_decay=hyper_parameters.weight_decay,
                 report_to=None,
                 eval_steps=eval_steps,
+                save_steps=save_steps,
                 save_strategy=save_strategy,
-                load_best_model_at_end=load_best_model_at_end,
                 logging_steps=logging_steps,
+                load_best_model_at_end=load_best_model_at_end,
             )
         else:
             args = transformers.TrainingArguments(
@@ -312,3 +320,27 @@ def split_training_set_tripple(
             shuffle=shuffle,
         )
     return indices_train, indices_validate, indices_test
+
+
+def set_evaluation_save_logging_steps(
+    evaluation_strategy: str, eval_steps: int = 500, logging_steps: None | int = None, save_steps: None | int = None
+):
+    logging.info(f"User choice: {eval_steps=} {logging_steps=} {save_steps=}, ({evaluation_strategy=})")
+    if eval_steps is None:
+        raise ValueError(f"{eval_steps=} cannot be None!")
+    if evaluation_strategy == "epoch":
+        # eval_steps is ignored
+        pass
+    elif evaluation_strategy == "steps":
+        if eval_steps is not None:
+            save_steps = eval_steps
+    elif evaluation_strategy == "no":
+        pass
+    else:
+        raise ValueError(f"{evaluation_strategy=} not known!")
+    if logging_steps is None:
+        logging_steps = eval_steps
+    if save_steps is None:
+        save_steps = eval_steps
+    logging.info(f"Setting: {eval_steps=} {logging_steps=} {save_steps=}, ({evaluation_strategy=})")
+    return eval_steps, save_steps, logging_steps

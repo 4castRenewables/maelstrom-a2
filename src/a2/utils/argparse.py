@@ -291,6 +291,8 @@ def hyperparameter(parser):
         action="store_true",
         help="Weights of base model (without classification head) are fixed (not trainable).",
     )
+    parser.add_argument("--save_steps", type=int, default=500, help="Steps after which model is saved.")
+    parser.add_argument("--logging_steps", type=int, default=1, help="Steps after which model logs are written.")
 
 
 def benchmarks(parser):
