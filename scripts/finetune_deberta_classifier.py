@@ -8,6 +8,7 @@ import a2.training.benchmarks
 import a2.training.tracking
 import a2.training.tracking_hugging
 import a2.training.training_deep500
+import a2.training.training_hugging
 import a2.utils
 import utils_scripts
 from a2.training import benchmarks as timer
@@ -91,9 +92,10 @@ def main(args):
                 a2.training.tracking_hugging.LogCallback(tracker),
             ],
             trainer_class=a2.training.training_deep500.TrainerWithTimer,
-            logging_steps=1,
             base_model_trainable=not args.base_model_weights_fixed,
             eval_steps=args.eval_steps,
+            logging_steps=args.logging_steps,
+            save_steps=args.save_steps,
             evaluation_strategy=args.evaluation_strategy,
             label=args.key_output,
         )
