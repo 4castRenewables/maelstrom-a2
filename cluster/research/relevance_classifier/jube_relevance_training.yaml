@@ -53,7 +53,7 @@ parameterset:
         _: ""
       - name: evaluation_strategy
         type: string
-        _: "epoch"
+        _: steps
       - name: eval_steps
         type: int
         _: 5000
