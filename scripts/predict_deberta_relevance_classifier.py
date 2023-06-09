@@ -88,7 +88,7 @@ def main(args):
         )
         a2.dataset.load_dataset.save_dataset(
             ds_test_predicted,
-            filename=f"{path_output}/{args.filename_dataset_predict.name}_{args.key_output}_predicted.nc",
+            filename=f"{path_output}/{args.filename_dataset_predict.stem}_{args.key_output}_predicted.nc",
         )
 
         # only "evaluate" prediction if true label present in dataset

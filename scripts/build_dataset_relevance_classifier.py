@@ -151,6 +151,7 @@ def _initialize_tracking(args):
 if __name__ == "__main__":
     parser = a2.utils.argparse.get_parser()
     a2.utils.argparse.dataset_tweets(parser)
+    a2.utils.argparse.dataset_split_sizes(parser)
     a2.utils.argparse.dataset_rain(parser)
     a2.utils.argparse.dataset_relevance(parser)
     a2.utils.argparse.dataset_relevance_split(parser)
