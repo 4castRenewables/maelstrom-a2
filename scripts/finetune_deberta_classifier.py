@@ -67,8 +67,6 @@ def main(args):
         memory_tracker.reset_cuda_memory_monitoring()
     with tracker.start_run(run_name=args.run_name, experiment_id=experiment_id):
         tmr = timer.Timer()
-        print(f"{dataset_train=}")
-        print(f"{dir(dataset_train)=}")
         tracker.log_params(
             {
                 "N_tweets_train": len(dataset_train["index"]),
