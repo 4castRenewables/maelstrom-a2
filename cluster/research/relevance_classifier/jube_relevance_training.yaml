@@ -84,15 +84,24 @@ parameterset:
       - name: folder_split
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/data/dataset_split/2017-2020/
-      - name: filename_dataset_train
+      - name: filename_dataset_train_relevance
         type: string
         _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc
-      - name: filename_dataset_validate
+      - name: filename_dataset_validate_relevance
         type: string
         _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc
-      - name: filename_dataset_test
+      - name: filename_dataset_test_relevance
         type: string
         _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc
+      - name: filename_dataset_train_rain
+        type: string
+        _: ${folder_split}/RainingClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_relevant_predicted_train.nc
+      - name: filename_dataset_validate_rain
+        type: string
+        _: ${folder_split}/RainingClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_relevant_predicted_validate.nc
+      - name: filename_dataset_test_rain
+        type: string
+        _: ${folder_split}/RainingClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_relevant_predicted_test.nc
       - name: filename_dataset_predict
         type: string
         _: ${folder_split}/RainingClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc
@@ -158,6 +167,7 @@ parameterset:
           source ~/.bashrc
           ${modules}
           export ${visible_devices}
+          export GIT_PYTHON_REFRESH=quiet
           conda activate ${conda_env}
           which python
           pip list
@@ -246,32 +256,13 @@ parameterset:
         tag: e4
         _: ""
       - name: args_exec
-        tag: rain
-        mode: text
-        _: >
-          --run_folder ${run_folder}
-          --log_gpu_memory
-          --run_name ${run_name}
-          --data_filename ${data_filename}
-          -lr ${lr}
-          -nepochs ${nepochs}
-          --data_dir ${indir}
-          -jid $${SLURM_JOBID}
-          --batch_size ${batch_size}
-          --key_rain ${key_rain}
-          --model_path ${model_path}
-          --output_dir ${outdir}
-          --weight_decay ${weight_decay}
-          --iteration ${iteration}
-          ${weightsfixed}
-      - name: args_exec
         tag: relevance
         mode: text
         _: >
           --model_path ${model_path}
-          --filename_dataset_train ${filename_dataset_train}
-          --filename_dataset_validate ${filename_dataset_validate}
-          --filename_dataset_test ${filename_dataset_test}
+          --filename_dataset_train ${filename_dataset_train_relevance}
+          --filename_dataset_validate ${filename_dataset_validate_relevance}
+          --filename_dataset_test ${filename_dataset_test_relevance}
           --output_dir ${outdir}
           --log_gpu_memory
           --run_name ${run_name}
@@ -287,13 +278,35 @@ parameterset:
           --iteration ${iteration}
           ${weightsfixed}
       - name: args_exec
+        tag: rain
+        mode: text
+        _: >
+          --model_path ${model_path}
+          --filename_dataset_train ${filename_dataset_train_rain}
+          --filename_dataset_validate ${filename_dataset_validate_rain}
+          --filename_dataset_test ${filename_dataset_test_rain}
+          --output_dir ${outdir}
+          --log_gpu_memory
+          --run_name ${run_name}
+          -jid $${SLURM_JOBID}
+          --mlflow_experiment_name maelstrom-a2-rain
+          -lr ${lr}
+          -nepochs ${nepochs}
+          --task_name rain_classification
+          --classifier_domain rain
+          --key_output raining
+          --batch_size ${batch_size}
+          --weight_decay ${weight_decay}
+          --iteration ${iteration}
+          ${weightsfixed}
+      - name: args_exec
         tag: relevanceprediction
         mode: text
         _: >
           --filename_dataset_predict ${filename_dataset_predict}
           --path_raw_model ${model_path}
           --path_trained_model ${path_trained_model}
-          --output_dir ${outdir}
+          --output_dir ${folder_split}
           --task_name relevance_prediction
           --classifier_domain relevance
           --key_output relevant
