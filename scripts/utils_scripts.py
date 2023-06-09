@@ -15,7 +15,7 @@ def _determine_path_output(args):
     return path_output
 
 
-def get_dataset(args, filename, dataset_object, prediction_dataset=False, build_hugging_dataset=True):
+def get_dataset(args, filename, dataset_object, set_labels=False, build_hugging_dataset=True):
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(filename, raw=True)
     if args.debug:
         ds_raw = ds_raw.sel(index=slice(0, 100))
@@ -23,7 +23,7 @@ def get_dataset(args, filename, dataset_object, prediction_dataset=False, build_
 
     N_tweets = ds_raw.index.shape[0]
     logging.info(f"loaded {N_tweets} tweets: from {filename}")
-    if not prediction_dataset:
+    if set_labels:
         if args.classifier_domain == "rain":
             ds_raw[args.key_output] = (
                 ["index"],
@@ -41,7 +41,7 @@ def get_dataset(args, filename, dataset_object, prediction_dataset=False, build_
             None,
             key_inputs=args.key_input,
             key_label=args.key_output,
-            prediction_dataset=prediction_dataset,
+            prediction_dataset=set_labels,
         )
     return dataset, ds_raw
 

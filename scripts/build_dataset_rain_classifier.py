@@ -19,7 +19,7 @@ def main(args):
     path_output = utils_scripts._determine_path_output(args)
 
     _, ds_raw = utils_scripts.get_dataset(
-        args, args.filename_dataset_to_split, dataset_object=None, prediction_dataset=False, build_hugging_dataset=False
+        args, args.filename_dataset_to_split, dataset_object=None, set_labels=True, build_hugging_dataset=False
     )
 
     ds_selected = select_dataset(args, ds_raw)

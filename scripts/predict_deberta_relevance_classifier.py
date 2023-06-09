@@ -38,7 +38,7 @@ def main(args):
 
     path_output = utils_scripts._determine_path_output(args)
     dataset_predict, ds_predict = utils_scripts.get_dataset(
-        args, args.filename_dataset_predict, dataset_object, prediction_dataset=True
+        args, args.filename_dataset_predict, dataset_object, set_labels=False
     )
 
     path_figures = os.path.join(path_output, args.figure_folder)
