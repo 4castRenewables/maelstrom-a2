@@ -108,6 +108,15 @@ def dataset_rain(parser):
 
 def dataset_relevance(parser):
     parser.add_argument(
+        "--key_relevance",
+        type=str,
+        default="relevant",
+        help="Variable name that specifies relevance of Tweet.",
+    )
+
+
+def dataset_relevance_split(parser):
+    parser.add_argument(
         "--filename_tweets_with_keywords",
         type=str,
         default="2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered.nc",
@@ -126,15 +135,6 @@ def dataset_relevance(parser):
         help="Number of irrelevant tweets used to create dataset, "
         "use all irrelevant tweets by default (`n_tweets_irrelevant=-1`).",
     )
-    parser.add_argument(
-        "--key_relevance",
-        type=str,
-        default="relevant",
-        help="Filename of training data.",
-    )
-
-
-def dataset_relevance_split(parser):
     parser.add_argument(
         "--split_dir",
         type=str,
@@ -174,9 +174,13 @@ def dataset_relevance_split(parser):
     )
 
 
-def dataset_split(parser):
+def dataset_split_sizes(parser):
     parser.add_argument("--test_size", "-ts", type=float, default=0.2, help="Fraction of test set.")
     parser.add_argument("--validation_size", "-vs", type=float, default=0.2, help="Fraction of validation set.")
+
+
+def dataset_split(parser):
+    dataset_split_sizes(parser)
     parser.add_argument(
         "--filename_dataset_to_split",
         required=True,
@@ -188,6 +192,15 @@ def dataset_split(parser):
         type=str,
         default=None,
         help="Key used to stratify dataset split.",
+    )
+
+
+def dataset_select(parser):
+    parser.add_argument(
+        "--select_relevant",
+        type=custom_boolean,
+        default=True,
+        help="Whether to only select Tweets as revelant (`args.key_relevance`==True).",
     )
 
 
@@ -299,3 +312,13 @@ def debug(parser):
         action="store_true",
         help="Whether to toggle debug mode.",
     )
+
+
+def custom_boolean(boolean: str) -> bool:
+    """Custom argparse type for booleans"""
+    if boolean == "False" or boolean == "false" or boolean == "0":
+        return False
+    elif boolean == "True" or boolean == "true" or boolean == "1":
+        return True
+    else:
+        raise argparse.ArgumentTypeError(f"Couldn't convert {boolean=} to boolean!")
