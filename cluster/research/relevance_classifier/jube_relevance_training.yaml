@@ -51,6 +51,12 @@ parameterset:
       - name: weightsfixed
         type: string
         _: ""
+      - name: evaluation_strategy
+        type: string
+        _: "epoch"
+      - name: eval_steps
+        type: int
+        _: 5000
       - name: key_rain
         type: string
         _: "tp_h"
@@ -206,7 +212,7 @@ parameterset:
         _: 4
       - name: timelimit
         tag: test
-        _: "01:00:00"
+        _: "02:00:00"
       - name: timelimit
         tag: "!test"
         _: "24:00:00"
@@ -298,6 +304,8 @@ parameterset:
           --batch_size ${batch_size}
           --weight_decay ${weight_decay}
           --iteration ${iteration}
+          --evaluation_strategy ${evaluation_strategy}
+          --eval_steps ${eval_steps}
           ${weightsfixed}
       - name: args_exec
         tag: relevanceprediction
