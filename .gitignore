@@ -40,3 +40,4 @@ notebooks/tmp/
 src/tests/unit/twitter/cassettes
 *.zip
 share/
+*.log

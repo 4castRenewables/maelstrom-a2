@@ -41,7 +41,7 @@ def get_dataset(args, filename, dataset_object, set_labels=False, build_hugging_
             None,
             key_inputs=args.key_input,
             key_label=args.key_output,
-            prediction_dataset=set_labels,
+            prediction_dataset=not set_labels,
         )
     return dataset, ds_raw
 

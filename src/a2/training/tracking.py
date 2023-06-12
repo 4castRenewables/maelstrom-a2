@@ -1,5 +1,6 @@
 import contextlib
 import logging
+import pathlib
 import typing as t
 import warnings
 
@@ -104,7 +105,12 @@ class Tracker:
 
 
 def log_metric_classification_report(
-    tracker: Tracker, truth: t.Sequence, predictions: t.Sequence, step: int | None = 1, label: str = "raining"
+    tracker: Tracker,
+    truth: t.Sequence,
+    predictions: t.Sequence,
+    step: int | None = 1,
+    label: str = "raining",
+    filename_confusion_matrix: pathlib.Path | str = "confusion_matrix.pdf",
 ):
     """
     Compute f1 score and logs results to mlflow
@@ -124,13 +130,13 @@ def log_metric_classification_report(
     classification_report = a2.plotting.analysis.check_prediction(
         truth=truth,
         prediction=predictions,
-        filename="confusion_matrix.pdf",
+        filename=filename_confusion_matrix,
         output_dict=True,
         label=label,
     )
     logging.info(classification_report)
     log_classification_report(tracker, classification_report, step, label)
-    tracker.log_artifact("confusion_matrix.pdf")
+    tracker.log_artifact(filename_confusion_matrix)
 
 
 def log_classification_report(tracker, classification_report, step, label):

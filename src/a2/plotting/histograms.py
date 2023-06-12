@@ -796,8 +796,8 @@ def get_bin_edges(
         raise Exception(f"Need to specify vmin {vmin} and {vmax} or provide data: {data}!")
     if vmin == vmax:
         logging.info(f"{vmin=} == {vmax=}!")
-        vmax -= 0.5
-        vmin += 0.5
+        vmin -= 0.5
+        vmax += 0.5
         logging.info(f"vmax=0, setting {vmin=} and {vmax=}")
     if not log:
         bins = np.linspace(vmin, vmax, n_bins)
