@@ -329,7 +329,7 @@ parameterset:
           --path_raw_model ${model_path}
           --path_trained_model ${path_trained_model_relevance}
           --output_dir ${folder_split}
-          --task_name relevance_prediction
+          --task_name rain_prediction
           --classifier_domain relevance
           --key_output relevant
           --mlflow_experiment_name maelstrom-a2-relevance
