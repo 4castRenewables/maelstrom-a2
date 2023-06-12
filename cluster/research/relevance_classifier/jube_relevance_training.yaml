@@ -73,7 +73,10 @@ parameterset:
       - name: model_path
         tag: e4
         _: /data/maelstrom/kehlert/models/deberta-v3-small
-      - name: path_trained_model
+      - name: path_trained_model_relevance
+        tag: "jwb|jwc"
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000006/000000_submit/work/output_model/relevance_classification/checkpoint-4365/
+      - name: path_trained_model_raining
         tag: "jwb|jwc"
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000006/000000_submit/work/output_model/relevance_classification/checkpoint-4365/
       - name: indir
@@ -115,9 +118,12 @@ parameterset:
       - name: filename_dataset_test_rain
         type: string
         _: ${folder_split}/RainingClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_relevant_predicted_test.nc
-      - name: filename_dataset_predict
+      - name: filename_dataset_predict_relevance
         type: string
         _: ${folder_split}/RainingClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc
+      - name: filename_dataset_predict_rain
+        type: string
+        _: ${folder_split}/WeatherStationDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc
       - name: slurm_output
         type: string
         _: "$jube_wp_abspath/slurm-out.%j"
@@ -250,13 +256,10 @@ parameterset:
       - name: gres
         _: gpu:$gpus
       - name: executable
-        tag: relevance
+        tag: rain | relevance
         _: python -u $jube_benchmark_home/../../../scripts/finetune_deberta_classifier.py
       - name: executable
-        tag: rain
-        _: python -u $jube_benchmark_home/../../../scripts/finetune_deberta_classifier.py
-      - name: executable
-        tag: relevanceprediction
+        tag: relevanceprediction | rainprediction
         _: python -u $jube_benchmark_home/../../../scripts/predict_deberta_classifier.py
       - name: submit_cmd
         _: sbatch
@@ -320,14 +323,28 @@ parameterset:
         tag: relevanceprediction
         mode: text
         _: >
-          --filename_dataset_predict ${filename_dataset_predict}
+          --filename_dataset_predict ${filename_dataset_predict_relevance}
           --path_raw_model ${model_path}
-          --path_trained_model ${path_trained_model}
+          --path_trained_model ${path_trained_model_relevance}
           --output_dir ${folder_split}
           --task_name relevance_prediction
           --classifier_domain relevance
           --key_output relevant
           --mlflow_experiment_name maelstrom-a2-relevance
+          ${ignore_tracking}
+      - name: args_exec
+        tag: rainprediction
+        mode: text
+        _: >
+          --filename_dataset_predict ${filename_dataset_predict_rain}
+          --path_raw_model ${model_path}
+          --path_trained_model ${path_trained_model_raining}
+          --output_dir ${folder_split}
+          --task_name relevance_prediction
+          --classifier_domain rain
+          --key_output raining
+          --mlflow_experiment_name maelstrom-a2-relevance
+          ${ignore_tracking}
 
 patternset:
    - name: perf_patterns
