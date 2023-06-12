@@ -342,7 +342,7 @@ parameterset:
           --output_dir ${folder_split}
           --task_name relevance_prediction
           --classifier_domain rain
-          --key_output raining
+          --key_output raining_station
           --mlflow_experiment_name maelstrom-a2-relevance
           ${ignore_tracking}
 
