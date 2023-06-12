@@ -60,6 +60,13 @@ parameterset:
       - name: key_rain
         type: string
         _: "tp_h"
+      - name: ignore_tracking
+        type: string
+        _: ""
+      - name: ignore_tracking
+        tag: itracking
+        type: string
+        _: "--ignore_tracking"
       - name: model_path
         tag: "jwb|jwc"
         _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
@@ -282,6 +289,7 @@ parameterset:
           --batch_size ${batch_size}
           --weight_decay ${weight_decay}
           --iteration ${iteration}
+          ${ignore_tracking}
           ${weightsfixed}
       - name: args_exec
         tag: rain
@@ -306,6 +314,7 @@ parameterset:
           --iteration ${iteration}
           --evaluation_strategy ${evaluation_strategy}
           --eval_steps ${eval_steps}
+          ${ignore_tracking}
           ${weightsfixed}
       - name: args_exec
         tag: relevanceprediction
