@@ -255,12 +255,14 @@ parameterset:
         _: develgpus
       - name: gres
         _: gpu:$gpus
+      - name: folder_scripts
+        _: $jube_benchmark_home/../../../scripts/relevance_classifier/
       - name: executable
         tag: rain | relevance
-        _: python -u $jube_benchmark_home/../../../scripts/finetune_deberta_classifier.py
+        _: python -u ${folder_scripts}/finetune_deberta_classifier.py
       - name: executable
         tag: relevanceprediction | rainprediction
-        _: python -u $jube_benchmark_home/../../../scripts/predict_deberta_classifier.py
+        _: python -u ${folder_scripts}/predict_deberta_classifier.py
       - name: submit_cmd
         _: sbatch
       - name: visible_devices
