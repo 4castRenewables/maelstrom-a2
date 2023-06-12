@@ -78,7 +78,7 @@ parameterset:
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000028/000000_submit/work/output_model/relevance_classification/checkpoint-4365/
       - name: path_trained_model_raining
         tag: "jwb|jwc"
-        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000019/000000_submit/work/output_model/rain_classification/checkpoint-20000/
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000030/000000_submit/work/output_model/rain_classification/checkpoint-20000/
       - name: indir
         type: string
         tag: "jwb|jwc"
