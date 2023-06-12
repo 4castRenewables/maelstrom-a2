@@ -122,36 +122,16 @@ def main(args):
             prediction_probabilities=prediction_probabilities,
             label=args.key_output,
         )
-        truth = ds_test_predicted[args.key_output].values
-
-        filename_confusion_matrix = os.path.join(path_figures, "confusion_matrix.pdf")
-        a2.training.tracking.log_metric_classification_report(
-            tracker,
-            truth,
+        utils_scripts.evaluate_model(
+            args,
+            ds_test_predicted,
             predictions,
-            step=hyper_parameters.epochs,
-            label=args.key_output,
-            filename_confusion_matrix=filename_confusion_matrix,
+            prediction_probabilities,
+            path_figures,
+            tracker,
+            memory_tracker,
+            hyper_parameters=hyper_parameters,
         )
-
-        filename_certainty_plot = os.path.join(path_figures, "plot_2d_predictions_truth.pdf")
-        a2.plotting.analysis.plot_prediction_certainty(
-            truth=ds_test_predicted[args.key_output].values,
-            prediction_probabilities=ds_test_predicted[f"prediction_probability_{args.key_output}"].values,
-            filename=filename_certainty_plot,
-            label_x="True label",
-            label_y=f"Prediction probability for '{args.key_output}'",
-        )
-        tracker.log_artifact(filename_certainty_plot)
-
-        filename_roc_plot = os.path.join(path_figures, "roc.pdf")
-        a2.plotting.analysis.plot_roc(
-            ds_test_predicted[args.key_output].values, prediction_probabilities[:, 1], filename=filename_roc_plot
-        )
-        tracker.log_artifact(filename_roc_plot)
-        logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
-        if args.log_gpu_memory:
-            memory_tracker.get_cuda_memory_usage("Finished run")
 
 
 if __name__ == "__main__":
