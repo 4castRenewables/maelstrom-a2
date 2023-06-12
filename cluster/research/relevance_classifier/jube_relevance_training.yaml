@@ -257,7 +257,7 @@ parameterset:
         _: python -u $jube_benchmark_home/../../../scripts/finetune_deberta_classifier.py
       - name: executable
         tag: relevanceprediction
-        _: python -u $jube_benchmark_home/../../../scripts/predict_deberta_relevance_classifier.py
+        _: python -u $jube_benchmark_home/../../../scripts/predict_deberta_classifier.py
       - name: submit_cmd
         _: sbatch
       - name: visible_devices
