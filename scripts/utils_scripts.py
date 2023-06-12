@@ -15,7 +15,17 @@ def _determine_path_output(args):
     return path_output
 
 
-def get_dataset(args, filename, dataset_object, set_labels=False, build_hugging_dataset=True):
+def get_dataset(
+    args,
+    filename,
+    dataset_object,
+    set_labels=False,
+    build_hugging_dataset=True,
+    plot_key_distribution=False,
+    path_figures=None,
+    tracker=None,
+    prefix_histogram="",
+):
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(filename, raw=True)
     if args.debug:
         ds_raw = ds_raw.sel(index=slice(0, 100))
@@ -42,6 +52,14 @@ def get_dataset(args, filename, dataset_object, set_labels=False, build_hugging_
             key_inputs=args.key_input,
             key_label=args.key_output,
             prediction_dataset=not set_labels,
+        )
+    if plot_key_distribution and path_figures is not None:
+        plot_and_log_histogram(
+            ds_raw,
+            args.key_output,
+            path_figures,
+            tracker=tracker,
+            filename=f"{prefix_histogram}_{args.output}_histogram.pdf",
         )
     return dataset, ds_raw
 
