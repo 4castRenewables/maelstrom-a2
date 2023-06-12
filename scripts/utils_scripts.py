@@ -47,11 +47,29 @@ def get_dataset(args, filename, dataset_object, set_labels=False, build_hugging_
 
 
 def evaluate_model(
-    args, ds_test_predicted, predictions, prediction_probabilities, path_figures, tracker, memory_tracker
+    args,
+    ds_test_predicted,
+    predictions,
+    prediction_probabilities,
+    path_figures,
+    tracker,
+    memory_tracker,
+    hyper_parameters=None,
 ):
     truth = ds_test_predicted[args.key_output].values
 
-    a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=None, label=args.key_output)
+    filename_confusion_matrix = os.path.join(path_figures, "confusion_matrix.pdf")
+    step = None
+    if hyper_parameters is not None:
+        step = hyper_parameters.epochs
+    a2.training.tracking.log_metric_classification_report(
+        tracker,
+        truth,
+        predictions,
+        step=step,
+        label=args.key_output,
+        filename_confusion_matrix=filename_confusion_matrix,
+    )
 
     filename_certainty_plot = os.path.join(path_figures, "plot_2d_predictions_truth.pdf")
     a2.plotting.analysis.plot_prediction_certainty(

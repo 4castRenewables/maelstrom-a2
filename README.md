@@ -94,12 +94,14 @@ poetry run pytest --mpl --mpl-baseline-path=${MPL_BASELINE_PATH_A2}
 ## Ideas
 
 ### Relevance classification as additional step
+
 ```bash
 . test_build_dataset_relevance_classifier.sh
 . test_finetune_deberta_classifier_relevance.sh
 . test_predict_deberta_classifier_relevance.sh
 . test_build_dataset_rain_classifier.sh
 . test_finetune_deberta_classifier_relevance.sh
+. test_predict_deberta_classifier_rain.sh
 ```
 
 ### Paint weather map
