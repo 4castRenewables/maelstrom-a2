@@ -36,14 +36,35 @@ def main(args):
     dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
 
     path_output = utils_scripts._determine_path_output(args)
+    path_figures = os.path.join(path_output, args.figure_folder)
+    tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
+
     dataset_train, _ = utils_scripts.get_dataset(
-        args, f"{args.filename_dataset_train}", dataset_object, set_labels=False
+        args,
+        f"{args.filename_dataset_train}",
+        dataset_object,
+        set_labels=False,
+        path_figures=path_figures,
+        tracker=tracker,
+        prefix_histogram="train",
     )
     dataset_validate, _ = utils_scripts.get_dataset(
-        args, f"{args.filename_dataset_validate}", dataset_object, set_labels=False
+        args,
+        f"{args.filename_dataset_validate}",
+        dataset_object,
+        set_labels=False,
+        path_figures=path_figures,
+        tracker=tracker,
+        prefix_histogram="validate",
     )
     dataset_test, ds_test = utils_scripts.get_dataset(
-        args, f"{args.filename_dataset_test}", dataset_object, set_labels=False
+        args,
+        f"{args.filename_dataset_test}",
+        dataset_object,
+        set_labels=False,
+        path_figures=path_figures,
+        tracker=tracker,
+        prefix_histogram="test",
     )
 
     hyper_parameters = a2.training.training_hugging.HyperParametersDebertaClassifier(
@@ -60,8 +81,6 @@ def main(args):
 
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path)
 
-    path_figures = os.path.join(path_output, args.figure_folder)
-    tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     experiment_id = tracker.create_experiment(args.mlflow_experiment_name)
     tracker.end_run()
     if args.log_gpu_memory:
