@@ -23,6 +23,7 @@ def main(args):
     """ "Split Tweets (matched by keywords) into args.key_relevance Tweets used for relevance classifier,
     excluding Tweets near weather station (<1km),
     remaining Tweets are used for training the "raining" classifier"""
+    logging.info(f"Args used: {args.__dict__}")
     dataset_prefix = _determine_dataset_prefix(args)
     path_output = utils_scripts._determine_path_output(args)
 

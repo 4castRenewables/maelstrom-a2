@@ -16,6 +16,7 @@ logging.basicConfig(
 
 def main(args):
     """Split labeled Tweets into train, test, validation set"""
+    logging.info(f"Args used: {args.__dict__}")
     path_output = utils_scripts._determine_path_output(args)
 
     _, ds_raw = utils_scripts.get_dataset(
