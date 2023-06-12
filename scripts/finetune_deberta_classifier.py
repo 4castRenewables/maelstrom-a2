@@ -124,8 +124,14 @@ def main(args):
         )
         truth = ds_test_predicted[args.key_output].values
 
+        filename_confusion_matrix = os.path.join(path_figures, "confusion_matrix.pdf")
         a2.training.tracking.log_metric_classification_report(
-            tracker, truth, predictions, step=hyper_parameters.epochs, label=args.key_output
+            tracker,
+            truth,
+            predictions,
+            step=hyper_parameters.epochs,
+            label=args.key_output,
+            filename_confusion_matrix=filename_confusion_matrix,
         )
 
         filename_certainty_plot = os.path.join(path_figures, "plot_2d_predictions_truth.pdf")
