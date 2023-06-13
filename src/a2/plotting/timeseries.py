@@ -73,7 +73,7 @@ def plot_timeseries(
     Returns
     -------
     """
-    fig, ax = a2.plotting.utils_plotting.create_figure_axes(fig=fig, ax=ax, font_size=None)
+    fig, ax = a2.plotting.utils_plotting.create_figure_axes(figure=fig, axes=ax, font_size=None)
     if ds is not None and isinstance(y, str):
         if label_y is None:
             label_y = y

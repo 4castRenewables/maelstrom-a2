@@ -1,5 +1,5 @@
 additional_args="$@"
-poetry run python ../build_dataset_rain_classifier.py \
+poetry run python ../../relevance_classifier/build_dataset_rain_classifier.py \
     --filename_dataset_to_split /tmp/test_prediction_relevance//relevance_classification//RainingClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_relevant_predicted.nc \
     --output_dir /tmp/relevance_classifier \
     --task_name dataset_rain_split \

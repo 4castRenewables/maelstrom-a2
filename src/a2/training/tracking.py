@@ -111,6 +111,7 @@ def log_metric_classification_report(
     step: int | None = 1,
     label: str = "raining",
     filename_confusion_matrix: pathlib.Path | str = "confusion_matrix.pdf",
+    font_size: int = 14,
 ):
     """
     Compute f1 score and logs results to mlflow
@@ -133,6 +134,7 @@ def log_metric_classification_report(
         filename=filename_confusion_matrix,
         output_dict=True,
         label=label,
+        font_size=font_size,
     )
     logging.info(classification_report)
     log_classification_report(tracker, classification_report, step, label)

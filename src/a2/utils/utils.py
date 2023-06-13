@@ -7,6 +7,7 @@ import logging
 import multiprocessing
 import re
 import typing as t
+from collections.abc import Iterable
 from functools import wraps
 from time import time
 
@@ -189,3 +190,28 @@ def flatten_list(lis: list[list]) -> list:
 def str_to_delta_time(string: str) -> t.Tuple[float, str]:
     time, units, _ = re.split("([a-zA-Z]+)$", string)
     return float(time), units
+
+
+def to_nlength_tuple(x: object, n: int = 2) -> tuple:
+    if not (isinstance(x, list) or isinstance(x, tuple) or isinstance(x, np.ndarray)):
+        return tuple([x] * n)
+    elif isinstance(x, list) or isinstance(x, np.ndarray):
+        x = tuple(x)
+    if len(x) != n:
+        raise ValueError(f"{x} doesn't have expected length {n=}")
+    return x
+
+
+def assert_all_same_type(variable_list: Iterable, type_: type):
+    for var in variable_list:
+        if not isinstance(var, type_):
+            raise ValueError(f"{var} not of type {type_.__name__}!")
+
+
+def validate_array(array: np.ndarray, type_: str = "float", name: str | None = None):
+    """Validate numpy based on `type`, e.g. no nan-values"""
+    if type_ == "float":
+        if np.sum(np.isnan(array.astype(float))) > 0:
+            raise ValueError(f"Found nan-values {f'in {name}' if name is not None else ''}!")
+    else:
+        raise ValueError(f"{type_=} unknown!")
