@@ -7,6 +7,7 @@ import warnings
 import a2.dataset.radar
 import a2.dataset.tweets
 import a2.plotting.axes_utils
+import a2.plotting.figures
 import a2.plotting.utils_plotting
 import a2.utils.checks
 import a2.utils.constants
@@ -157,7 +158,7 @@ def plot_precipiation_map(
         )
         axes[index, n_time].set_title(title)
     fig.tight_layout()
-    a2.plotting.utils_plotting.save_figure(fig, filename)
+    a2.plotting.figures.save_figure(fig, filename)
     if return_plots:
         return axes, plots
     return axes

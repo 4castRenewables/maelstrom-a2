@@ -43,7 +43,7 @@ def parallel_plot(
 
     if axes_backend == "default":
         fig, axes, axes_colorbar = a2.plotting.utils_plotting.create_axes_grid(
-            n_cols=grid_shape[1],
+            n_columns=grid_shape[1],
             n_rows=grid_shape[0],
             figure_size=figsize,
             colorbar_width=0.02,

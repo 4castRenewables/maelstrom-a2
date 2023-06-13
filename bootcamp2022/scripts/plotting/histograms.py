@@ -67,7 +67,7 @@ def plot_histogram_2d(
         raise ValueError("found nan-values in y")
     if x.shape != y.shape:
         raise Exception(f"x and y need to be of same shape: {np.shape(x)} != {np.shape(y)}")
-    fig, ax = a2.plotting.utils_plotting.create_figure_axes(fig=fig, ax=ax, font_size=font_size)
+    fig, ax = a2.plotting.utils_plotting.create_figure_axes(figure=fig, axes=ax, font_size=font_size)
     if not isinstance(log, list):
         log = [log, log]
     if not isinstance(n_bins, list):
@@ -104,7 +104,7 @@ def plot_histogram_2d(
     X, Y = np.meshgrid(bin_edges_x, bin_edges_y)
     plot = ax.pcolormesh(X, Y, H_plot, norm=norm_object)
     if overplot_values:
-        a2.plotting.utils_plotting.overplot_values(H, ax, len(bin_edges_x) - 1, len(bin_edges_y) - 1)
+        a2.plotting.utils_plotting.annotate_values(H, ax, len(bin_edges_x) - 1, len(bin_edges_y) - 1)
     colorbar = fig.colorbar(plot)
     ax_colorbar = colorbar.ax
     if label_colorbar is not None:
@@ -176,7 +176,7 @@ def plot_histogram(
     if not isinstance(ylim, list):
         ylim = [ylim, ylim]
 
-    fig, ax = a2.plotting.utils_plotting.create_figure_axes(fig=fig, ax=ax, font_size=font_size)
+    fig, ax = a2.plotting.utils_plotting.create_figure_axes(figure=fig, axes=ax, font_size=font_size)
     if bin_edges is None:
         bin_edges, linear_thresh = get_bin_edges(
             data=x,

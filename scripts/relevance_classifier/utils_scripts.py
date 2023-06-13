@@ -2,10 +2,13 @@ import logging
 import os.path
 
 import a2.plotting.analysis
+import a2.plotting.histograms
 import a2.training.tracking
 import a2.utils.file_handling
 import numpy as np
 from a2.training import benchmarks as timer
+
+FONTSIZE = 16
 
 
 def _determine_path_output(args):
@@ -87,6 +90,7 @@ def evaluate_model(
         step=step,
         label=args.key_output,
         filename_confusion_matrix=filename_confusion_matrix,
+        font_size=FONTSIZE,
     )
 
     filename_certainty_plot = os.path.join(path_figures, "plot_2d_predictions_truth.pdf")
@@ -96,12 +100,16 @@ def evaluate_model(
         filename=filename_certainty_plot,
         label_x="True label",
         label_y=f"Prediction probability for '{args.key_output}'",
+        font_size=FONTSIZE,
     )
     tracker.log_artifact(filename_certainty_plot)
 
     filename_roc_plot = os.path.join(path_figures, "roc.pdf")
     a2.plotting.analysis.plot_roc(
-        ds_test_predicted[args.key_output].values, prediction_probabilities[:, 1], filename=filename_roc_plot
+        ds_test_predicted[args.key_output].values,
+        prediction_probabilities[:, 1],
+        filename=filename_roc_plot,
+        font_size=FONTSIZE,
     )
     tracker.log_artifact(filename_roc_plot)
     logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
@@ -111,10 +119,6 @@ def evaluate_model(
 
 def plot_and_log_histogram(ds, key, path_figures, tracker=None, filename="prediction_histogram.pdf"):
     filename_prediction_histogram = os.path.join(path_figures, filename)
-    a2.plotting.histograms.plot_histogram(
-        key,
-        ds,
-        filename=filename_prediction_histogram,
-    )
+    a2.plotting.histograms.plot_histogram(key, ds, filename=filename_prediction_histogram, font_size=FONTSIZE)
     if tracker is not None:
         tracker.log_artifact(filename_prediction_histogram)
