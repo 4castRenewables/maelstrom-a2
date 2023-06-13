@@ -2,6 +2,7 @@ import pathlib
 import typing as t
 
 import a2.plotting.axes_utils
+import a2.plotting.figures
 import a2.plotting.utils_plotting
 import matplotlib.pyplot as plt
 import numpy as np
@@ -61,7 +62,7 @@ def plot_prediction_certainty(
         label_x=label_x,
         label_colorbar=label_colorbar,
         label_y=label_y,
-        overplot_values=True,
+        annotate=True,
         filename=filename,
         vmin=vmin,
         vmax=vmax,
@@ -109,6 +110,7 @@ def check_prediction(
     output_dict: bool = True,
     filename: t.Union[str, pathlib.Path] | None = None,
     label: str = "raining",
+    font_size: int = 14,
 ):
     plot_confusion_matrix(
         truth,
@@ -117,6 +119,7 @@ def check_prediction(
         overplot_round_base=2,
         tick_labels_x=(f"not {label}", f"{label}"),
         tick_labels_y=(f"{label}", f"not {label}"),
+        font_size=font_size,
     )
 
     report = classification_report(
@@ -183,7 +186,7 @@ def plot_confusion_matrix(
     mesh = ax.pcolormesh(xedges, yedges, cm.T, norm=norm, cmap=colormap)
     cbar = plt.colorbar(mesh, cax=ax_colorbar, orientation="vertical")
     a2.plotting.axes_utils.set_colorbar(cbar.ax, label_y=colorbar_label, fontsize=font_size)
-    a2.plotting.utils_plotting.overplot_values(
+    a2.plotting.utils_plotting.annotate_values(
         np.array(cm), ax, 2, 2, color=text_color, round_to_base=overplot_round_base, font_size=font_size
     )
     a2.plotting.utils_plotting.set_axis_tick_labels(ax, [0.25, 0.75], tick_labels_x, "x")
@@ -197,7 +200,7 @@ def plot_confusion_matrix(
         label_y=label_y,
     )
 
-    a2.plotting.utils_plotting.save_figure(fig, filename)
+    a2.plotting.figures.save_figure(fig, filename)
     return fig
 
 
@@ -238,7 +241,7 @@ def plot_roc(
     )
     roc_auc = sklearn.metrics.auc(false_positive_rate, true_positive_rate)
     fig, ax = a2.plotting.utils_plotting.create_figure_axes(
-        fig=fig, ax=ax, figure_size=figure_size, font_size=font_size
+        figure=fig, axes=ax, figure_size=figure_size, font_size=font_size
     )
     lw = 2
     ax.plot(
@@ -259,7 +262,7 @@ def plot_roc(
     )
 
     ax.legend(loc="lower right")
-    a2.plotting.utils_plotting.save_figure(fig, filename)
+    a2.plotting.figures.save_figure(fig, filename)
     if return_rates:
         return ax, true_positive_rate, false_positive_rate
     return ax
