@@ -390,9 +390,10 @@ def annotate_values(
             H_processed = np.array(H_processed, int)
     for x_index, x in enumerate(x_positions):
         for y_index, y in enumerate(y_positions):
-            label = H_processed[x_index, y_index]
+            label = H_processed[y_index, x_index]
             text_x = x + jump_x
             text_y = y + jump_y
+            text_y = 1 - text_y
             axes.text(
                 text_x,
                 text_y,

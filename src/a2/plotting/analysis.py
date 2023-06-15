@@ -71,8 +71,8 @@ def plot_prediction_certainty(
         **kwargs,
     )
     if return_matrix:
-        return results_dic["axes"][0], results_dic["histograms"][0]
-    return results_dic["axes"][0]
+        return results_dic["axes_2d_histograms_10"], results_dic["2d_histograms_10"]
+    return results_dic["axes_2d_histograms_10"]
 
 
 def classification_report(
