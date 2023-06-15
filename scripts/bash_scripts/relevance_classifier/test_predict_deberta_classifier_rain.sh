@@ -1,5 +1,5 @@
 additional_args="$@"
-source env_dev.sh
+source ../env_dev.sh
 poetry run python ../../relevance_classifier/predict_deberta_classifier.py \
     --filename_dataset_predict /tmp/relevance_classifier/dataset_split/WeatherStationDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc \
     --path_raw_model /home/kristian/Projects/a2/models/deberta-v3-small \

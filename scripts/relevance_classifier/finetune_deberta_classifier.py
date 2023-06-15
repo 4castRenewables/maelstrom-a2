@@ -21,6 +21,7 @@ logging.basicConfig(
 
 
 def main(args):
+    tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     memory_tracker = a2.training.benchmarks.CudaMemoryMonitor()
     if args.log_gpu_memory:
         memory_tracker.reset_cuda_memory_monitoring()
@@ -37,7 +38,6 @@ def main(args):
 
     path_output = utils_scripts._determine_path_output(args)
     path_figures = os.path.join(path_output, args.figure_folder)
-    tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
 
     dataset_train, _ = utils_scripts.get_dataset(
         args,
