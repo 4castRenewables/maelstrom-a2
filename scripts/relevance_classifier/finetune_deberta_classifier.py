@@ -71,10 +71,11 @@ def main(args):
 
     hyper_parameters = a2.training.model_configs.get_model_config(args.model_name)
 
-    trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path)
+    trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path, num_labels=args.num_labels)
 
     experiment_id = tracker.create_experiment(args.mlflow_experiment_name)
     tracker.end_run()
+    print(f"{dataset_train['label']=}")
     if args.log_gpu_memory:
         memory_tracker.reset_cuda_memory_monitoring()
     with tracker.start_run(run_name=args.run_name, experiment_id=experiment_id):
@@ -102,6 +103,7 @@ def main(args):
                 a2.training.training_deep500.TimerCallback(tmr, gpu=True),
                 a2.training.tracking_hugging.LogCallback(tracker),
             ],
+            # trainer_class=a2.training.training_hugging.TrainerWithFocalLoss,
             trainer_class=transformers.Trainer,
             base_model_trainable=not args.base_model_weights_fixed,
             eval_steps=args.eval_steps,
@@ -154,6 +156,7 @@ if __name__ == "__main__":
     a2.utils.argparse.hyperparameter(parser)
     a2.utils.argparse.benchmarks(parser)
     a2.utils.argparse.model(parser)
+    a2.utils.argparse.model_classifier(parser)
     a2.utils.argparse.evaluation(parser)
     a2.utils.argparse.output(parser)
     a2.utils.argparse.debug(parser)

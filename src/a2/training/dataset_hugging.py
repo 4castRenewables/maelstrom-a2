@@ -78,6 +78,9 @@ class DatasetHuggingFace:
         columns: t.Mapping = {key_inputs: "inputs", key_label: "label"}
         df = df.rename(columns=columns, errors="ignore")  # type: ignore
         datasets_ds = datasets.Dataset.from_pandas(df)
+        updated_features = datasets_ds.features.copy()
+        updated_features["label"] = datasets.ClassLabel(names=[f"not {key_label}", f"{key_label}"])
+        datasets_ds = datasets_ds.cast(updated_features)
         tok_ds = datasets_ds.map(self._tok_func, batched=True)
         if not train or (indices_train is None and indices_validate is None):
             return tok_ds
