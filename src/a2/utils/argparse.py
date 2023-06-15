@@ -1,6 +1,7 @@
 import argparse
 import pathlib
 
+import a2.training
 import a2.utils
 
 
@@ -232,6 +233,13 @@ def model(parser):
         type=str,
         default="/p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/",
         help="Directory where input netCDF-files are stored.",
+    )
+    parser.add_argument(
+        "--model_name",
+        type=str,
+        choices=a2.training.model_configs.SUPPORTED_MODELS,
+        default="deberta_small",
+        help="Name of model, sets default hyper parameters.",
     )
     parser.add_argument(
         "--output_dir_model",
