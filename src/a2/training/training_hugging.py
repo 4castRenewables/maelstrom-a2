@@ -15,7 +15,7 @@ import xarray
 
 
 @dataclasses.dataclass
-class HyperParametersDebertaClassifier:
+class HyperParametersHuggingFaceClassifier:
     """
     Hold hyper parameters for Hugging Face DeBERTa classifier
     """
@@ -30,6 +30,24 @@ class HyperParametersDebertaClassifier:
     attention_probs_dropout_prob: float = 0.1
     cls_dropout: float = 0.1
     lr_scheduler_type: str = "linear"
+
+
+@dataclasses.dataclass
+class HyperParametersDebertaClassifier(HyperParametersHuggingFaceClassifier):
+    """
+    Hold hyper parameters for Hugging Face DeBERTa classifier
+    """
+
+    learning_rate: float = 3e-05
+
+
+@dataclasses.dataclass
+class HyperParametersElectraClassifier(HyperParametersHuggingFaceClassifier):
+    """
+    Hold hyper parameters for Hugging Face DeBERTa classifier
+    """
+
+    learning_rate: float = 2e-5
 
 
 def _compute_metrics(eval_pred, label="raining"):
