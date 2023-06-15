@@ -87,7 +87,24 @@ class TrainerWithTimer(Trainer):
         self.tmr_gpu = self.timer_callback.gpu
         super().__init__(*args, **kwargs)
 
-    def training_step(self, model, inputs):
+    def training_step(self, model: nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
+        """
+        Perform a training step on a batch of inputs.
+
+        Subclass and override to inject custom behavior.
+
+        Args:
+            model (`nn.Module`):
+                The model to train.
+            inputs (`Dict[str, Union[torch.Tensor, Any]]`):
+                The inputs and targets of the model.
+
+                The dictionary will be unpacked before being fed to the model. Most models expect the targets under the
+                argument `labels`. Check your model's documentation for all accepted arguments.
+
+        Return:
+            `torch.Tensor`: The tensor with training loss on this batch.
+        """
         model.train()
         inputs = self._prepare_inputs(inputs)
 
@@ -99,32 +116,24 @@ class TrainerWithTimer(Trainer):
             self.tmr.start(timer.TimeType.FORWARD, gpu=self.tmr_gpu)
         with self.compute_loss_context_manager():
             loss = self.compute_loss(model, inputs)
-
-        if self.args.n_gpu > 1:
-            loss = loss.mean()  # mean() to average on multi-gpu parallel training
-
-        if self.args.gradient_accumulation_steps > 1 and not self.deepspeed:
-            # deepspeed handles loss scaling by gradient_accumulation_steps in its `backward`
-            loss = loss / self.args.gradient_accumulation_steps
         if self.tmr:
             self.tmr.end(timer.TimeType.FORWARD, gpu=self.tmr_gpu)
             self.tmr.start(timer.TimeType.BACKWARD, gpu=self.tmr_gpu)
+
+        if self.args.n_gpu > 1:
+            loss = loss.mean()  # mean() to average on multi-gpu parallel training
 
         if self.do_grad_scaling:
             self.scaler.scale(loss).backward()
         elif self.use_apex:
             with amp.scale_loss(loss, self.optimizer) as scaled_loss:
                 scaled_loss.backward()
-        elif self.deepspeed:
-            # loss gets scaled under gradient_accumulation_steps in deepspeed
-            loss = self.deepspeed.backward(loss)
         else:
-            loss.backward()
-
+            self.accelerator.backward(loss)
         if self.tmr:
             self.tmr.end(timer.TimeType.BACKWARD, gpu=self.tmr_gpu)
 
-        return loss.detach()
+        return loss.detach() / self.args.gradient_accumulation_steps
 
     def get_train_dataloader(self):
         if self.train_dataset is None:

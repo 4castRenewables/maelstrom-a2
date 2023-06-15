@@ -457,6 +457,8 @@ def _plot_histogram_2d(
         rasterized=True,
         convert_zeros_to_nan=convert_zeros_to_nan,
     )
+    print(f"{H_plot=}")
+    print(f"{np.flip(H_plot, axis=0)=}")
     if annotate:
         a2.plotting.utils_plotting.annotate_values(
             H=np.flip(H_plot, axis=0),
