@@ -5,11 +5,13 @@ import os
 import a2.dataset
 import a2.plotting
 import a2.training.benchmarks
+import a2.training.model_configs
 import a2.training.tracking
 import a2.training.tracking_hugging
 import a2.training.training_deep500
 import a2.training.training_hugging
-import a2.utils
+import a2.utils.argparse
+import transformers
 import utils_scripts
 from a2.training import benchmarks as timer
 
@@ -67,17 +69,7 @@ def main(args):
         prefix_histogram="test",
     )
 
-    hyper_parameters = a2.training.training_hugging.HyperParametersDebertaClassifier(
-        learning_rate=args.learning_rate,
-        batch_size=args.batch_size,
-        weight_decay=args.weight_decay,
-        epochs=args.number_epochs,
-        warmup_ratio=args.warmup_ratio,
-        warmup_steps=args.warmup_steps,
-        hidden_dropout_prob=args.hidden_dropout_prob,
-        cls_dropout=args.cls_dropout,
-        lr_scheduler_type=args.lr_scheduler_type,
-    )
+    hyper_parameters = a2.training.model_configs.get_model_config(args.model_name)
 
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path)
 
@@ -110,7 +102,7 @@ def main(args):
                 a2.training.training_deep500.TimerCallback(tmr, gpu=True),
                 a2.training.tracking_hugging.LogCallback(tracker),
             ],
-            trainer_class=a2.training.training_deep500.TrainerWithTimer,
+            trainer_class=transformers.Trainer,
             base_model_trainable=not args.base_model_weights_fixed,
             eval_steps=args.eval_steps,
             logging_steps=args.logging_steps,
