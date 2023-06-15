@@ -10,6 +10,7 @@ import a2.training.utils_training
 import datasets
 import numpy as np
 import sklearn.model_selection
+import torch.nn
 import transformers
 import xarray
 
@@ -94,11 +95,16 @@ class HuggingFaceTrainerClass:
         model_folder: str,
         num_labels: int = 2,
         config: t.Optional[t.Dict] = None,
+        problem_type: str = "single_label_classification",
     ):
         self.model_folder = model_folder
         self.num_labels = num_labels
-        if config is None:
-            self.db_config_base = transformers.AutoConfig.from_pretrained(model_folder, num_labels=num_labels)
+        if config is None and self.num_labels is not None:
+            self.db_config_base = transformers.AutoConfig.from_pretrained(
+                model_folder, num_labels=num_labels, problem_type=problem_type
+            )
+        elif config is None:
+            self.db_config_base = transformers.AutoConfig.from_pretrained(model_folder, problem_type=problem_type)
         else:
             self.db_config_base = config
         self.hyper_parameters = HyperParametersDebertaClassifier()
@@ -107,7 +113,8 @@ class HuggingFaceTrainerClass:
         db_config = self.db_config_base
         if params is not None:
             db_config.update({"cls_dropout": params["cls_dropout"]})
-        db_config.update({"num_labels": self.num_labels})
+        if self.num_labels is not None:
+            db_config.update({"num_labels": self.num_labels})
         model = transformers.AutoModelForSequenceClassification.from_pretrained(self.model_folder, config=db_config)
         if not base_model_trainable:
             for param in model.base_model.parameters():
@@ -171,7 +178,7 @@ class HuggingFaceTrainerClass:
         if not a2.training.utils_training.gpu_available():
             fp16 = False
         if hyper_parameters is None:
-            hyper_parameters = HyperParametersDebertaClassifier()
+            hyper_parameters = HyperParametersHuggingFaceClassifier()
         self.hyper_parameters = hyper_parameters
         if tokenizer is None:
             tokenizer = transformers.AutoTokenizer.from_pretrained(self.model_folder)
@@ -362,3 +369,25 @@ def set_evaluation_save_logging_steps(
         save_steps = eval_steps
     logging.info(f"Setting: {eval_steps=} {logging_steps=} {save_steps=}, ({evaluation_strategy=})")
     return eval_steps, save_steps, logging_steps
+
+
+class TrainerWithFocalLoss(transformers.Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False):
+        HP_LOSS_FL = (0.2, 5, 3)
+        labels = inputs.get("labels")
+        # forward pass
+        outputs = model(**inputs)
+        logits = outputs.get("logits")
+        # compute custom loss (suppose one has 3 labels with different weights)
+        # loss_fct = torch.nn.CrossEntropyLoss(weight=torch.tensor([1.0, 2.0, 3.0], device=model.device))
+        # loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
+
+        labels = labels.tile((logits.shape[0],)).unsqueeze(-1)
+        print(f"{labels=}")
+        print(f"{inputs=}")
+        print(f"{logits=}")
+        probabilities = torch.nn.functional.softmax(logits, dim=-1).flatten().gather(1, labels).flatten()
+        # probabilities = torch.nn.functional.softmax(logits, dim=-1).flatten(0, 1).gather(1, labels).flatten()
+        gammas = torch.where(probabilities < HP_LOSS_FL[0], HP_LOSS_FL[1], HP_LOSS_FL[2])
+        loss = -((1 - probabilities) ** gammas * probabilities.log()).mean()
+        return (loss, outputs) if return_outputs else loss

@@ -250,6 +250,15 @@ def model(parser):
     )
 
 
+def model_classifier(parser):
+    parser.add_argument(
+        "--num_labels",
+        type=int,
+        default=2,
+        help="Number of labels in classification task.",
+    )
+
+
 def run(parser):
     parser.add_argument(
         "--run_folder", type=str, required=True, help="Output folder where model is saved in `output_dir`."
