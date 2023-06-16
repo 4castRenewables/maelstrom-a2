@@ -108,28 +108,28 @@ parameterset:
         _: 2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar
       - name: filename_dataset_train_relevance
         type: string
-        _: ${folder_split}/RelevanceClassifierDataset_${core_files_name}_train.nc
+        _: ${folder_split}/RelevanceClassifierDataset${core_files_name}_train.nc
       - name: filename_dataset_validate_relevance
         type: string
-        _: ${folder_split}/RelevanceClassifierDataset_${core_files_name}_validate.nc
+        _: ${folder_split}/RelevanceClassifierDataset${core_files_name}_validate.nc
       - name: filename_dataset_test_relevance
         type: string
-        _: ${folder_split}/RelevanceClassifierDataset_${core_files_name}_test.nc
+        _: ${folder_split}/RelevanceClassifierDataset${core_files_name}_test.nc
       - name: filename_dataset_train_rain
         type: string
-        _: ${folder_split}/RainingClassifierDataset_${core_files_name}_relevant_predicted_train.nc
+        _: ${folder_split}/RainingClassifierDataset${core_files_name}_relevant_predicted_train.nc
       - name: filename_dataset_validate_rain
         type: string
-        _: ${folder_split}/RainingClassifierDataset_${core_files_name}_relevant_predicted_validate.nc
+        _: ${folder_split}/RainingClassifierDataset${core_files_name}_relevant_predicted_validate.nc
       - name: filename_dataset_test_rain
         type: string
-        _: ${folder_split}/RainingClassifierDataset_${core_files_name}_relevant_predicted_test.nc
+        _: ${folder_split}/RainingClassifierDataset${core_files_name}_relevant_predicted_test.nc
       - name: filename_dataset_predict_relevance
         type: string
-        _: ${folder_split}/RainingClassifierDataset_${core_files_name}.nc
+        _: ${folder_split}/RainingClassifierDataset${core_files_name}.nc
       - name: filename_dataset_predict_rain
         type: string
-        _: ${folder_split}/WeatherStationDataset_${core_files_name}.nc
+        _: ${folder_split}/WeatherStationDataset${core_files_name}.nc
       - name: slurm_output
         type: string
         _: "$jube_wp_abspath/slurm-out.%j"
