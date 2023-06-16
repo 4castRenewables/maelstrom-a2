@@ -215,3 +215,12 @@ def validate_array(array: np.ndarray, type_: str = "float", name: str | None = N
             raise ValueError(f"Found nan-values {f'in {name}' if name is not None else ''}!")
     else:
         raise ValueError(f"{type_=} unknown!")
+
+
+def override_class_method(class_instance, method_name, target_class):
+    class_method = getattr(target_class, method_name)
+
+    def new_method(*args, **kwargs):
+        return class_method(class_instance, *args, **kwargs)
+
+    setattr(class_instance, method_name, new_method)
