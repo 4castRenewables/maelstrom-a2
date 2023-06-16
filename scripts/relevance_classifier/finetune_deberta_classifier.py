@@ -11,7 +11,6 @@ import a2.training.tracking_hugging
 import a2.training.training_deep500
 import a2.training.training_hugging
 import a2.utils.argparse
-import transformers
 import utils_scripts
 from a2.training import benchmarks as timer
 
@@ -91,6 +90,12 @@ def main(args):
         tmr.start(timer.TimeType.RUN)
         if args.log_gpu_memory:
             memory_tracker.get_cuda_memory_usage("Starting run")
+        trainer_class = a2.training.model_configs.get_customized_trainer_class(
+            args.trainer_name,
+            method_overwrites=[
+                args.loss,
+            ],
+        )
         trainer = trainer_object.get_trainer(
             (dataset_train, dataset_validate),
             hyper_parameters=hyper_parameters,
@@ -104,7 +109,7 @@ def main(args):
                 a2.training.tracking_hugging.LogCallback(tracker),
             ],
             # trainer_class=a2.training.training_hugging.TrainerWithFocalLoss,
-            trainer_class=transformers.Trainer,
+            trainer_class=trainer_class,
             base_model_trainable=not args.base_model_weights_fixed,
             eval_steps=args.eval_steps,
             logging_steps=args.logging_steps,

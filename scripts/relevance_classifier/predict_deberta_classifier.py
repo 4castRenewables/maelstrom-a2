@@ -9,7 +9,7 @@ import a2.training.evaluate_hugging
 import a2.training.tracking
 import a2.training.tracking_hugging
 import a2.training.training_deep500
-import a2.utils
+import a2.utils.argparse
 import torch
 import utils_scripts
 from a2.training import benchmarks as timer
@@ -31,7 +31,7 @@ def main(args):
     logging.info(f"Running finetuning as {args.job_id=}")
     logging.info(f"Iteration: {args.iteration=}")
     logging.info(f"Args used: {args.__dict__}")
-    model_name = os.path.split(args.model_path)
+    model_name = os.path.split(args.path_trained_model)
     logging.info(f"Using ML model: {model_name}")
 
     dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.path_trained_model)
