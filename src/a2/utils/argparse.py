@@ -248,6 +248,20 @@ def model(parser):
         default=a2.utils.file_handling.get_folder_models(),
         help="Output directory where model is saved.",
     )
+    parser.add_argument(
+        "--trainer_name",
+        type=str,
+        default="default",
+        choices=a2.training.model_configs.SUPPORTED_TRAINERS,
+        help="Trainer class selected by its name.",
+    )
+    parser.add_argument(
+        "--loss",
+        type=str,
+        default="default",
+        choices=a2.training.model_configs.SUPPORTED_LOSSES,
+        help="Loss used for training selected by its name.",
+    )
 
 
 def model_classifier(parser):
