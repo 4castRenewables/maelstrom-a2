@@ -258,7 +258,7 @@ def model(parser):
     parser.add_argument(
         "--loss",
         type=str,
-        default="default",
+        default="default_loss",
         choices=a2.training.model_configs.SUPPORTED_LOSSES,
         help="Loss used for training selected by its name.",
     )
