@@ -224,3 +224,12 @@ def override_class_method(class_instance, method_name, target_class):
         return class_method(class_instance, *args, **kwargs)
 
     setattr(class_instance, method_name, new_method)
+
+
+def is_in_list_and_remove(to_check, _list):
+    is_in = False
+    if to_check in _list:
+        is_in = True
+    if is_in:
+        _list.remove(to_check)
+    return is_in
