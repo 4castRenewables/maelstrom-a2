@@ -78,7 +78,7 @@ parameterset:
         _: /data/maelstrom/kehlert/models/deberta-v3-small
       - name: path_trained_model_relevance
         tag: "jwb|jwc"
-        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000037/000000_submit/work/output_model/relevance_classification_electra_base/checkpoint-4365
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000042/000000_submit/work/output_model/relevance_classification_electra_base/checkpoint-4365
       - name: path_trained_model_raining
         tag: "jwb|jwc"
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000030/000000_submit/work/output_model/rain_classification/checkpoint-20000
