@@ -147,7 +147,7 @@ Embed Tweets as RGB (or similar) on a grid (unstructured?!/average embeddings?!/
 * Relevance classifier:
     * Used to classify tweets as "relevant" for identification of "raining"/"not raining" (could a human deduct this from the Tweet)
     * Dataset:
-        * Labeling:
+        * Labeling1:
             * "relevant":
                 * Tweets matching keyword
                 * ~250k Tweets (stratified by "raining")
@@ -155,11 +155,21 @@ Embed Tweets as RGB (or similar) on a grid (unstructured?!/average embeddings?!/
                 * Tweets are sample of Tweets only with location (no keyword matching applied).
                 * 2020-02-13T - 2020-02-15T
                 * 250k Tweets
+        * Labeling2:
+            * Use LLM (ChatGpt4/Falcon) to build dataset
+            * Use prompt to let LLM classify tweets;
+                * Raining likelihood: float -> not raining (0) - raining (1)
+                * How certain assessment (sufficient precipitation-related content present): float -> no information (0) - perfectly clear information (1)
+            * Use [relevance ai](https://relevanceai.com/bulk-run) to pass csv of Tweets to be classified by engineerd prompt
+            * ~100s examples could be sufficient
         * Splits:
             * Dataset: 500k Tweets
             * Train 60%, Validate 20%, Test 20%
-    * Model:
+    * Model1:
         * Finetune DeBertA-v3-base classifier
+    * Model2:
+        * Finetune LLM (Falcon), which should reduce information retrieval time (?!)
+            * Backup model for uncertain Tweets?
 * Rain classifier:
     * Classify Tweets as "raining" / "not raining" when above `rain_threshold` (e.g., 0.1 mm).
     * Dataset:
