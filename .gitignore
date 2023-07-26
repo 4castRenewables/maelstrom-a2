@@ -41,3 +41,5 @@ src/tests/unit/twitter/cassettes
 *.zip
 share/
 *.log
+env*.sh
+test.ipynb
