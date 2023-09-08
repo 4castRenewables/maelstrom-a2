@@ -1,0 +1,67 @@
+entry_points:
+  train:
+    parameters:
+      model_path:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-base/
+      model_name:
+        type: str
+        default: deberta_base
+      filename_dataset_train_rain:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/data/dataset_split/2017-2020_electra_base/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc
+      filename_dataset_validate_rain:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/data/dataset_split/2017-2020_electra_base/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc
+      filename_dataset_test_rain:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/data/dataset_split/2017-2020_electra_base/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc
+      outdir:
+        type: str
+        default: "./"
+      run_name:
+        type: str
+        default: "RUNNAME"
+      lr:
+        type: float
+        default: 3e-05
+      nepochs:
+        type: int
+        default: 1
+      batch_size:
+        type: int
+        default: 32
+      weight_decay:
+        type: float
+        default: 0.01
+      iteration:
+        type: int
+        default: 1
+      evaluation_strategy:
+        type: str
+        default: steps
+      eval_steps:
+        type: int
+        default: 5000
+    command: >
+      python ../../relevance_classifier/finetune_deberta_classifier.py
+        --model_path ${model_path}
+        --model_name ${model_name}
+        --filename_dataset_train ${filename_dataset_train_rain}
+        --filename_dataset_validate ${filename_dataset_validate_rain}
+        --filename_dataset_test ${filename_dataset_test_rain}
+        --output_dir ${outdir}
+        --log_gpu_memory
+        --run_name ${run_name}
+        -jid $${SLURM_JOBID}
+        --mlflow_experiment_name maelstrom-a2-rain
+        -lr ${lr}
+        -nepochs ${nepochs}
+        --task_name rain_classification_${model_name}
+        --classifier_domain rain
+        --key_output raining
+        --batch_size ${batch_size}
+        --weight_decay ${weight_decay}
+        --iteration ${iteration}
+        --evaluation_strategy ${evaluation_strategy}
+        --eval_steps ${eval_steps}
