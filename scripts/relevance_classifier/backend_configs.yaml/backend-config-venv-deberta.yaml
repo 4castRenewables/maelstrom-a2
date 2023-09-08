@@ -1,12 +1,11 @@
 UnicoreApiUrl: https://zam2125.zam.kfa-juelich.de:9112/JUWELS/rest/core
 Environment:
-  Python: /p/project/deepacf/maelstrom/grau1/ap3_env
+  Python: /p/scratch/deepacf/maelstrom/maelstrom_data/ap2/venvs/ap2_deberta
   Modules:
-    - Stages/2022
-    - GCCcore/.11.2.0
-    - GCC/11.2.0
-    - cuDNN/8.3.1.22-CUDA-11.5
-    - Python/3.9.6
+    - Stages/2023
+    - GCCcore/.11.3.0
+    - Python/3.10.4
+    - nvidia/cuda-11.7
   Variables:
     GIT_PYTHON_REFRESH: quiet
 Resources:
