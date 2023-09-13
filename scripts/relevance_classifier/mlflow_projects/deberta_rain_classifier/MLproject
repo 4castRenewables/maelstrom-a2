@@ -38,7 +38,7 @@ entry_points:
         type: str
         default: False
     command: >
-      python scripts/relevance_classifier/build_dataset_rain_classifier.py
+      python build_dataset_rain_classifier.py
         --filename_dataset_to_split {filename_dataset_to_split}
         --output_dir {output_dir}
         --task_name {task_name}
@@ -96,7 +96,7 @@ entry_points:
         type: int
         default: 5000
     command: >
-      python scripts/relevance_classifier/finetune_deberta_classifier.py
+      python finetune_deberta_classifier.py
         --model_path {model_path}
         --model_name {model_name}
         --filename_dataset_train {filename_dataset_train_rain}
