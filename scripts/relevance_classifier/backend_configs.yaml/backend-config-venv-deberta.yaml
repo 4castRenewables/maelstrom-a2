@@ -13,6 +13,6 @@ Resources:
   Nodes: 1
 Exclude:
   - "*.sif"
-  - "figures"
+  - "figures/"
   - "saved_model"
   - README.md
