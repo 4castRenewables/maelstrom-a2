@@ -189,8 +189,8 @@ def plot_confusion_matrix(
     a2.plotting.utils_plotting.annotate_values(
         np.array(cm), ax, 2, 2, color=text_color, round_to_base=overplot_round_base, font_size=font_size
     )
-    a2.plotting.utils_plotting.set_axis_tick_labels(ax, [0.25, 0.75], tick_labels_x, "x")
-    a2.plotting.utils_plotting.set_axis_tick_labels(ax, [0.25, 0.75], tick_labels_y, "y")
+    a2.plotting.utils_plotting.set_axis_tick_labels(axes=ax, values=[0.25, 0.75], labels=tick_labels_x, axis="x")
+    a2.plotting.utils_plotting.set_axis_tick_labels(axes=ax, values=[0.25, 0.75], labels=tick_labels_y, axis="y")
     a2.plotting.axes_utils.set_axes(
         ax,
         xlim=[0, 1],
