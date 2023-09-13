@@ -5,7 +5,7 @@ Environment:
     - Stages/2023
     - GCCcore/.11.3.0
     - Python/3.10.4
-    - nvidia/cuda-11.7
+    - CUDA/11.7
   Variables:
     GIT_PYTHON_REFRESH: quiet
 Resources:
