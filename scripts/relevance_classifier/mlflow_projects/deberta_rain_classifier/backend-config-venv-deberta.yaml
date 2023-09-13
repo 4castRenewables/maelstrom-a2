@@ -1,0 +1,18 @@
+UnicoreApiUrl: https://zam2125.zam.kfa-juelich.de:9112/JUWELS/rest/core
+Environment:
+  Python: /p/scratch/deepacf/maelstrom/maelstrom_data/ap2/venvs/ap2_deberta
+  Modules:
+    - Stages/2023
+    - GCCcore/.11.3.0
+    - Python/3.10.4
+    - CUDA/11.7
+  Variables:
+    GIT_PYTHON_REFRESH: quiet
+Resources:
+  Queue: develbooster
+  Nodes: 1
+Exclude:
+  - "*.sif"
+  - "figures/"
+  - "saved_model"
+  - README.md
