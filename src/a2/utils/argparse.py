@@ -107,6 +107,28 @@ def dataset_rain(parser):
     )
 
 
+def dataset_weather_stations(parser):
+    parser.add_argument(
+        "--kms_within_station",
+        "-kms",
+        type=float,
+        default=1,
+        help="Distance to weather station. Used to create weather station dataset.",
+    )
+    parser.add_argument(
+        "--key_distance_weather_station",
+        type=str,
+        default="station_distance_km",
+        help="Key in dataset that shows distance to weather station. Used to create weather station dataset.",
+    )
+    parser.add_argument(
+        "--weather_station_dataset_prefix",
+        type=str,
+        default="WeatherStationDataset",
+        help="Prefix of weather station dataset.",
+    )
+
+
 def dataset_relevance(parser):
     parser.add_argument(
         "--key_relevance",
@@ -141,25 +163,6 @@ def dataset_relevance_split(parser):
         type=str,
         default="split_relevance",
         help="Folder to save split datasets.",
-    )
-    parser.add_argument(
-        "--kms_within_station",
-        "-kms",
-        type=float,
-        default=1,
-        help="Distance to weather station. Used to create weather station dataset.",
-    )
-    parser.add_argument(
-        "--key_distance_weather_station",
-        type=str,
-        default="station_distance_km",
-        help="Key in dataset that shows distance to weather station. Used to create weather station dataset.",
-    )
-    parser.add_argument(
-        "--weather_station_dataset_prefix",
-        type=str,
-        default="WeatherStationDataset",
-        help="Prefix of weather station dataset.",
     )
     parser.add_argument(
         "--raining_classifier_dataset_prefix",
