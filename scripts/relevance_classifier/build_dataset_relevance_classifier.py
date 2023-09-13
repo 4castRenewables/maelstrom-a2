@@ -107,7 +107,7 @@ def _prepare_relevant_tweets(args, dataset_prefix, path_output):
         os.path.join(args.tweets_dir, args.filename_tweets_with_keywords)
     )
 
-    ds_tweets_keywords_excluded = _exclude_and_save_weather_stations_dataset(
+    ds_tweets_keywords_excluded = utils_scripts.exclude_and_save_weather_stations_dataset(
         args, ds_tweets_keywords, path_output, dataset_prefix
     )
     ds_tweets_keywords_excluded["raining"] = (
@@ -122,20 +122,6 @@ def _determine_dataset_prefix(args):
     dataset_prefix, _ = os.path.splitext(args.filename_tweets_with_keywords)
     logging.info(f"Determine {dataset_prefix=}")
     return dataset_prefix
-
-
-def _exclude_and_save_weather_stations_dataset(args, ds_tweets_keywords, path_output, filename_prefix):
-    ds_weather_stations = ds_tweets_keywords.where(
-        ds_tweets_keywords[args.key_distance_weather_station] <= args.kms_within_station, drop=True
-    )
-    a2.dataset.load_dataset.save_dataset(
-        ds_weather_stations,
-        filename=f"{path_output}{args.weather_station_dataset_prefix}{filename_prefix}.nc",
-    )
-    ds_tweets_keywords_near_stations_excluded = ds_tweets_keywords.where(
-        ds_tweets_keywords[args.key_distance_weather_station] > args.kms_within_station, drop=True
-    )
-    return ds_tweets_keywords_near_stations_excluded
 
 
 def _initialize_tracking(args):

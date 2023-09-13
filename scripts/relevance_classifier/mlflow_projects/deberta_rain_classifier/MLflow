@@ -1,4 +1,56 @@
 entry_points:
+  split:
+    parameters:
+      filename_dataset_to_split:
+        type: str
+        default: /p/largedata2/maelstrom/ap2/
+      output_dir:
+        type: str
+        default: dataset_split/
+      task_name:
+        type: str
+        default: dataset_rain_split
+      test_size:
+        type: float
+        default: 0.2
+      validation_size:
+        type: str
+        default: 0.2
+      key_stratify:
+        type: str
+        default: raining
+      classifier_domain:
+        type: str
+        default: rain
+      key_input:
+        type: str
+        default: text
+      key_rain:
+        type: str
+        default: tp_h
+      threshold_rain:
+        type: float
+        default: 7e-6
+      key_relevance:
+        type: str
+        default: prediction_relevant
+      select_relevant:
+        type: str
+        default: False
+    command: >
+      python scripts/relevance_classifier/build_dataset_rain_classifier.py
+        --filename_dataset_to_split /tmp/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc
+        --output_dir ${output_dir}
+        --task_name ${task_name}
+        --test_size ${test_size}
+        --validation_size ${validation_size}
+        --key_stratify ${key_stratify}
+        --classifier_domain ${classifier_domain}
+        --key_input ${key_input}
+        --key_rain ${key_rain}
+        --threshold_rain ${threshold_rain}
+        --key_relevance ${key_relevance}
+        --select_relevant ${select_relevant}
   train:
     parameters:
       model_path:
@@ -44,7 +96,7 @@ entry_points:
         type: int
         default: 5000
     command: >
-      python ../../relevance_classifier/finetune_deberta_classifier.py
+      python scripts/relevance_classifier/finetune_deberta_classifier.py
         --model_path ${model_path}
         --model_name ${model_name}
         --filename_dataset_train ${filename_dataset_train_rain}

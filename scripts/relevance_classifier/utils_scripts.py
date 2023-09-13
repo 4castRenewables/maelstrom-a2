@@ -122,3 +122,17 @@ def plot_and_log_histogram(ds, key, path_figures, tracker=None, filename="predic
     a2.plotting.histograms.plot_histogram(key, ds, filename=filename_prediction_histogram, font_size=FONTSIZE)
     if tracker is not None:
         tracker.log_artifact(filename_prediction_histogram)
+
+
+def exclude_and_save_weather_stations_dataset(args, ds_tweets, path_output, filename_prefix):
+    ds_weather_stations = ds_tweets.where(
+        ds_tweets[args.key_distance_weather_station] <= args.kms_within_station, drop=True
+    )
+    a2.dataset.load_dataset.save_dataset(
+        ds_weather_stations,
+        filename=f"{path_output}{args.weather_station_dataset_prefix}{filename_prefix}.nc",
+    )
+    ds_tweets_keywords_near_stations_excluded = ds_tweets.where(
+        ds_tweets[args.key_distance_weather_station] > args.kms_within_station, drop=True
+    )
+    return ds_tweets_keywords_near_stations_excluded
