@@ -8,7 +8,7 @@ Environment:
   Variables:
     GIT_PYTHON_REFRESH: quiet
 Resources:
-  Queue: develbooster
+  Queue: booster # develbooster
   Nodes: 1
 Exclude:
   - "*.sif"
