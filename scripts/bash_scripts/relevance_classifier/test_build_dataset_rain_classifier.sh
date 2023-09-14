@@ -1,6 +1,6 @@
-# rsync -Pvra ../../../data/tweets/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc /tmp/
+#rsync -Pvra ../../../data/tweets/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc /tmp/
 additional_args="$@"
-poetry run python ../../relevance_classifier/build_dataset_rain_classifier.py \
+poetry run python ../../relevance_classifier/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
     --filename_dataset_to_split /tmp/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc \
     --output_dir /tmp/relevance_classifier \
     --task_name dataset_rain_split \
