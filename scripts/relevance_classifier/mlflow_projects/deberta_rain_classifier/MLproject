@@ -61,19 +61,16 @@ entry_points:
         default: deberta_base
       filename_dataset_train_rain:
         type: str
-        default: >
-          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/
-          2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_train.nc
+        default:
+          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_train.nc
       filename_dataset_validate_rain:
         type: str
-        default: >
-          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/
-          2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_validate.nc
+        default:
+          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_validate.nc
       filename_dataset_test_rain:
         type: str
-        default: >
-          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/
-          2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_test.nc
+        default:
+          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_test.nc
       outdir:
         type: str
         default: "./"
