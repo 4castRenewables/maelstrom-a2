@@ -10,6 +10,7 @@ Environment:
 Resources:
   Queue: develbooster
   Nodes: 1
+  Runtime: 2h
 Exclude:
   - "*.sif"
   - "figures/"
