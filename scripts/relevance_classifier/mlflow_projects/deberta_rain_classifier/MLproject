@@ -53,6 +53,27 @@ entry_points:
         --select_relevant {select_relevant}
   train:
     parameters:
+      lr:
+        type: float
+        default: 3e-05
+      batch_size:
+        type: int
+        default: 32
+      weight_decay:
+        type: float
+        default: 0.01
+      iteration:
+        type: int
+        default: 1
+      evaluation_strategy:
+        type: str
+        default: steps
+      eval_steps:
+        type: int
+        default: 5000
+      nepochs:
+        type: int
+        default: 1
       model_path:
         type: str
         default: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-base/
@@ -77,27 +98,6 @@ entry_points:
       run_name:
         type: str
         default: "RUNNAME"
-      lr:
-        type: float
-        default: 3e-05
-      nepochs:
-        type: int
-        default: 1
-      batch_size:
-        type: int
-        default: 32
-      weight_decay:
-        type: float
-        default: 0.01
-      iteration:
-        type: int
-        default: 1
-      evaluation_strategy:
-        type: str
-        default: steps
-      eval_steps:
-        type: int
-        default: 5000
 
     command: >
       python finetune_deberta_classifier.py
