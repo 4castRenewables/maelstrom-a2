@@ -284,7 +284,7 @@ def run(parser):
 
 def mlflow(parser):
     figures(parser)
-    parser.add_argument("--run_name", type=str, default="era5 whole dataset", help="Name of run used for logging only.")
+    parser.add_argument("--run_name", type=str, default="RUNNAME", help="Name of run used for logging only.")
     parser.add_argument(
         "--mlflow_experiment_name",
         type=str,
