@@ -53,7 +53,7 @@ entry_points:
         --select_relevant {select_relevant}
   train:
     parameters:
-      lr:
+      learning_rate:
         type: float
         default: 3e-05
       batch_size:
@@ -71,7 +71,7 @@ entry_points:
       eval_steps:
         type: int
         default: 500
-      nepochs:
+      epochs:
         type: int
         default: 1
       model_path:
@@ -109,8 +109,8 @@ entry_points:
         --output_dir {outdir}
         --log_gpu_memory
         --run_name {run_name}
-        -lr {lr}
-        -nepochs {nepochs}
+        --learning_rate {lr}
+        --epochs {epochs}
         --classifier_domain rain
         --key_output raining
         --batch_size {batch_size}

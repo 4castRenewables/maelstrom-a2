@@ -68,8 +68,10 @@ def main(args):
         prefix_histogram="test",
     )
 
-    hyper_parameters = a2.training.model_configs.get_model_config(args.model_name)
-
+    hyper_parameters = a2.training.model_configs.get_model_config(
+        model_name=args.model_name, parameters_overwrite=args.__dict__
+    )
+    print(f"{hyper_parameters=}")
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path, num_labels=args.num_labels)
 
     experiment_id = tracker.create_experiment(args.mlflow_experiment_name)

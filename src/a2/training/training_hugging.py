@@ -32,6 +32,11 @@ class HyperParametersHuggingFaceClassifier:
     cls_dropout: float = 0.1
     lr_scheduler_type: str = "linear"
 
+    def update(self, new: dict):
+        for key, value in new.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
 
 @dataclasses.dataclass
 class HyperParametersDebertaClassifier(HyperParametersHuggingFaceClassifier):
