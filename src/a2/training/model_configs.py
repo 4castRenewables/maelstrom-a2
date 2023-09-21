@@ -10,13 +10,34 @@ SUPPORTED_TRAINERS: Literal = ["default", None]
 SUPPORTED_LOSSES: Literal = ["default_loss", "focal_loss"]
 
 
-def get_model_config(model_name: SUPPORTED_MODELS):
+def update_hyperparameters():
+
+    return
+
+
+def get_model_config(model_name: SUPPORTED_MODELS, parameters_overwrite: dict = None):
+    """
+    Get data class that holds hyper parameters of models that are specified via their name (str)
+
+    Parameters:
+    ----------
+    model_name: Name of model, only selection available, see `a2.training.model_configs.SUPPORTED_MODELS`
+    parameters_overwrite: Overwrites hyper parameters based on dictionary key-value pairs,
+        ignores keys not present in original data class
+
+    Returns
+    -------
+    dictionary of metrics
+    """
+    if parameters_overwrite is None:
+        parameters_overwrite = {}
     if model_name == "deberta_base" or model_name == "deberta_small":
         hyper_parameters = a2.training.training_hugging.HyperParametersDebertaClassifier()
     elif model_name == "electra_base":
         hyper_parameters = a2.training.training_hugging.HyperParametersElectraClassifier()
     else:
         raise ValueError(f"{model_name=} not supported, ({SUPPORTED_MODELS=})!")
+    hyper_parameters.update(parameters_overwrite)
     return hyper_parameters
 
 
