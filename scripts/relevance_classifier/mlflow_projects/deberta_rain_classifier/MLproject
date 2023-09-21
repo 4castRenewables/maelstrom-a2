@@ -109,7 +109,7 @@ entry_points:
         --output_dir {outdir}
         --log_gpu_memory
         --run_name {run_name}
-        --learning_rate {lr}
+        --learning_rate {learning_rate}
         --epochs {epochs}
         --classifier_domain rain
         --key_output raining
