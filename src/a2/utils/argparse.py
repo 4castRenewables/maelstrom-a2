@@ -308,7 +308,7 @@ def hyperparameter_basic(parser):
 def hyperparameter(parser):
     hyperparameter_basic(parser)
     # arg name should match name of hyper parameter used in `model_configs.py`!
-    parser.add_argument("--number_epochs", type=int, default=1, help="Numer of epochs to train.")
+    parser.add_argument("--epochs", type=int, default=1, help="Numer of epochs to train.")
     parser.add_argument("--batch_size", type=int, default=32, help="Number of samples per mini-batch.")
     parser.add_argument("--learning_rate", type=float, default=3e-05, help="Learning rate to train model.")
     parser.add_argument("--weight_decay", type=float, default=0, help="Weight decay rate to train model.")
