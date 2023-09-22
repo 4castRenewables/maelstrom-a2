@@ -331,15 +331,19 @@ def hyperparameter(parser):
 
 
 def benchmarks(parser):
+    tracking(parser)
     parser.add_argument(
         "--log_gpu_memory",
         action="store_true",
         help="Monitor Cuda memory usage.",
     )
+
+
+def tracking(parser):
     parser.add_argument(
         "--ignore_tracking",
         action="store_true",
-        help="Use mantik tracking.",
+        help="Do not use mantik tracking.",
     )
 
 
