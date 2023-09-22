@@ -26,6 +26,7 @@ def plot_histogram_2d(
     log: str | tuple[str, str] = "false",
     filename: str | pathlib.Path | None = None,
     n_bins: int | tuple[int, int] = 60,
+    n_bins_linear: int = 10,
     norm: str | None = None,
     norm_symlog_linear_threshold: float | None = None,
     axis_symlog_linear_threshold: float | tuple[float, float] = 1e-9,
@@ -97,6 +98,8 @@ def plot_histogram_2d(
     n_bins:
         Number of bins if `bin_edges` is None,
         can be provided as (x-axis n_bins, y-axis n_bins) or n_bins used for both x-axis/y-axis
+    n_bins_linear:
+        Only relevant if `log="symlog"`, Number of bins for linear part of bins (around zero)
     norm:
         Scaling of colorbar (None/"linear", "log", "symlog")
     norm_symlog_linear_threshold:
@@ -280,6 +283,7 @@ def plot_histogram_2d(
                 ylim=ylim,
                 log=log,
                 n_bins=n_bins,
+                n_bins_linear=n_bins_linear,
                 norm=norm,
                 norm_symlog_linear_threshold=norm_symlog_linear_threshold,
                 linear_thresh=axis_symlog_linear_threshold,
@@ -359,6 +363,7 @@ def _plot_histogram_2d(
     log: str | tuple[str, str] = "false",
     fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
     n_bins: int | tuple[int, int] = 60,
+    n_bins_linear: int = 10,
     norm: str | None = None,
     norm_symlog_linear_threshold: float | None = None,
     linear_thresh: float | tuple[float, float] = 1e-9,
@@ -408,12 +413,15 @@ def _plot_histogram_2d(
 
     x_values, y_values = _get_xy_values(x_values, y_values, mask)
 
-    xlim, ylim, log, n_bins, linear_thresh = _prepare_parameters(xlim, ylim, log, n_bins, linear_thresh)
+    xlim, ylim, log, n_bins, n_bins_linear, linear_thresh = _prepare_parameters(
+        xlim, ylim, log, n_bins, n_bins_linear, linear_thresh
+    )
 
     if bin_edges is None:
         bin_edges_x = get_bin_edges(
             data=x_values,
             n_bins=n_bins[0],
+            n_bins_linear=n_bins_linear[0],
             symlog_linear_threshold=linear_thresh[0],
             log=log[0],
             vmin=xlim[0],
@@ -422,6 +430,7 @@ def _plot_histogram_2d(
         bin_edges_y = get_bin_edges(
             data=y_values,
             n_bins=n_bins[1],
+            n_bins_linear=n_bins_linear[1],
             symlog_linear_threshold=linear_thresh[1],
             log=log[1],
             vmin=ylim[0],
@@ -490,6 +499,7 @@ def _plot_histogram_2d(
             log=log[0],
             figure=fig,
             n_bins=n_bins[0],
+            n_bins_linear=n_bins_linear[0],
             symlog_linear_threshold=linear_thresh[0],
             label_x=_get_label(marginal_x_label_x),
             label_y=_get_label(marginal_x_label_y),
@@ -509,6 +519,7 @@ def _plot_histogram_2d(
             log=log[1],
             figure=fig,
             n_bins=n_bins[1],
+            n_bins_linear=n_bins_linear[1],
             symlog_linear_threshold=linear_thresh[1],
             label_x=_get_label(marginal_y_label_x),
             label_y=_get_label(marginal_y_label_y),
@@ -532,6 +543,7 @@ def _prepare_parameters(
     ylim: tuple[float | None, float | None] | None,
     log: str | tuple[str, str],
     n_bins: int | tuple[int, int],
+    n_bins_linear: int | tuple[int, int],
     linear_thresh: float | tuple[float, float],
 ) -> tuple[
     tuple[float | None, float | None],
@@ -547,8 +559,11 @@ def _prepare_parameters(
     n_bins = tuple(
         [i + 1 if i is not None else i for i in n_bins]  # type: ignore
     )  # using bin edges later, where n_edges = n_bins + 1
+    n_bins_linear = tuple(
+        [i + 1 if i is not None else i for i in n_bins_linear]  # type: ignore
+    )  # using bin edges later, where n_edges = n_bins + 1
     linear_thresh = a2.utils.utils.to_nlength_tuple(linear_thresh)  # type: ignore
-    return xlim, ylim, log, n_bins, linear_thresh  # type: ignore
+    return xlim, ylim, log, n_bins, n_bins_linear, linear_thresh  # type: ignore
 
 
 def _get_xy_values(x: np.ndarray, y: np.ndarray, mask: np.ndarray | None) -> tuple[np.ndarray, np.ndarray]:
@@ -573,6 +588,7 @@ def plot_histogram(
     symlog_linear_threshold: float | None = None,
     bin_edges: np.ndarray | None = None,
     n_bins: int = 60,
+    n_bins_linear: int = 10,
     label_x: str | None = None,
     label_y: str | None = "counts",
     figure: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
@@ -614,6 +630,8 @@ def plot_histogram(
         Bin edges, if `None` computed based on data `xlim` provided and `n_bins`.
     n_bins:
         Number of bins if `bin_edges` is None.
+    n_bins_linear:
+        Only relevant if `log="symlog"`, Number of bins for linear part of bins (around zero)
     label_x:
         Label of x-axis
     label_y:
@@ -667,6 +685,7 @@ def plot_histogram(
         bin_edges, symlog_linear_threshold = get_bin_edges(
             data=values,
             n_bins=n_bins,
+            n_bins_linear=n_bins_linear,
             symlog_linear_threshold=symlog_linear_threshold,
             log=_log[0],
             return_symlog_linear_threshold=True,
@@ -839,6 +858,7 @@ def get_bin_edges(
     vmax: float | None = None,
     data: np.ndarray | None = None,
     n_bins: int = 60,
+    n_bins_linear: int = 10,
     log: str = "false",
     symlog_linear_threshold: float | None = None,
     return_symlog_linear_threshold: bool = False,
@@ -857,6 +877,8 @@ def get_bin_edges(
         Used to compute `vmin`/`vmax` if None
     n_bins:
         Number of bins
+    n_bins_linear:
+        Only relevant if `log="symlog"`, Number of bins for linear part of bins (around zero)
     log:
         Type of bins ("false", "symlog", "log")
     symlog_linear_threshold:
@@ -887,7 +909,7 @@ def get_bin_edges(
                 abs_min if abs_min < abs_max or abs_min == 0 else abs_max if abs_max != 0 else abs_min
             )
             logger.info(f"Setting: linear_thresh: {symlog_linear_threshold} with vmin: {vmin}" " and vmax: {vmax}!")
-        bins = _get_bin_edges_symlog(vmin, vmax, symlog_linear_threshold, n_bins=n_bins)
+        bins = _get_bin_edges_symlog(vmin, vmax, symlog_linear_threshold, n_bins=n_bins, n_bins_linear=n_bins_linear)
     elif log == "log":
         bins = 10 ** np.linspace(np.log10(vmin), np.log10(vmax), n_bins)
     else:
@@ -933,7 +955,7 @@ def _get_bin_edges_symlog(
         bins = np.hstack(
             (
                 np.linspace(0, linear_thresh, n_bins_linear),
-                10 ** np.linspace(np.log10(linear_thresh), np.log10(vmax)),
+                10 ** np.linspace(np.log10(linear_thresh), np.log10(vmax), n_bins),
             )
         )
     else:
