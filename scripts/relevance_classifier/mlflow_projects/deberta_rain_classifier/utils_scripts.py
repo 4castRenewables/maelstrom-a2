@@ -119,20 +119,46 @@ def evaluate_model(
 
 def plot_and_log_histogram(ds, key, path_figures, tracker=None, filename="prediction_histogram.pdf"):
     filename_prediction_histogram = os.path.join(path_figures, filename)
-    a2.plotting.histograms.plot_histogram(key, ds, filename=filename_prediction_histogram, font_size=FONTSIZE)
+    a2.plotting.histograms.plot_histogram(
+        key, ds, filename=filename_prediction_histogram, font_size=FONTSIZE, title=key
+    )
     if tracker is not None:
         tracker.log_artifact(filename_prediction_histogram)
 
 
-def exclude_and_save_weather_stations_dataset(args, ds_tweets, path_output, filename_prefix):
+def exclude_and_save_weather_stations_dataset(
+    args, ds_tweets, path_output, filename_prefix, tracker=None, path_figures=None
+):
     ds_weather_stations = ds_tweets.where(
         ds_tweets[args.key_distance_weather_station] <= args.kms_within_station, drop=True
     )
+    try:
+        plot_and_log_histogram(
+            ds_weather_stations,
+            key="raining_station",
+            path_figures=path_figures,
+            tracker=tracker,
+            filename="weather_stations_raining_histogram.pdf",
+        )
+        plot_and_log_histogram(
+            ds_weather_stations,
+            key="station_tp_mm",
+            path_figures=path_figures,
+            tracker=tracker,
+            filename="weather_stations_precipitation_histogram.pdf",
+        )
+    except Exception as e:
+        raise ValueError("Cannot save plots for weather station dataset!") from e
     a2.dataset.load_dataset.save_dataset(
         ds_weather_stations,
         filename=f"{path_output}{args.weather_station_dataset_prefix}{filename_prefix}.nc",
     )
-    ds_tweets_keywords_near_stations_excluded = ds_tweets.where(
-        ds_tweets[args.key_distance_weather_station] > args.kms_within_station, drop=True
-    )
+    # https://stackoverflow.com/questions/52417929/remove-elements-from-one-array-if-present-in-another-array-keep-duplicates-nu
+    all_indices = ds_tweets.index.values
+    weather_station_indices = ds_weather_stations.index.values
+    print(f"{all_indices=}")
+    print(f"{weather_station_indices=}")
+    remaining_indices = all_indices[np.isin(all_indices, weather_station_indices, invert=True)]
+    print(f"{remaining_indices=}")
+    ds_tweets_keywords_near_stations_excluded = ds_tweets.sel(index=remaining_indices)
     return ds_tweets_keywords_near_stations_excluded

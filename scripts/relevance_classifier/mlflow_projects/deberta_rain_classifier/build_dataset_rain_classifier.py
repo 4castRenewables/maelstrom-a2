@@ -15,9 +15,11 @@ logging.basicConfig(
 
 
 def main(args):
+    tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     """Split labeled Tweets into train, test, validation set"""
     logging.info(f"Args used: {args.__dict__}")
     path_output = utils_scripts._determine_path_output(args)
+    path_figures = os.path.join(path_output, args.figure_folder)
     filename_prefix = ""
     _, ds_raw = utils_scripts.get_dataset(
         args, args.filename_dataset_to_split, dataset_object=None, set_labels=True, build_hugging_dataset=False
@@ -28,7 +30,7 @@ def main(args):
     logging.info(f"Dataset contains {ds_selected.index.shape[0]=} Tweets.")
 
     ds_exclude_weather_stations = utils_scripts.exclude_and_save_weather_stations_dataset(
-        args, ds_selected, path_output, filename_prefix
+        args, ds_selected, path_output, filename_prefix, tracker=tracker, path_figures=path_figures
     )
 
     indices_train, indices_validate, indices_test = a2.training.training_hugging.split_training_set_tripple(
@@ -47,16 +49,32 @@ def main(args):
         f"{len(indices_train)} for training."
     )
 
-    for suffix, inidices in zip(["train", "validate", "test"], [indices_train, indices_validate, indices_test]):
+    for suffix, indices in zip(["train", "validate", "test"], [indices_train, indices_validate, indices_test]):
         save_subsection_dataset(
             ds=ds,
             filename=f"{path_output}/{args.filename_dataset_to_split.stem}_{suffix}.nc",
-            indices=inidices,
+            indices=indices,
         )
-    path_figures = os.path.join(path_output, args.figure_folder)
-    for suffix, inidices in zip(["train", "validate", "test"], [indices_train, indices_validate, indices_test]):
+    utils_scripts.plot_and_log_histogram(
+        ds, key="raining", path_figures=path_figures, tracker=tracker, filename="raining_histogram.pdf"
+    )
+    utils_scripts.plot_and_log_histogram(
+        ds, key=args.key_rain, path_figures=path_figures, tracker=tracker, filename="precipitation_histogram.pdf"
+    )
+    for suffix, indices in zip(["train", "validate", "test"], [indices_train, indices_validate, indices_test]):
         utils_scripts.plot_and_log_histogram(
-            ds.sel(index=inidices), "raining", path_figures, tracker=None, filename=f"raining_histogram_{suffix}.pdf"
+            ds.sel(index=indices),
+            key="raining",
+            path_figures=path_figures,
+            tracker=tracker,
+            filename=f"raining_histogram_{suffix}.pdf",
+        )
+        utils_scripts.plot_and_log_histogram(
+            ds.sel(index=indices),
+            key=args.key_rain,
+            path_figures=path_figures,
+            tracker=tracker,
+            filename=f"precipitation_histogram_{suffix}.pdf",
         )
 
 
@@ -83,6 +101,7 @@ if __name__ == "__main__":
     a2.utils.argparse.classifier(parser)
     a2.utils.argparse.dataset_rain(parser)
     a2.utils.argparse.hyperparameter_basic(parser)
+    a2.utils.argparse.tracking(parser)
     a2.utils.argparse.output(parser)
     a2.utils.argparse.figures(parser)
     a2.utils.argparse.debug(parser)
