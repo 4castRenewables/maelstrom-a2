@@ -3,7 +3,7 @@ Environment:
   PreRunCommand:
     Command: >
       module load Stages/2023 GCCcore/.11.3.0 Python/3.10.4 CUDA/11.7;
-      source /p/scratch/deepacf/maelstrom/maelstrom_data/ap2/venvs/ap2_deberta/bin/activate;
+      source /p/scratch/deepacf/maelstrom/maelstrom_data/ap2/venvs/ap2_deberta/bin/activate && pip install a2 -U;
     ExecuteOnLoginNode: false
   Variables:
     GIT_PYTHON_REFRESH: quiet
