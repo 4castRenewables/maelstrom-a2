@@ -13,5 +13,5 @@ poetry run python ../../relevance_classifier/mlflow_projects/deberta_rain_classi
     --threshold_rain 7e-6 \
     --key_relevance prediction_relevant \
     --select_relevant False\
-    --debug \
+    # --debug \
     ${additional_args}

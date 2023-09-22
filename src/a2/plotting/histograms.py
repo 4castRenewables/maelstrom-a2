@@ -586,6 +586,7 @@ def plot_histogram(
     tight_layout: bool = True,
     rotation_x_labels: int = 0,
     rotation_y_labels: int = 0,
+    title: str = "",
 ) -> a2.utils.constants.TYPE_MATPLOTLIB_AXES:
     """
     plots 1d histogram
@@ -639,6 +640,8 @@ def plot_histogram(
         Angle of rotation of x-axis labels
     rotation_y_labels:
         Angle of rotation of y-axis labels
+    title:
+        Title of figure
 
     Returns
     -------
@@ -699,6 +702,7 @@ def plot_histogram(
 
     if tight_layout:
         figure.tight_layout()
+    a2.plotting.utils_plotting.set_title(axes, title, font_size=font_size)
     a2.plotting.figures.save_figure(figure, filename)
     return axes
 
