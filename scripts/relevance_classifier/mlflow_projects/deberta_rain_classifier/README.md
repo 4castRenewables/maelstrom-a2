@@ -15,3 +15,7 @@ and activate
 ```
 source /p/scratch/deepacf/maelstrom/maelstrom_data/ap2/venvs/ap2_deberta/bin/activate
 ```
+Install requirements in `venv` via
+```
+. requirements.sh
+```
