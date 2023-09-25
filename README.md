@@ -35,6 +35,16 @@ Note, make sure that you are using `python3` or `python` in the apptainer recipe
 1. Start a Jupyter lab via Jupyter JSC on the respective login node (i.e. Juwels or Juwels Booster).
 2. Select the kernel (see above).
 
+## Running A2 on Mantik
+Currently, the following MLflow projects exist to run A2 models with Mantik
+- Split data and train model of baseline DeBERTa classifier, see `scripts/relevance_classifier/mlflow_projects/deberta_rain_classifier/.
+### Setup on Juwels Cluster
+Here, we execute our code in a venv environment. For setup of a venv with the necessary packages installed, can be found in README.md of respective MLflow project folder.
+### Setup on Mantik platform GUI
+In your project, create an `Experiment` to log data to and `Code` that refers to this repository.
+### Create Run
+In the `Run` form adopt parameter values of the `MLflow` project file and compute backend file to your setup.
+
 ## Debugging
 To show processing bottelenecks line_profiler is used. For memory profiling, we use the respective [memory_profiler](https://github.com/pythonprofilers/memory_profiler) package.
 
@@ -90,6 +100,12 @@ Tests including image comparisons are run when including the option
 poetry run pytest --mpl --mpl-baseline-path=${MPL_BASELINE_PATH_A2}
 ```
 
+## Poetry
+
+### Known issues
+- [Invalid hashes](https://stackoverflow.com/questions/71001968/python-poetry-install-failure-invalid-hashes):
+    Search for problematic file `find ~/.cache/pypoetry -name numpy-1.22.2-cp38-cp38-macosx_10_14_x86_64.whl` and remove it.
+
 
 ## Ideas
 
@@ -107,11 +123,6 @@ poetry run pytest --mpl --mpl-baseline-path=${MPL_BASELINE_PATH_A2}
 ### Paint weather map
 Embed Tweets as RGB (or similar) on a grid (unstructured?!/average embeddings?!/take most informative Tweet?!) and treat as image to predict rain map.
 
-## Poetry
-
-### Known issues
-- [Invalid hashes](https://stackoverflow.com/questions/71001968/python-poetry-install-failure-invalid-hashes):
-    Search for problematic file `find ~/.cache/pypoetry -name numpy-1.22.2-cp38-cp38-macosx_10_14_x86_64.whl` and remove it.
 ### First paper idea
 * Introduce keyword distribution -> histogram plot
 * Motivate certainty in prediction with softmax output
