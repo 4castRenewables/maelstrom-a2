@@ -554,6 +554,7 @@ def _prepare_parameters(
 ]:
     log = a2.utils.utils.to_nlength_tuple(log)  # type: ignore
     n_bins = a2.utils.utils.to_nlength_tuple(n_bins)  # type: ignore
+    n_bins_linear = a2.utils.utils.to_nlength_tuple(n_bins_linear)  # type: ignore
     xlim = a2.utils.utils.to_nlength_tuple(xlim)  # type: ignore
     ylim = a2.utils.utils.to_nlength_tuple(ylim)  # type: ignore
     n_bins = tuple(

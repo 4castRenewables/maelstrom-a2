@@ -5,6 +5,7 @@ dist/
 data/precipitation/
 data/weather_stations/
 data/embeddings/
+data/bootcamp2023/
 **.ipynb_checkpoints/
 **/__pycache__
 *.pyc
@@ -43,3 +44,4 @@ share/
 *.log
 env*.sh
 test.ipynb
+mlruns/
