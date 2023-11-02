@@ -1,8 +1,7 @@
 .ONESHELL:
-
-SHELL = /bin/bash
-CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
-
+ACTIVE_ENV = source ~/.bashrc
+SHELL := /bin/bash
+CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate
 ROOT_DIR = $(PWD)
 NOTEBOOKS_DIR = $(ROOT_DIR)/notebooks
 JSC_DIR = $(NOTEBOOKS_DIR)/containers/jsc
@@ -129,6 +128,9 @@ define JSC_KERNEL_JSON
 endef
 
 export JSC_KERNEL_JSON
+
+sync-bootcamp-data:
+	. ~/.bashrc && rsynctojuwels /home/kristian/Projects/a2/data/bootcamp2023/ /p/project/training2330/a2/data/bootcamp2023/
 
 upload-jsc-kernel:
 	echo $(KERNEL_PATH)
