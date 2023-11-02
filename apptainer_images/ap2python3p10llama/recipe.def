@@ -1,0 +1,28 @@
+Bootstrap: docker
+
+From: nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu22.04
+# nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+
+%files
+    dist/ /opt/dist
+    requirements.txt
+
+%post
+    apt-get update
+    apt install -y git libsndfile1-dev tesseract-ocr espeak-ng python3 python3-pip ffmpeg python3-venv
+    pip install --upgrade pip
+    export PATH="/root/.local/bin:$PATH"
+    pip install -r requirements.txt
+#    cd /opt
+#    pip install /opt/dist/*.whl
+#    pip install ipykernel joblib
+#    python3 -m ipykernel install
+    apt --fix-broken install
+    cd /
+    rm -rf /opt
+
+%environment
+    # `PATH` and `LD_LIBRARY_PATH` must be expanded to include everything necessary
+    # to run Slurm commands.
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64:/opt/parastation/lib64/slurm:/usr/lib64/slurm:/etc/slurm:/p/software/juwels/stages/2020/software/binutils/2.36.1-GCCcore-10.3.0/core-10.3.0/lib:/p/software/juwels/stages/2020/software/zlib/1.2.11-GCCcore-10.3.0/lib:/p/software/juwels/stages/2020/software/GCCcore/10.3.0/lib64:/p/software/juwels/stages/2020/software/GCCcore/10.3.0/lib
+    PATH=$PATH:/usr/lib64/slurm:/etc/slurm:/host/usr/bin/sbatch:/p/software/juwels/stages/2020/software/binutils/2.36.1-GCCcore-10.3.0/bin:/p/software/juwels/stages/2020/software/GCCcore/10.3.0/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ddn/ime/bin:/opt/jsc/bin:/usr/local/jsc/bin:/opt/parastation/bin:/p/software/juwels/bin
