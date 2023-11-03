@@ -84,9 +84,9 @@ def evaluate_model(
     if hyper_parameters is not None:
         step = hyper_parameters.epochs
     a2.training.tracking.log_metric_classification_report(
-        tracker,
-        truth,
-        predictions,
+        tracker=tracker,
+        truth=truth,
+        predictions=predictions,
         step=step,
         label=args.key_output,
         filename_confusion_matrix=filename_confusion_matrix,

@@ -145,7 +145,7 @@ def plot_confusion_matrix(
     vmax: float | None = None,
     text_color: str | None = "firebrick",
     colormap: str | None = "Blues",
-    overplot_round_base: int | None = None,
+    overplot_round_base: int | None = 2,
     tick_labels_x: tuple | None = ("not raining", "raining"),
     tick_labels_y: tuple | None = ("raining", "not raining"),
     colorbar_label: str | None = "Fraction",
@@ -173,7 +173,6 @@ def plot_confusion_matrix(
     if figure_size is None:
         figure_size = [6, 6]
     cm = sklearn.metrics.confusion_matrix(truth, prediction, normalize=normalize)
-    print(f"{cm=}")
     if ax is None:
         fig, ax, ax_colorbar = a2.plotting.utils_plotting.create_axes_grid(
             1, 1, figure_size=figure_size, unravel=True, colorbar_off=False, colorbar_width=colorbar_width
@@ -183,8 +182,7 @@ def plot_confusion_matrix(
     norm = a2.plotting.utils_plotting.get_norm("linear", vmin=vmin, vmax=vmax)
     xedges = [0, 0.5, 1]
     yedges = [0, 0.5, 1]
-    cm = cm[::-1, :].T
-    mesh = ax.pcolormesh(xedges, yedges, cm.T, norm=norm, cmap=colormap)
+    mesh = ax.pcolormesh(xedges, yedges, cm, norm=norm, cmap=colormap)
     cbar = plt.colorbar(mesh, cax=ax_colorbar, orientation="vertical")
     a2.plotting.axes_utils.set_colorbar(cbar.ax, label_y=colorbar_label, fontsize=font_size)
     a2.plotting.utils_plotting.annotate_values(
