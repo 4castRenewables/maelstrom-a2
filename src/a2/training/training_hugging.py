@@ -7,12 +7,14 @@ import a2.dataset
 import a2.plotting.analysis
 import a2.training.tracking
 import a2.training.utils_training
+import a2.utils.utils
 import datasets
 import numpy as np
 import sklearn.model_selection
-import torch.nn
 import transformers
 import xarray
+
+torch = a2.utils.utils._import_torch(__file__)
 
 
 @dataclasses.dataclass
