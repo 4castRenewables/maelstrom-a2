@@ -172,7 +172,7 @@ def circle_scatter(
     color: Optional[t.Union[str, list, np.ndarray]] = None,
     radius: t.Union[float, list, np.ndarray] = 1,
     fill: bool = True,
-    cmap: Optional[matplotlib.colormaps] = None,
+    cmap: matplotlib.cm.ColormapRegistry | None = None,
     norm=None,
     alpha: float = 1,
     show_colorbar: bool = False,

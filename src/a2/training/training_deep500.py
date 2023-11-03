@@ -1,9 +1,11 @@
 import logging as logging_std_library
 
 import a2.training.benchmarks as timer
-import torch
+import a2.utils.utils
 import transformers
 from transformers.trainer import *  # Ugly but probably needed ... # noeq
+
+torch = a2.utils.utils._import_torch(__file__)
 
 
 class TimerCallback(transformers.TrainerCallback):

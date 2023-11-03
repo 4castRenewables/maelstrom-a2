@@ -4,8 +4,10 @@ import pprint
 import resource
 import time
 
+import a2.utils.utils
 import numpy as np
-import torch
+
+torch = a2.utils.utils._import_torch(__file__)
 
 
 @dataclasses.dataclass(frozen=True)
