@@ -26,7 +26,7 @@ class DatasetHuggingFace:
         self.model_folder = model_folder
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(
             model_folder,
-            use_fast=False,
+            use_fast=use_fast,
         )
 
     def _tok_func(self, x: dict):

@@ -2,6 +2,7 @@ import functools
 import io
 import typing as t
 from copy import deepcopy
+from typing import Optional
 
 import a2.plotting.utils_plotting
 import a2.utils
@@ -17,7 +18,7 @@ def parallel_plot(
     figsize: t.Optional[t.List[float]] = None,
     aspect: str = "auto",
     kwargs=None,
-    height_ratios: list = None,
+    height_ratios: Optional[list] = None,
     axes_backend: str = "matplotlib",
     processes: int = -1,
 ):

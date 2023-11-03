@@ -46,7 +46,6 @@ args = transformers.TrainingArguments(
 
 
 def fake_dataset(n_sentences=20, max_words_per_sentence=20, min_words_per_sentence=3):
-
     word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
 
     response = requests.get(word_site)

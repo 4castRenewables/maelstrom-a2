@@ -4,4 +4,4 @@ From: nvidia/cuda:12.2.2-cudnn8-devel-ubuntu22.04
 apt update
 apt upgrade -y
 apt install -y python3-venv python3-pip
-pip install a2 bottleneck keras tensorflow torch datasets transformers sentencepiece ray[tune] xgboost nltk sentence_transformers catboost
+pip install a2 bottleneck keras tensorflow[and-cuda] torch datasets transformers[torch] sentencepiece ray[tune] xgboost nltk sentence_transformers catboost

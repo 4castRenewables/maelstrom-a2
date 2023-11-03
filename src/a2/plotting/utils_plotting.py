@@ -1,6 +1,7 @@
 import collections
 import typing as t
 from collections.abc import Sequence
+from typing import Optional
 
 import a2.utils.constants
 import a2.utils.utils
@@ -115,7 +116,7 @@ def set_axes_label(
 def create_figure_axes(
     figure: t.Optional[plt.figure] = None,
     axes: t.Optional[plt.axes] = None,
-    figure_size: t.Sequence = None,
+    figure_size: Optional[t.Sequence] = None,
     font_size: t.Optional[int] = 10,
     aspect: str = "auto",
 ) -> t.Tuple[plt.figure, plt.axes]:
@@ -532,7 +533,7 @@ def _plot_colorbar(
 
 def plot_colorbar(
     plot: matplotlib.cm.ScalarMappable,
-    cax: a2.utils.constants.TYPE_MATPLOTLIB_AXES = None,
+    cax: Optional[a2.utils.constants.TYPE_MATPLOTLIB_AXES] = None,
     label: str | None = None,
     font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_SMALL,
 ) -> a2.utils.constants.TYPE_MATPLOTLIB_COLORBAR:

@@ -94,7 +94,11 @@ def test_HuggingFaceTrainerClass_get_trainer(
         a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=1)
         assert np.array_equal(predictions, np.array([1, 1, 1, 1]))
     logging.debug(f'{os.listdir(folder_output + "checkpoint-1/")=}')
-    (truth, predictions, prediction_probabilities,) = a2.training.evaluate_hugging.make_predictions_loaded_model(
+    (
+        truth,
+        predictions,
+        prediction_probabilities,
+    ) = a2.training.evaluate_hugging.make_predictions_loaded_model(
         ds,
         indices_validate,
         folder_output + "checkpoint-1/",
