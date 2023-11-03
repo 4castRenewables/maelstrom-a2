@@ -5,8 +5,10 @@ import functools
 import itertools
 import logging
 import multiprocessing
+import pathlib
 import re
 import typing as t
+import warnings
 from collections.abc import Iterable
 from functools import wraps
 from time import time
@@ -234,3 +236,12 @@ def is_in_list_and_remove(to_check, _list):
     if is_in:
         _list.remove(to_check)
     return is_in
+
+
+def _import_torch(file):
+    try:
+        import torch as torch  # noqa: E501
+    except ModuleNotFoundError:
+        warnings.warn(f"Need to install `torch` to use all functionality in {pathlib.Path(file).parent}.")
+    else:
+        return torch

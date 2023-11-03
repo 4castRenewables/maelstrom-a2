@@ -5,11 +5,13 @@ import warnings
 import a2.training.dataset_hugging
 import a2.training.training_hugging
 import a2.training.utils_training
+import a2.utils.utils
 import datasets
 import numpy as np
-import torch
 import transformers
 import xarray
+
+torch = a2.utils.utils._import_torch(__file__)
 
 
 def build_ds_test(

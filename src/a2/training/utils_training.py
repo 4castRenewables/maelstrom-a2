@@ -1,4 +1,6 @@
-import torch
+import a2.utils.utils
+
+torch = a2.utils.utils._import_torch(__file__)
 
 
 def gpu_available():
