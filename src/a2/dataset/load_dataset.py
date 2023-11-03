@@ -174,7 +174,6 @@ def save_dataset(
     encode_time: bool = True,
     reset_index: bool = False,
     engine: str | None = "h5netcdf",
-    replace_nan_in_string_field: str = "nan",
 ) -> None:
     """
     saves xarray dataset to file.

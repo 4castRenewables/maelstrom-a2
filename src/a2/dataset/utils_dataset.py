@@ -1,6 +1,7 @@
 import logging
 import re
 import typing as t
+from typing import Optional
 
 import a2.dataset
 import a2.utils.testing
@@ -16,7 +17,7 @@ def is_same_type_data_array(ds: xarray.Dataset, field: t.Hashable, which_type: t
 def is_nan(
     ds: xarray.Dataset,
     field: t.Union[str, t.Hashable],
-    dims: t.Tuple = None,
+    dims: Optional[t.Tuple] = None,
 ):
     """
     Test element-wise for nan-values and returns boolean mask as DataArray
@@ -44,7 +45,7 @@ def is_na(
     ds: xarray.Dataset,
     field: str,
     check: t.Optional[t.List[str]] = None,
-    dims: t.Tuple = None,
+    dims: Optional[t.Tuple] = None,
 ):
     """
     Returns boolean data array that notes if either field in `check` is matched.
@@ -126,9 +127,9 @@ def print_tweet_groupby(
     ds: xarray.Dataset,
     group_by: t.Union[str, xarray.DataArray],
     n_sample: int = 5,
-    n: int = None,
+    n: Optional[int] = None,
     n_groups: int = 20,
-    ds_grouped: xarray.Dataset = None,
+    ds_grouped: Optional[xarray.Dataset] = None,
     fancy: bool = True,
     fields_to_print: list = ["text"],
 ) -> xarray.Dataset:
@@ -389,9 +390,9 @@ def add_precipitation_to_tweets(
 def add_field(
     ds: xarray.Dataset,
     variable: t.Hashable,
-    coordinates: list = None,
+    coordinates: Optional[list] = None,
     overwrite: bool = False,
-    rename_coordinate: str = None,
+    rename_coordinate: Optional[str] = None,
 ):
     if coordinates is None:
         coordinates = list(ds.coords)

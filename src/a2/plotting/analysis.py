@@ -1,5 +1,6 @@
 import pathlib
 import typing as t
+from typing import Optional
 
 import a2.plotting.axes_utils
 import a2.plotting.figures
@@ -21,14 +22,14 @@ def plot_prediction_certainty(
     label_x: str = "True label",
     label_y: str = "Prediction probability for 'raining'",
     label_colorbar: str = "Number of Tweets",
-    filename: t.Union[str, pathlib.Path] = None,
+    filename: Optional[t.Union[str, pathlib.Path]] = None,
     font_size: int = 12,
     vmin=None,
     vmax=None,
     cmap="viridis",
-    figure_size: t.Sequence = None,
+    figure_size: Optional[t.Sequence] = None,
     return_matrix: bool = False,
-    ax: plt.axes = None,
+    ax: Optional[plt.axes] = None,
     **kwargs,
 ) -> t.Union[plt.Axes, t.Tuple[plt.Axes, np.ndarray]]:
     """
@@ -207,9 +208,9 @@ def plot_confusion_matrix(
 def plot_roc(
     truth: t.Sequence,
     prediction_probabilities: t.Sequence,
-    filename: t.Union[str, pathlib.Path] = None,
+    filename: Optional[t.Union[str, pathlib.Path]] = None,
     font_size: int = 12,
-    figure_size: t.Sequence = None,
+    figure_size: Optional[t.Sequence] = None,
     ax: object | None = None,
     fig: object | None = None,
     label_x: str | None = "False Positive Rate",
