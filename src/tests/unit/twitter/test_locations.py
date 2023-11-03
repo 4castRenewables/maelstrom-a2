@@ -89,7 +89,7 @@ def test_add_locations(
     new_files,
     expected,
     request,
-    mock_tweepy_auth_api_geoid,
+    # mock_tweepy_auth_api_geoid,
     tmp_path,
 ):
     if new_files:

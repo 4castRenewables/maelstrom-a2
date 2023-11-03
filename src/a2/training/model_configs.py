@@ -1,4 +1,5 @@
 from typing import Literal
+from typing import Optional
 
 import a2.training.training_hugging
 import a2.utils.utils
@@ -11,11 +12,10 @@ SUPPORTED_LOSSES: Literal = ["default_loss", "focal_loss"]
 
 
 def update_hyperparameters():
-
     return
 
 
-def get_model_config(model_name: SUPPORTED_MODELS, parameters_overwrite: dict = None):
+def get_model_config(model_name: SUPPORTED_MODELS, parameters_overwrite: Optional[dict] = None):
     """
     Get data class that holds hyper parameters of models that are specified via their name (str)
 

@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "a2"
-version = "0.4.7"
+version = "0.4.9"
 description = "Package for predicting information about the weather from social media data as application 2 for maelstrom project"
 authors = ["Kristian Ehlert <kristian.ehlert@4-cast.de>"]
-packages = [{ include = "a2", from = "src"}]
+packages = [{ include = "a2", from = "src" }]
 
 [tool.poetry.dependencies]
 # torch = {url = "https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp310-cp310-linux_x86_64.whl", optional = true} # cannot upload this to package
@@ -26,7 +26,7 @@ pyproj = "^3.3.1"
 h5py = "^3.7.0"
 netCDF4 = "^1.6.0"
 h5netcdf = "^1.0.1"
-mantik = "^0.4.1"
+mantik = {extras = ["mlflow"], version = "^0.4.4"}
 urllib3 = "^1.26.12"
 scikit-learn = "^1.1.2"
 kaleido = "0.2.1"
@@ -40,9 +40,9 @@ click = "^8.1.3"
 ipython = "^8.7.0"
 llvmlite = "^0.39.1"
 datasets = "^2.11.0"
-sentencepiece = {version = "^0.1.98", optional = true}
+sentencepiece = { version = "^0.1.98", optional = true }
 ecmwflibs = "0.5.3"
-transformers = {version = "^4.29.2", optional = true}
+transformers = { version = "^4.29.2", optional = true }
 
 [[tool.poetry.source]]
 name = "torch-source"
@@ -55,9 +55,6 @@ name = "PyPI"
 priority = "primary"
 
 [tool.poetry.group.dev.dependencies]
-black = {extras = ["jupyter"], version = "^22.6.0"}
-mypy = "^0.971"
-reorder-python-imports = "^3.1.0"
 types-python-dateutil = "^2.8.18"
 types-requests = "^2.28.0"
 pandas-stubs = "^1.4.2"
@@ -66,7 +63,7 @@ pytest-cov = "^3.0.0"
 pytest-cases = "^3.6.13"
 pytest-recording = "^0.12.1"
 types-tqdm = "^4.64.4"
-line-profiler = {extras = ["ipython"], version = "^3.5.1"}
+line-profiler = { extras = ["ipython"], version = "^3.5.1" }
 pyflakes = "^2.5.0"
 traceback-with-variables = "^2.0.4"
 sacremoses = "^0.0.53"
@@ -78,6 +75,7 @@ docformatter = "^1.5.0"
 pytest-mpl = "^0.16.1"
 responses = "0.18"
 pytest-mock = "^3.10.0"
+no-implicit-optional = "^1.4"
 
 
 [tool.poetry.group.eradata.dependencies]
@@ -93,9 +91,7 @@ twine = "^4.0.2"
 
 [tool.poetry.extras]
 llama-chatbot = ["transformers", "sentencepiece"]
-extend-exclude = [
-    "helper_deep500.py"
-]
+extend-exclude = ["helper_deep500.py"]
 
 [tool.poetry.group.parallel.dependencies]
 p-tqdm = "^1.4.0"
@@ -107,20 +103,20 @@ xgboost = "^1.6.2"
 catboost = "^1.1"
 nltk = "^3.7"
 sentence-transformers = "^2.2.2"
-ray = {extras = ["tune"], version = "^2.2.0"}
+ray = { extras = ["tune"], version = "^2.2.0" }
 tensorboard = "^2.11.0"
 
 [tool.poetry.group.torch-cpu]
 optional = true
 [tool.poetry.group.torch-cpu.dependencies]
-torch = {version = "2.0.0", source = "torch-source"} # for newest version, i.e. 2.0.1, torch with cpu backend notworking
-accelerate = {version = "^0.20.0"}
+torch = { version = "2.0.0", source = "torch-source" } # for newest version, i.e. 2.0.1, torch with cpu backend notworking
+accelerate = { version = "^0.20.0" }
 
 
 [tool.poetry.group.benchmarking]
 optional = true
 [tool.poetry.group.benchmarking.dependencies]
-optimum = {extras = ["onnxruntime"], version = "^1.7.1", optional = true}
+optimum = { extras = ["onnxruntime"], version = "^1.7.1", optional = true }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -129,12 +125,28 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 a2 = 'a2.cli.main:cli'
 
-[tool.mypy]
+[tool.vulture]
+min_confidence = 80
+paths = ['src/']
 exclude = [
-    'mlprojects',
-    'bootcamp2022',
+    '**/cachedir/*',
+    '**/.venv/*',
+    'src/a2/training/tracking_hugging.py',
+    'src/a2/training/training_performance.py',
+    'src/a2/training/training_deep500.py',
+]
+ignore_names = ["control", "gpu"]
+sort_by_size = true
+verbose = false
+
+[tool.mypy]
+warn_unused_configs = true
+exclude = [
+    'src/a2/dataset/radar.py',
+    'bootcamp2023/scripts/normalize_text_bootcamp.py',
     'src/a2/dataset/radar.py'
 ]
+
 [[tool.mypy.overrides]]
 module = [
     "shapely.geometry",
@@ -154,6 +166,7 @@ module = [
     "uvloop",
     "PIL",
     "geopy",
+    "requests",
 ]
 ignore_missing_imports = true
 
@@ -185,4 +198,3 @@ log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-

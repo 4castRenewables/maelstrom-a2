@@ -466,8 +466,6 @@ def _plot_histogram_2d(
         rasterized=True,
         convert_zeros_to_nan=convert_zeros_to_nan,
     )
-    print(f"{H_plot=}")
-    print(f"{np.flip(H_plot, axis=0)=}")
     if annotate:
         a2.plotting.utils_plotting.annotate_values(
             H=np.flip(H_plot, axis=0),
@@ -906,10 +904,13 @@ def get_bin_edges(
         if symlog_linear_threshold is None:
             abs_max = abs(vmax)
             abs_min = abs(vmin)
-            symlog_linear_threshold = (
-                abs_min if abs_min < abs_max or abs_min == 0 else abs_max if abs_max != 0 else abs_min
-            )
+            symlog_linear_threshold = abs_min if abs_min < abs_max else abs_max if abs_max != 0 else abs_min
+            if symlog_linear_threshold == 0:
+                raise ValueError(
+                    f"{symlog_linear_threshold=}, which is not allowed. Please set manually to different value!"
+                )
             logger.info(f"Setting: linear_thresh: {symlog_linear_threshold} with vmin: {vmin}" " and vmax: {vmax}!")
+
         bins = _get_bin_edges_symlog(vmin, vmax, symlog_linear_threshold, n_bins=n_bins, n_bins_linear=n_bins_linear)
     elif log == "log":
         bins = 10 ** np.linspace(np.log10(vmin), np.log10(vmax), n_bins)

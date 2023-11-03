@@ -2,6 +2,7 @@ import logging
 import pathlib
 import re
 import typing as t
+from typing import Optional
 
 import a2.dataset.load_dataset
 import a2.utils
@@ -720,7 +721,7 @@ def filter_text_dataset(
     only_text_containing_keywords: bool = True,
     maximum_bounding_box_area: t.Optional[float] = 100,
     only_unique_text: bool = True,
-    keywords: t.Sequence = None,
+    keywords: Optional[t.Sequence] = None,
 ) -> xarray.Dataset:
     """
     Filters Tweets to allow for more concise (problem specific) text

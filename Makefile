@@ -26,6 +26,9 @@ else ifeq ($(IMAGE_TYPE), llamachat)
 	POETRY_EXTRAS := ""
 	IMAGE_NAME := llama-chat
 	KERNEL_IMAGE_DEFINITION_FILENAME := llama-chat
+	KERNEL_PATH := /p/project/training2330/ehlert1/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/training2330/ehlert1/jupyter/images/
+	KERNEL_DISPLAY_NAME := ap2_llama
 else ifeq ($(IMAGE_TYPE), bootcamp2023)
 	POETRY_GROUPS := train
 	IMAGE_NAME := bootcamp2023
@@ -80,7 +83,7 @@ publish-package:
 
 publish-patch:
 	poetry version patch
-	publish-package
+	$(MAKE) publish-package
 
 clean-poetry:
 	rm -rf .venv

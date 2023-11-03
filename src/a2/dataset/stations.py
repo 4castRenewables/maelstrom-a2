@@ -2,6 +2,7 @@ import dataclasses
 import functools
 import logging
 import typing as t
+from typing import Optional
 
 import a2.dataset.tweets
 import a2.utils
@@ -106,7 +107,7 @@ def find_closest_coordinate_and_distance(
     return np.array(latitudes), np.array(longitudes), np.array(distances)
 
 
-def unique_coordinates(df: pd.DataFrame, coordinates: list = None):
+def unique_coordinates(df: pd.DataFrame, coordinates: Optional[list] = None):
     """Finds unique coordinate pairs"""
     if coordinates is None:
         coordinates = ["latitude", "longitude"]

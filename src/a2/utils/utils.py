@@ -10,6 +10,7 @@ import typing as t
 from collections.abc import Iterable
 from functools import wraps
 from time import time
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -159,7 +160,7 @@ def _assert_same_type(variable, type_from_variable):
             raise TypeError(f"Variable {variable=} different type than expected {type_from_variable=}")
 
 
-def assert_same_type_as(variable: object, type_from_variable: object, alternative: object = None):
+def assert_same_type_as(variable: object, type_from_variable: object, alternative: Optional[object] = None):
     """Check if `variable` is same type as `type_from_variable` unless `variable` is `alternative`"""
     if variable is alternative:
         return
@@ -175,7 +176,7 @@ def all_same_type(variable_list: t.Iterable, type_: type):
             raise ValueError(f"{var} not of type {type_.__name__}!")
 
 
-def assert_shape(variable, shape: t.Tuple, name: str = None, ignore_none: bool = True):
+def assert_shape(variable, shape: t.Tuple, name: Optional[str] = None, ignore_none: bool = True):
     if ignore_none:
         if variable is None:
             return
