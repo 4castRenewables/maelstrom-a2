@@ -154,7 +154,7 @@ def plot_confusion_matrix(
     ax_colorbar: object | None = None,
 ):
     """
-    Computes classification report and plots confusion matrix
+    Computes and plots confusion matrix
 
     Parameters:
     ----------
@@ -168,7 +168,7 @@ def plot_confusion_matrix(
 
     Returns
     -------
-    classification report
+    Confusion matrix figure
     """
     if figure_size is None:
         figure_size = [6, 6]
@@ -182,9 +182,18 @@ def plot_confusion_matrix(
     norm = a2.plotting.utils_plotting.get_norm("linear", vmin=vmin, vmax=vmax)
     xedges = [0, 0.5, 1]
     yedges = [0, 0.5, 1]
-    mesh = ax.pcolormesh(xedges, yedges, cm, norm=norm, cmap=colormap)
-    cbar = plt.colorbar(mesh, cax=ax_colorbar, orientation="vertical")
-    a2.plotting.axes_utils.set_colorbar(cbar.ax, label_y=colorbar_label, fontsize=font_size)
+    X, Y = np.meshgrid(xedges, yedges)
+    mesh = a2.plotting.colormesh._plot_colormesh(
+        ax,
+        X,
+        Y,
+        cm[::-1],
+        norm,
+        colormap,
+        linewidth=0,
+        rasterized=True,
+    )
+    a2.plotting.utils_plotting.plot_colorbar(mesh, cax=ax_colorbar, label=colorbar_label, font_size=font_size)
     a2.plotting.utils_plotting.annotate_values(
         np.array(cm), ax, 2, 2, color=text_color, round_to_base=overplot_round_base, font_size=font_size
     )
