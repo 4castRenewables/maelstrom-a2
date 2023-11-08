@@ -468,7 +468,7 @@ def _plot_histogram_2d(
     )
     if annotate:
         a2.plotting.utils_plotting.annotate_values(
-            H=np.flip(H_plot, axis=0),
+            H=H_plot,
             axes=axes,
             size_x=len(bin_edges_x) - 1,
             size_y=len(bin_edges_y) - 1,

@@ -15,7 +15,7 @@ JSC_PROJECT = ${MANTIK_UNICORE_PROJECT}
 JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 
-IMAGE_TYPE = bootcamp2023
+IMAGE_TYPE = HFfinetuningBnB
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -29,6 +29,13 @@ else ifeq ($(IMAGE_TYPE), llamachat)
 	KERNEL_PATH := /p/project/training2330/ehlert1/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/training2330/ehlert1/jupyter/images/
 	KERNEL_DISPLAY_NAME := ap2_llama
+else ifeq ($(IMAGE_TYPE), HFfinetuningBnB)
+	POETRY_EXTRAS := ""
+	IMAGE_NAME := HFfinetuningBnB
+	KERNEL_IMAGE_DEFINITION_FILENAME := HFfinetuningBnB
+	KERNEL_PATH := /p/project/training2330/ehlert1/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/training2330/ehlert1/jupyter/images/
+	KERNEL_DISPLAY_NAME := ap2_HF-LLM-BnB
 else ifeq ($(IMAGE_TYPE), bootcamp2023)
 	POETRY_GROUPS := train
 	IMAGE_NAME := bootcamp2023
