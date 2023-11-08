@@ -385,6 +385,7 @@ def annotate_values(
     x_positions = np.linspace(start=x_start, stop=x_end, num=size_x, endpoint=False)
     y_positions = np.linspace(start=y_start, stop=y_end, num=size_y, endpoint=False)
     H_processed = H.copy()
+    H_processed = np.flip(H_processed, axis=0)
     if round_to_base is not None:
         H_processed = np.round(H, round_to_base)
         if round_to_base < 0:
