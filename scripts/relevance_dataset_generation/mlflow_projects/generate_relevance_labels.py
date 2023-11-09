@@ -38,6 +38,7 @@ def main(args):
     )
 
     logging.info(f"Dataset contains {ds_raw.index.shape[0]=} Tweets.")
+    logging.info(f"Available GPUs:\n{[torch.cuda.device(i) for i in range(torch.cuda.device_count())]}")
 
     ds = a2.dataset.load_dataset.reset_index_coordinate(ds_raw)
 
