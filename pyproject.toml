@@ -191,6 +191,7 @@ per-file-ignores = [
     "__init__.py:F401,E501",
     "training_deep500.py:F403,F405",
     "training_performance.py:F403,F405",
+    "scripts/relevance_dataset_generation/mlflow_projects/generate_relevance_labels.py:E501",
 ]
 
 [tool.pytest.ini_options]

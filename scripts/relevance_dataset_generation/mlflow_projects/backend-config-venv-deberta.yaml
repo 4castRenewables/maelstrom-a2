@@ -1,0 +1,18 @@
+UnicoreApiUrl: https://zam2125.zam.kfa-juelich.de:9112/JUWELS/rest/core
+Environment:
+  Apptainer:
+    Path: /p/project/training2330/ehlert1/jupyter/images//HFfinetuningBnB.sif
+    Type: remote
+    Options:
+      - --nv
+  Variables:
+    GIT_PYTHON_REFRESH: quiet
+Resources:
+  Queue: develbooster
+  Nodes: 1
+  Runtime: 2h
+Exclude:
+  - "*.sif"
+  - "figures/"
+  - "saved_model"
+  - README.md
