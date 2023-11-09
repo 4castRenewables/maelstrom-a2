@@ -13,6 +13,3 @@ Resources:
   Runtime: 2h
 Exclude:
   - "*.sif"
-  - "figures/"
-  - "saved_model"
-  - README.md
