@@ -76,7 +76,12 @@ def main(args):
 
     Result: [ { "tweet": 1, "content":"""
     ds_no_snow = ds.where(~ds.text_normalized.str.contains("snow", flags=re.IGNORECASE), drop=True)
-    tweets = ds_no_snow["text_normalized"].values
+
+    n_start = args.n_start
+    if n_start == "None":
+        n_start = None
+
+    tweets = ds_no_snow["text_normalized"].values[slice(n_start, n_start + args.n_samples)]
 
     for tweet_sample in np.array_split(tweets, len(tweets) // 5):
         prediction = generate_prediction(args, tokenizer, model, prompt, tweet_sample, example_output)
@@ -107,7 +112,7 @@ def generate_prediction(args, tokenizer, model, prompt, tweets, example_output):
         # do_sample=True,
         max_length=650,
         top_k=50,
-        top_p=0.95,
+        # top_p=0.95,
         # num_return_sequences=3
     )
 
@@ -155,6 +160,18 @@ if __name__ == "__main__":
         type=str,
         default="/p/project/deepacf/maelstrom/ehlert1/models/falcon-40b",
         help="Path to model.",
+    )
+    parser.add_argument(
+        "--n_start",
+        type=int,
+        default=0,
+        help="Start inference from Tweet with thins index.",
+    )
+    parser.add_argument(
+        "--n_samples",
+        type=int,
+        default=5000,
+        help="Number of tweets evaluated.",
     )
     a2.utils.argparse.dataset_split(parser)
     a2.utils.argparse.dataset_select(parser)
