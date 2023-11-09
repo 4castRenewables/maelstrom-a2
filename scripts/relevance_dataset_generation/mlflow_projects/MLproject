@@ -11,6 +11,6 @@ entry_points:
       python3 generate_relevance_labels.py
         --filename_tweets {filename_tweets}
         --folder_model {folder_model}
-        --filename_dataset_to_split None
+        --filename_dataset_to_split filename
         --classifier_domain rain
         --task_name TASKNAME
