@@ -79,8 +79,7 @@ def main(args):
     tweets = ds_no_snow["text_normalized"].values
 
     for tweet_sample in np.array_split(tweets, len(tweets) // 5):
-        print(f"{tweet_sample}")
-        prediction = generate_prediction(args, tokenizer, model, prompt, tweets, example_output)
+        prediction = generate_prediction(args, tokenizer, model, prompt, tweet_sample, example_output)
         with open("dump_relevance.csv", "a") as fd:
             fd.write(prediction)
 
