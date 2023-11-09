@@ -1,0 +1,13 @@
+entry_points:
+  download:
+    parameters:
+      filename_tweets:
+        type: str
+        default: /p/project/training2330/a2/data/bootcamp2023/tweets/tweets_2017_01_era5_normed_filtered.nc
+      folder_model:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/models/falcon-40b
+    command: >
+      python generate_relevance_labels.py
+        --filename_tweets {filename_tweets}
+        --folder_model {folder_model}
