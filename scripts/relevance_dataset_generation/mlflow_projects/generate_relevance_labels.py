@@ -77,7 +77,8 @@ def main(args):
     ds_no_snow = ds.where(~ds.text_normalized.str.contains("snow", flags=re.IGNORECASE), drop=True)
     tweets = ds_no_snow["text_normalized"].values
 
-    for tweet_sample in np.array_split(tweets, 5):
+    for tweet_sample in np.array_split(tweets, len(tweets) // 5):
+        print(f"{tweet_sample}")
         prediction = generate_prediction(args, tokenizer, model, prompt, tweets, example_output)
         with open("dump_relevance.csv", "a") as fd:
             fd.write(prediction)
