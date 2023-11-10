@@ -77,11 +77,14 @@ def main(args):
     Result: [ { "tweet": 1, "content":"""
     ds_no_snow = ds.where(~ds.text_normalized.str.contains("snow", flags=re.IGNORECASE), drop=True)
 
-    n_start = args.n_start
-    if n_start == "None":
-        n_start = None
+    n_start = int(args.n_start)
+    n_sample = int(args.n_samples)
 
-    tweets = ds_no_snow["text_normalized"].values[slice(n_start, n_start + args.n_samples)]
+    logging.info(f"Selecting {n_sample=} Tweets starting with index {n_start=}.")
+
+    tweets = ds_no_snow["text_normalized"].values[slice(n_start, n_start + n_sample)]
+
+    logging.info(f"Selected {len(tweets)} Tweets for relevance label generation.")
 
     for tweet_sample in np.array_split(tweets, len(tweets) // 5):
         prediction = generate_prediction(args, tokenizer, model, prompt, tweet_sample, example_output)
