@@ -33,9 +33,8 @@ def main(args):
     logging.info(f"Args used: {args.__dict__}")
     path_output = utils_scripts._determine_path_output(args)
     path_figures = os.path.join(path_output, args.figure_folder)
-    _, ds_raw = utils_scripts.get_dataset(
-        args, args.filename_tweets, dataset_object=None, set_labels=True, build_hugging_dataset=False
-    )
+
+    ds_raw = a2.dataset.load_dataset.load_tweets_dataset(args.filename_tweets, raw=True)
 
     logging.info(f"Dataset contains {ds_raw.index.shape[0]=} Tweets.")
     logging.info(f"Available GPUs:\n{[torch.cuda.device(i) for i in range(torch.cuda.device_count())]}")
