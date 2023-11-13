@@ -76,6 +76,7 @@ pytest-mpl = "^0.16.1"
 responses = "0.18"
 pytest-mock = "^3.10.0"
 no-implicit-optional = "^1.4"
+pytest-xdist = "^3.4.0"
 
 
 [tool.poetry.group.eradata.dependencies]
@@ -134,6 +135,7 @@ exclude = [
     'src/a2/training/tracking_hugging.py',
     'src/a2/training/training_performance.py',
     'src/a2/training/training_deep500.py',
+    'src/tests/unit/twitter/test_locations.py',
 ]
 ignore_names = ["control", "gpu"]
 sort_by_size = true

@@ -26,8 +26,8 @@ def test_plot_precipiation_map(
     fake_weather_maps,
 ):
     axes, plots = a2.plotting.weather_maps.plot_precipiation_map(
-        fake_dataset_precipitation,
-        fake_dataset_tweets_weather_map,
+        ds_precipitation=fake_dataset_precipitation,
+        ds_tweets=fake_dataset_tweets_weather_map,
         key_latitude="latitude",
         key_longitude="longitude",
         key_time="time_half",

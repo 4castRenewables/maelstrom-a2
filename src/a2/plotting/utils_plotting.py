@@ -178,7 +178,7 @@ def create_axes_grid(
     See also https://docs.google.com/presentation/d/1Ec-000rszefjCsv_sgUO62eGyT0-YbYzbk1aLQkU2gM/edit?usp=sharing
     Parameters:
     ----------
-    n_cols: Number of columns
+    n_columns: Number of columns
     n_rows: Number of rows
     figure_size: Size of figure
     widths_along_x: Normalized width ratios along horizontal direction
