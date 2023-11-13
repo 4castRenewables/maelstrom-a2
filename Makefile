@@ -96,6 +96,15 @@ clean-poetry:
 	rm -rf .venv
 	rm poetry.lock
 
+test:
+	poetry run pytest --mpl --mpl-hash-library=/home/kristian/Projects/a2/src/tests/data/mpl_baselines/hash_json.json --mpl-baseline-path=/home/kristian/Projects/a2/src/tests/data/mpl_baselines/ --mpl-generate-summary=html --cov=a2 --record-mode=once --cov-report=term-missing -n 14 src/tests/
+
+test-view-images:
+	poetry run pytest --mpl --mpl-hash-library=/home/kristian/Projects/a2/src/tests/data/mpl_baselines/hash_json.json --mpl-baseline-path=/home/kristian/Projects/a2/src/tests/data/mpl_baselines/ --cov=a2 --cov-report=term-missing --record-mode=once --mpl-generate-summary=html src/tests/
+
+test-generate-images:
+	poetry run pytest --mpl-generate-hash-library=src/tests/data/mpl_baselines/hash_json.json --mpl-generate-path=src/tests/data/mpl_baselines/ --record-mode=once src/tests/
+
 upload:
 	rsync -Pvra $(JSC_SSH_PRIVATE_KEY_FILE) \
 		mlflow/$(IMAGE_NAME).sif \

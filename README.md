@@ -89,17 +89,23 @@ Use `--skip_optional` when using pytest to skip these tests.
 
 ### Testing images
 Tests are based on the package [pytest-mpl](https://github.com/matplotlib/pytest-mpl).
+Running tests is simplified through pre-defined commands via the Makefile. To run all tests, simply call
 
+```shell
+make test
+```
 Baseline images are generated via
 ```shell
-poetry run pytest --mpl-generate-path=${MPL_BASELINE_PATH_A2}
+make test-generate-images
 ```
 
 Tests including image comparisons are run when including the option
 ```shell
-poetry run pytest --mpl --mpl-baseline-path=${MPL_BASELINE_PATH_A2}
+make test-view-images
 ```
 
+Note, that `torch` is not installed by default, use `poetry install --with torch-cpu` to install it on your local machine (without gpu). If not installed,
+ torch will be set to `None`, which may lead to unexepected errors.
 ## Poetry
 
 ### Known issues

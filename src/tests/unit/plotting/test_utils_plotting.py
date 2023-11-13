@@ -13,7 +13,7 @@ BASELINE_DIR = DATA_FOLDER / "baseline/"
 @pytest.mark.mpl_image_compare(BASELINE_DIR=BASELINE_DIR, tolerance=0)
 def test_create_axes_grid():
     fig, axes, axes_colorbar = a2.plotting.utils_plotting.create_axes_grid(
-        n_cols=2,
+        n_columns=2,
         n_rows=3,
         colorbar_skip_row_col=[[2, 1], [1, 0]],
         top=0.05,
@@ -31,7 +31,7 @@ def test_create_axes_grid():
 @pytest.mark.mpl_image_compare(BASELINE_DIR=BASELINE_DIR, tolerance=0)
 def test_create_axes_grid_no_colorbar():
     fig, axes, axes_colorbar = a2.plotting.utils_plotting.create_axes_grid(
-        n_cols=2,
+        n_columns=2,
         n_rows=3,
         colorbar_off=True,
         top=0.05,
