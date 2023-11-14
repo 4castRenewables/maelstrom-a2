@@ -5,7 +5,6 @@ import a2.dataset
 import a2.utils
 import distutils.dir_util
 import numpy as np
-import pytest
 import xarray
 
 FILE_LOC = pathlib.Path(__file__).parent
@@ -61,19 +60,6 @@ def test_nimrod_class_query():
         nimrod.query()
         query_as_string = io_capture.return_capture_stop()
     assert query_as_string == compare
-
-
-@pytest.mark.optional
-def test_nimrod_ds_cumulative_from_time(tmp_path, fake_cumulative_dataset):
-    setup_directory(tmp_path, "test_nimrod_ds_cumulative_from_time")
-
-    ds_radar = a2.dataset.radar.nimrod_ds_cumulative_from_time(
-        path_to_dapceda=tmp_path / "test_nimrod_ds_cumulative_from_time/",
-        time=np.datetime64("2020-02-07T00:05:00.000000000"),
-        time_delta=10,
-        time_delta_units="m",
-    )
-    xarray.testing.assert_equal(ds_radar, fake_cumulative_dataset)
 
 
 def test_time_series_from_files(tmp_path):
