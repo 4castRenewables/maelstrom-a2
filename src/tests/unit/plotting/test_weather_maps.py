@@ -20,27 +20,6 @@ def setup_directory(tmp_path, name_subdirectory):
     return directory
 
 
-# def test_plot_precipiation_map(
-#     fake_dataset_precipitation,
-#     fake_dataset_tweets_weather_map,
-#     fake_weather_maps,
-# ):
-#     axes, plots = a2.plotting.weather_maps.plot_precipiation_map(
-#         ds_precipitation=fake_dataset_precipitation,
-#         ds_tweets=fake_dataset_tweets_weather_map,
-#         key_latitude="latitude",
-#         key_longitude="longitude",
-#         key_time="time_half",
-#         key_tp="tp_h",
-#         return_plots=True,
-#     )
-#     plot_values = []
-#     for p in np.ndarray.flatten(plots):
-#         plot_values.append(a2.plotting.utils_plotting._get_values_from_pcolormesh_object(p))
-#     plot_values = np.array(plot_values)
-#     assert np.allclose(plot_values, fake_weather_maps)
-
-
 @pytest.mark.mpl_image_compare(BASELINE_DIR=BASELINE_DIR, tolerance=0)
 def test_plot_radar_map_with_tweets(tmp_path, fake_dataset_tweets_radar_stations_plotting):
     setup_directory(tmp_path, "test_plot_radar_map_with_tweets")
