@@ -37,6 +37,7 @@ else ifeq ($(IMAGE_TYPE), HFfinetuningBnB)
 	JSC_IMAGE_FOLDER := /p/project/training2330/ehlert1/jupyter/images/
 	KERNEL_DISPLAY_NAME := ap2_HF-LLM-BnB
 else ifeq ($(IMAGE_TYPE), bootcamp2023)
+	JSC_DIR := bootcamp2023/solutions/
 	POETRY_GROUPS := train
 	IMAGE_NAME := bootcamp2023
 	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_NAME)

@@ -8,6 +8,7 @@ import a2.utils
 import numpy as np
 import pandas as pd
 import xarray
+from typing import Optional
 
 FILE_LOC = pathlib.Path(__file__).parent
 EMOJI_PATH = FILE_LOC / "../../data/bootcamp2023/emoji/emoji_df.csv"
@@ -30,7 +31,7 @@ def remove_non_ascii_characters(text: str) -> str:
     return text.encode("ascii", errors="ignore").decode()
 
 
-def remove_unwanted_unicode(text: str, keep_emojis: str) -> str:
+def remove_unwanted_unicode(text: str) -> str:
     """
     remove emojis, symbols, flags and further unicode characters
 
@@ -44,34 +45,26 @@ def remove_unwanted_unicode(text: str, keep_emojis: str) -> str:
     -------
     cleaned text
     """
-    if keep_emojis == "none":
-        emoji_string = (
-            "\U0001F600-\U0001F64F"
-            "\U00010000-\U0010ffff"
-            "\U00002500-\U00002BEF"
-            "\U000024C2-\U0001F251"
-            "\U00002702-\U000027B0"
-            "\u2600-\u2B55"
-            "\ufe0f"
-        )
-        # dingbats
-        # emoticons
-    elif keep_emojis == "all":
-        emoji_string = ""
-    else:
-        raise NotImplementedError(f"Option {keep_emojis} not found!")
     emoj = re.compile(
         "["
-        f"{emoji_string}"
+        "\U0001F600-\U0001F64F"  # emoticons
+        "\U0001F300-\U0001F5FF"  # symbols & pictographs
         "\U0001F680-\U0001F6FF"  # transport & map symbols
         "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        "\U00002500-\U00002BEF"  # chinese char
         "\U00002460-\U000024FF"  # alpha numerics
+        "\U00002702-\U000027B0"
+        "\U00002702-\U000027B0"
+        "\U000024C2-\U0001F251"
         "\U0001f926-\U0001f937"
+        "\U00010000-\U0010ffff"
         "\u2640-\u2642"
+        "\u2600-\u2B55"
         "\u200d"
         "\u23cf"
         "\u23e9"
         "\u231a"
+        "\ufe0f"  # dingbats
         "\u3030"
         "]+",
         re.UNICODE,
@@ -541,7 +534,6 @@ class Normalizer:
         source: t.Optional[str] = None,
         ignore_non_ascii: bool = True,
         replace_keyword_emojis: bool = True,
-        keep_emojis: str = "none",
         remove_punctuations: str = "keep_basic_punctuations",
         reduce_punctuations: bool = True,
         use_lower_case: bool = False,
@@ -562,12 +554,6 @@ class Normalizer:
                           some punctuations
         replace_keyword_emojis: Replaces emojis whose name contains keywords
                                 with that keyword
-        keep_emojis: Whether to keep emojis based on unicode representation.
-                    `all`: all removed
-                    `none`: all kept
-                    `keywords`: only emojis which have a name that contains a keyword
-                                are kept
-                    Note, this step occurs after emojis are replaced (see `replace_keyword_emojis`).
         remove_punctuations: 'keep_basic_punctuations' or 'all'
         reduce_punctuations: Convert multiple occurence of same punctuation
                              character to single character.
@@ -579,8 +565,6 @@ class Normalizer:
         normalized sentence
         -------
         """
-        if replace_keyword_emojis and keep_emojis == "all":
-            raise ValueError(f"Combination {replace_keyword_emojis=} and {keep_emojis=} not allowed!")
         try:
             if source is not None and source == "Instagram":
                 sentence = remove_instagram_atsign(sentence)
@@ -598,7 +582,7 @@ class Normalizer:
             )
             sentence = remove_hashtags(sentence)
             sentence = normalize_slang_stopwords(sentence, replace_underscore=True)
-            sentence = remove_unwanted_unicode(sentence, keep_emojis=keep_emojis)
+            sentence = remove_unwanted_unicode(sentence)
             sentence = remove_newlines(sentence)
             sentence = remove_urls(sentence)
             if remove_punctuations:
@@ -628,7 +612,6 @@ def normalize_text_dataset(
     key_text_backup: t.Optional[str] = None,
     ignore_non_ascii: bool = True,
     replace_keyword_emojis: bool = True,
-    keep_emojis: str = "none",
     remove_punctuations: str = "keep_basic_punctuations",
     reduce_punctuations: bool = True,
     use_lower_case: bool = False,
@@ -686,7 +669,6 @@ def normalize_text_dataset(
         "reduce_punctuations": reduce_punctuations,
         "use_lower_case": use_lower_case,
         "do_split_punctuation_text": do_split_punctuation_text,
-        "keep_emojis": keep_emojis,
     }
     normalized_text = a2.utils.utils.parallelize(
         function=normalizer.normalize,
@@ -720,7 +702,7 @@ def filter_text_dataset(
     only_text_containing_keywords: bool = True,
     maximum_bounding_box_area: t.Optional[float] = 100,
     only_unique_text: bool = True,
-    keywords: t.Sequence = None,
+    keywords: Optional[t.Sequence] = None,
 ) -> xarray.Dataset:
     """
     Filters Tweets to allow for more concise (problem specific) text
@@ -777,7 +759,6 @@ def normalize_filter_dataset(
     key_text_backup: t.Optional[str] = None,
     ignore_non_ascii: bool = True,
     replace_keyword_emojis: bool = True,
-    keep_emojis: str = "none",
     remove_punctuations: str = "keep_basic_punctuations",
     reduce_punctuations: bool = True,
     use_lower_case: bool = False,
@@ -844,7 +825,6 @@ def normalize_filter_dataset(
         key_text_backup=key_text_backup,
         ignore_non_ascii=ignore_non_ascii,
         replace_keyword_emojis=replace_keyword_emojis,
-        keep_emojis=keep_emojis,
         remove_punctuations=remove_punctuations,
         reduce_punctuations=reduce_punctuations,
         use_lower_case=use_lower_case,

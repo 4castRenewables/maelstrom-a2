@@ -7,11 +7,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xarray
+from typing import Optional
 
 
 def get_info_string_tweets(
     ds: xarray.Dataset,
-    fields: t.List[str] = None,
+    fields: Optional[t.List[str]] = None,
     add: t.Optional[t.List[str]] = None,
 ) -> str:
     """
@@ -69,7 +70,7 @@ def plot_precipiation_map(
     delta_time_units: str = "h",
     delta_longitude: float = 1,
     delta_latitude: float = 1,
-    filename: t.Union[str, pathlib.Path] = None,
+    filename: Optional[t.Union[str, pathlib.Path]] = None,
     print_additional: t.Optional[t.List[str]] = None,
     add_time_before_plot: t.Optional[pd.Timedelta] = None,
     return_plots: bool = False,

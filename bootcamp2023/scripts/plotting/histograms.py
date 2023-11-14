@@ -6,6 +6,7 @@ import a2.dataset
 import a2.plotting.utils_plotting
 import matplotlib.pyplot as plt
 import numpy as np
+from typing import Optional
 
 
 def plot_histogram_2d(
@@ -16,7 +17,7 @@ def plot_histogram_2d(
     ylim: t.Optional[t.Sequence] = None,
     ax: t.Optional[plt.axes] = None,
     log: t.Union[bool, t.List[bool]] = False,
-    filename: t.Union[str, pathlib.Path] = None,
+    filename: Optional[t.Union[str, pathlib.Path]] = None,
     fig: t.Optional[plt.figure] = None,
     n_bins: t.Union[int, t.List[int]] = 60,
     norm: t.Optional[str] = None,
@@ -130,7 +131,7 @@ def plot_histogram(
     ylim: t.Optional[t.Sequence] = None,
     ax: t.Optional[plt.axes] = None,
     log: t.Union[bool, t.List[bool]] = False,
-    filename: t.Union[str, pathlib.Path] = None,
+    filename: Optional[t.Union[str, pathlib.Path]] = None,
     fig: t.Optional[plt.figure] = None,
     n_bins: int = 60,
     linear_thresh: t.Optional[float] = None,
