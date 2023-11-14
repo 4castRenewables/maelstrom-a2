@@ -1,5 +1,4 @@
 import logging
-import os
 
 import a2.dataset.load_dataset
 import a2.dataset.utils_dataset
@@ -7,7 +6,6 @@ import a2.plotting
 import a2.training.benchmarks
 import a2.training.training_hugging
 import a2.utils.argparse
-import utils_scripts
 import numpy as np
 import transformers
 import torch
@@ -28,11 +26,8 @@ logging.basicConfig(
 
 
 def main(args):
-    tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     """Split labeled Tweets into train, test, validation set"""
     logging.info(f"Args used: {args.__dict__}")
-    path_output = utils_scripts._determine_path_output(args)
-    path_figures = os.path.join(path_output, args.figure_folder)
 
     ds_raw = a2.dataset.load_dataset.load_tweets_dataset(args.filename_tweets, raw=True)
 
@@ -86,11 +81,9 @@ def main(args):
     logging.info(f"Selected {len(tweets)} Tweets for relevance label generation.")
 
     for tweet_sample in np.array_split(tweets, len(tweets) // 5):
-        prediction = generate_prediction(args, tokenizer, model, prompt, tweet_sample, example_output)
+        prediction = generate_prediction(tokenizer, model, prompt, tweet_sample, example_output)
         with open("dump_relevance.csv", "a") as fd:
             fd.write(prediction)
-
-    _plot(args, ds, path_figures, tracker)
 
 
 def string_tweets(tweets):
@@ -104,7 +97,7 @@ def tokenize_prompt(tokenizer, prompt):
     return tokenizer.encode(prompt, return_tensors="pt").cuda()
 
 
-def generate_prediction(args, tokenizer, model, prompt, tweets, example_output):
+def generate_prediction(tokenizer, model, prompt, tweets, example_output):
     full_prompt = prompt + string_tweets(tweets) + example_output
     input_ids = tokenize_prompt(tokenizer, full_prompt)
 
@@ -126,27 +119,9 @@ def generate_prediction(args, tokenizer, model, prompt, tweets, example_output):
     return prediction
 
 
-def _plot(args, ds, path_figures, tracker):
-    utils_scripts.plot_and_log_histogram(
-        ds, key="raining", path_figures=path_figures, tracker=tracker, filename="raining_histogram.pdf"
-    )
-    utils_scripts.plot_and_log_histogram(
-        ds, key=args.key_rain, path_figures=path_figures, tracker=tracker, filename="precipitation_histogram.pdf"
-    )
-
-
 def save_subsection_dataset(ds, filename, indices):
     ds_subsection = ds.sel(index=indices)
     a2.dataset.load_dataset.save_dataset(ds_subsection, filename=filename, reset_index=True, no_conversion=False)
-
-
-def select_dataset(args, ds):
-    if args.select_relevant:
-        logging.info(f"Selecting all Tweets where {args.key_relevance}==True")
-        logging.info(f"Before selection {ds.index.shape[0]} Tweets.")
-        ds = ds.where(ds[args.key_relevance] == 1, drop=True)
-        logging.info(f"After selection {ds.index.shape[0]} Tweets.")
-    return ds
 
 
 if __name__ == "__main__":
@@ -175,16 +150,5 @@ if __name__ == "__main__":
         default=5000,
         help="Number of tweets evaluated.",
     )
-    a2.utils.argparse.dataset_split(parser)
-    a2.utils.argparse.dataset_select(parser)
-    a2.utils.argparse.dataset_relevance(parser)
-    a2.utils.argparse.dataset_weather_stations(parser)
-    a2.utils.argparse.classifier(parser)
-    a2.utils.argparse.dataset_rain(parser)
-    a2.utils.argparse.hyperparameter_basic(parser)
-    a2.utils.argparse.tracking(parser)
-    a2.utils.argparse.output(parser)
-    a2.utils.argparse.figures(parser)
-    a2.utils.argparse.debug(parser)
     args = parser.parse_args()
     main(args)
