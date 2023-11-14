@@ -60,8 +60,8 @@ def fake_prediction_dataset(fake_prediction):
 def fake_prediction_certainties():
     return np.array(
         [
-            [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 3.0],
-            [1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+            [1.0, np.nan, np.nan, np.nan, np.nan, 1.0, 1.0, 1.0, 1.0, 3.0],
+            [1.0, 1.0, 1.0, np.nan, np.nan, np.nan, np.nan, 1.0, np.nan, np.nan],
         ]
     )
 

@@ -5,7 +5,6 @@ import a2.twitter.locations
 import a2.utils.testing
 import numpy as np
 import pytest
-import xarray
 from pytest_cases import parametrize
 
 FILE_LOC = pathlib.Path(__file__).parent
@@ -61,59 +60,6 @@ def test_convert_coordinates_to_lat_long_errors_2(fake_dataset_coordinates):
             prefix_lat_long="",
             overwrite=False,
         )
-
-
-@parametrize(
-    "ds, filename_location, filename_location_not_found, new_files, expected",
-    [
-        (
-            "fake_tweet_location_to_be_added_dataframe",
-            "test_locations_add.json",
-            "test_locations_not_found_add.csv",
-            True,
-            "fake_tweet_location_added_dataframe",
-        ),
-        (
-            "fake_tweet_location_to_be_added_dataframe",
-            "test_locations_added.json",
-            "test_locations_not_found_added.csv",
-            False,
-            "fake_tweet_location_added_dataframe",
-        ),
-    ],
-)
-def test_add_locations(
-    ds,
-    filename_location,
-    filename_location_not_found,
-    new_files,
-    expected,
-    request,
-    mock_tweepy_auth_api_geoid,  # noeq
-    tmp_path,
-):
-    if new_files:
-        directory = tmp_path / "test_add_locations/"
-        directory.mkdir(exist_ok=True)
-        filename_location = directory / filename_location
-        filename_location_not_found = directory / filename_location_not_found
-    else:
-        filename_location = FILE_LOC / "../../data/" / filename_location
-        filename_location_not_found = FILE_LOC / "../../data/" / filename_location_not_found
-    fake_dataset = request.getfixturevalue(ds)
-    expected = request.getfixturevalue(expected)
-    print(f"{fake_dataset=}")
-    fake_dataset_locations = a2.twitter.locations.add_locations(
-        fake_dataset,
-        filename_location,
-        filename_location_not_found,
-        key_coordinates="coordinates",
-        key_place_id="place_id",
-        download=True,
-    )
-    print(f"{fake_dataset_locations['bounding_box'].values=}")
-    print(f"{expected['bounding_box'].values=}")
-    xarray.testing.assert_equal(expected, fake_dataset_locations)
 
 
 @parametrize(

@@ -29,7 +29,7 @@ def plot_prediction_certainty(
     cmap="viridis",
     figure_size: Optional[t.Sequence] = None,
     return_matrix: bool = False,
-    ax: Optional[plt.axes] = None,
+    axes: Optional[plt.axes] = None,
     **kwargs,
 ) -> t.Union[plt.Axes, t.Tuple[plt.Axes, np.ndarray]]:
     """
@@ -47,10 +47,12 @@ def plot_prediction_certainty(
     label_colorbar: label of colorbar axis
     filename: save figure to this file, not saved if `None`
     font_size: font size of all labels of plot
-    figure_size: size of figure [width, height]
     vmin: Minimum value for colorbar
     vmax: Maximum value for colorbar
+    cmap: Colormap used for confusion matrix
+    figure_size: size of figure [width, height]
     return_matrix: return 2d histogram matrix and axes
+    axes: Matplotlib axes object
 
     Returns
     -------
@@ -69,6 +71,8 @@ def plot_prediction_certainty(
         vmax=vmax,
         colormap=cmap,
         font_size=font_size,
+        axes=axes,
+        figure_size=figure_size,
         **kwargs,
     )
     if return_matrix:

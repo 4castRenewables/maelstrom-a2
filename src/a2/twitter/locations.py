@@ -94,6 +94,8 @@ def save_location_to_file(
         place_ids = set(place_ids) - set(df["id"].values)
         del df
     if os.path.isfile(filename_location_not_found):
+        print(f"{filename_location_not_found=}")
+        print(f"{os.path.exists(filename_location_not_found)=}")
         df = load_location_to_not_found(filename_location_not_found)
         place_ids = set(place_ids) - set(df["id"].values)
         del df
