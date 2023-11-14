@@ -5,6 +5,7 @@ import typing as t
 import matplotlib.colors
 import numpy as np
 from matplotlib import pyplot as plt
+from typing import Optional
 
 
 def set_x_log(ax: plt.axes, log: bool = False, linear_thresh: t.Optional[float] = None) -> plt.axes:
@@ -82,7 +83,7 @@ def get_norm(
 def create_figure_axes(
     fig: t.Optional[plt.figure] = None,
     ax: t.Optional[plt.axes] = None,
-    figure_size: t.Sequence = None,
+    figure_size: Optional[t.Sequence] = None,
     font_size: int = 10,
 ) -> t.Tuple[plt.figure, plt.axes]:
     """
@@ -178,7 +179,7 @@ def set_axis_tick_labels(ax: plt.axes, values: t.Sequence[float], labels: t.Sequ
     return ax
 
 
-def save_figure(fig: plt.figure, filename: t.Union[str, pathlib.Path] = None) -> None:
+def save_figure(fig: plt.figure, filename: Optional[t.Union[str, pathlib.Path]] = None) -> None:
     if filename is not None:
         logging.info(f"... saving {filename}")
         fig.savefig(filename, bbox_inches="tight")
