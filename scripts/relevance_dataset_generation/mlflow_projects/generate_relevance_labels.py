@@ -73,7 +73,7 @@ def main(args):
 
     n_start = int(args.n_start)
     n_sample = int(args.n_samples)
-
+    logging.info(f"Final dataset contains {len(ds_no_snow.index.values)} Tweets.")
     logging.info(f"Selecting {n_sample=} Tweets starting with index {n_start=}.")
 
     tweets = ds_no_snow["text_normalized"].values[slice(n_start, n_start + n_sample)]
