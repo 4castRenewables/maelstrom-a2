@@ -67,7 +67,7 @@ def plot_histogram_2d(
     if np.sum(np.isnan(y.astype(float))) > 0:
         raise ValueError("found nan-values in y")
     if x.shape != y.shape:
-        raise Exception(f"x and y need to be of same shape: {np.shape(x)} != {np.shape(y)}")
+        raise ValueError(f"x and y need to be of same shape: {np.shape(x)} != {np.shape(y)}")
     fig, ax = a2.plotting.utils_plotting.create_figure_axes(figure=fig, axes=ax, font_size=font_size)
     if not isinstance(log, list):
         log = [log, log]
@@ -242,7 +242,7 @@ def get_bin_edges(
     if data is not None and vmax is None:
         vmax = data.max()
     if vmin is None or vmax is None:
-        raise Exception(f"Need to specify vmin {vmin} and {vmax} or provide data: {data}!")
+        raise ValueError(f"Need to specify vmin {vmin} and {vmax} or provide data: {data}!")
     if not log:
         bins = np.linspace(vmin, vmax, n_bins)
     elif log == "symlog":

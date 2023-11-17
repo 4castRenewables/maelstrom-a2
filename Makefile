@@ -54,7 +54,7 @@ KERNEL_PATH := "/p/home/jusers/$(JSC_USER)/juwels/.local/share/jupyter/kernels/$
 endif
 
 ifndef JSC_IMAGE_FOLDER
-JSC_IMAGE_FOLDER := "/p/scratch/$(JSC_PROJECT)/maelstrom/maelstrom_data/ap2/singularity_images/"
+JSC_IMAGE_FOLDER := "/p/scratch/$(JSC_PROJECT)/maelstrom/maelstrom_data/ap2/apptainer_images/"
 endif
 
 ifndef KERNEL_DISPLAY_NAME
