@@ -79,8 +79,9 @@ def load_tweets_dataset(
     Parameters:
     ----------
     filename: Filename of cn file
-    reset_index: Reset index coordinate
     raw: Just load file, no conversions
+    reset_index: Reset index coordinate
+    reset_index_raw: Reset index coordinate even when `raw="true"`
     drop_variables: List of variables to drop
     convert_bounding_box: Convert bounding box coordinates from string to dictionary
     open_dataset: Open the dataset instead of loading it in memory
@@ -171,6 +172,8 @@ def save_dataset(
     add_attributes: str = "",
     no_conversion: bool = True,
     encode_time: bool = True,
+    reset_index: bool = False,
+    engine: str | None = "h5netcdf",
 ) -> None:
     """
     saves xarray dataset to file.
@@ -179,12 +182,20 @@ def save_dataset(
     Therefore, they are converted to strings before the file is saved.
     Parameters:
     ----------
+    ds: Dataset to be saved
     filename: name of file dataset is saved to
+    add_attributes: Add string to attributes of `ds`
+    no_conversion: Whether variables are converted
+    encode_time: Whether time variable is converted
+    reset_index: Whether "index" field variable is reset
 
     Returns
     -------
     """
+    if reset_index:
+        ds = reset_index_coordinate(ds.copy())
     types_to_convert = [dict, list]
+
     if not no_conversion:
         for k, v in ds.variables.items():
             if any_type_present(ds[k].values, types_to_check=types_to_convert):
@@ -203,7 +214,8 @@ def save_dataset(
     if encode_time:
         keys_time = get_time_variables(ds)
         encoding = {k: {"units": "seconds since 1900-01-01"} for k in keys_time}
-    ds.to_netcdf(filename, encoding=encoding)
+    logging.info(f"... saving dataset as {filename}")
+    ds.to_netcdf(filename, encoding=encoding, engine=engine)
 
 
 def get_time_variables(ds):
@@ -254,6 +266,11 @@ def load_weather_stations(filename: str, drop_columns: str | list = "Unnamed: 0"
     return df
 
 
-def load_radar_dataset(files):
+def load_multifile_dataset(files):
     """load multiple netcdf radar files converted from nimrod"""
     return xarray.open_mfdataset(files, combine_attrs="drop_conflicts")
+
+
+def load_radar_dataset(files):
+    """load multiple netcdf radar files converted from nimrod"""
+    return load_multifile_dataset(files)

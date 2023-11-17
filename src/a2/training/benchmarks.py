@@ -4,8 +4,10 @@ import pprint
 import resource
 import time
 
+import a2.utils.utils
 import numpy as np
-import torch
+
+torch = a2.utils.utils._import_torch(__file__)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -95,12 +97,13 @@ class CudaMemoryMonitor:
         for i_cuda in range(torch.cuda.device_count()):
             torch.cuda.reset_peak_memory_stats(i_cuda)
 
-    def get_cuda_memory_usage(self, log_message):
+    def get_cuda_memory_usage(self, log_message, style="verbose"):
         logging.info("CUDA memory logging....\n")
         for i_cuda in range(torch.cuda.device_count()):
             logging.info(f"{log_message}: Cuda device {i_cuda} report:\n")
-            pprint.pprint(torch.cuda.memory_stats(i_cuda))
-            logging.info(f"Report done! for Cuda device {i_cuda}\n")
+            if style == "verbose":
+                pprint.pprint(torch.cuda.memory_stats(i_cuda))
+                logging.info(f"Report done! for Cuda device {i_cuda}\n")
             logging.info(f"Gpu memory currently allocated: {torch.cuda.memory_allocated(i_cuda)/1e9} GB.")
             logging.info(f"Gpu max memory allocated: {torch.cuda.max_memory_allocated(i_cuda)/1e9} GB.")
             logging.info(f"Gpu memory currently reserved: {torch.cuda.memory_reserved(i_cuda)/1e9} GB.")

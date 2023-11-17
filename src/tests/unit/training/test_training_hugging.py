@@ -57,7 +57,9 @@ def test_HuggingFaceTrainerClass_get_trainer(
         _tracking_uri = tracker.get_tracking_uri()
         print(f"{_tracking_uri=}")
         _run_artifact_dir = tracker.local_file_uri_to_path(_tracking_uri)
-        folder_params = _run_artifact_dir + f"0/{run.info.run_id}/params/"
+        mlflow_folders = [x for x in os.listdir(_run_artifact_dir) if x != ".trash"]
+        print(f"{mlflow_folders=}")
+        folder_params = _run_artifact_dir + f"{mlflow_folders[0]}/{run.info.run_id}/params/"
         parameters = {}
         for file in os.listdir(folder_params):
             with open(folder_params + file) as f:
@@ -94,7 +96,11 @@ def test_HuggingFaceTrainerClass_get_trainer(
         a2.training.tracking.log_metric_classification_report(tracker, truth, predictions, step=1)
         assert np.array_equal(predictions, np.array([1, 1, 1, 1]))
     logging.debug(f'{os.listdir(folder_output + "checkpoint-1/")=}')
-    (truth, predictions, prediction_probabilities,) = a2.training.evaluate_hugging.make_predictions_loaded_model(
+    (
+        truth,
+        predictions,
+        prediction_probabilities,
+    ) = a2.training.evaluate_hugging.make_predictions_loaded_model(
         ds,
         indices_validate,
         folder_output + "checkpoint-1/",

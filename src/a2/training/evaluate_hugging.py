@@ -5,18 +5,21 @@ import warnings
 import a2.training.dataset_hugging
 import a2.training.training_hugging
 import a2.training.utils_training
+import a2.utils.utils
 import datasets
 import numpy as np
-import torch
 import transformers
 import xarray
+
+torch = a2.utils.utils._import_torch(__file__)
 
 
 def build_ds_test(
     ds: xarray.Dataset,
-    indices_test: np.ndarray,
+    indices_test: np.ndarray | None,
     predictions: np.ndarray,
     prediction_probabilities: np.ndarray,
+    label: str = "raining",
 ) -> xarray.Dataset:
     """
     Construct test dataset where test data is defined by their indices
@@ -29,18 +32,21 @@ def build_ds_test(
     predictions: Predicted labels
     prediction_probabilities: Prediction probability for both labels,
                               shape = [n_tests, 2]
-
+    label: Label name of the classification
     Returns
     -------
     xarray.Dataset
     """
-    ds_test = ds.sel(index=indices_test)
-    ds_test["prediction"] = (["index"], predictions)
-    ds_test["prediction_probability_not_raining"] = (
+    if indices_test is not None:
+        ds_test = ds.sel(index=indices_test)
+    else:
+        ds_test = ds.copy()
+    ds_test[f"prediction_{label}"] = (["index"], predictions)
+    ds_test[f"prediction_probability_not_{label}"] = (
         ["index"],
         prediction_probabilities[:, 0],
     )
-    ds_test["prediction_probability_raining"] = (
+    ds_test[f"prediction_probability_{label}"] = (
         ["index"],
         prediction_probabilities[:, 1],
     )

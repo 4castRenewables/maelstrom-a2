@@ -1,0 +1,466 @@
+name:    ap2-all
+outpath: ap2_run
+comment: MAELSTROM AP2 benchmark jube script for training
+
+parameterset:
+  - name: appParameter
+    parameter:
+      - name: iteration
+        tag: benchs
+        type: int
+        _: 1,2,3
+      - name: iteration
+        tag: "!benchs"
+        type: int
+        _: 1
+      - name: conda_env
+        tag: e4amd
+        type: string
+        _: a2-amd
+      - name: conda_env
+        tag: "!e4amd"
+        type: string
+        _: a2-torch2p0
+      - name: batch_size
+        tag: "!hps"
+        type: int
+        _: 32
+      - name: batch_size
+        tag: hps
+        type: int
+        _: 16, 32, 64
+      - name: nepochs
+        tag: "!hps"
+        type: int
+        _: 1
+      - name: nepochs
+        tag: hps
+        type: int
+        _: 1, 3, 10
+      - name: lr
+        tag: "!hps"
+        type: float
+        _: 3e-05
+      - name: lr
+        tag: hps
+        type: float
+        _: 3e-05, 7e-6
+      - name: weight_decay
+        type: float
+        _: 0.01
+      - name: weightsfixed
+        type: string
+        _: ""
+      - name: evaluation_strategy
+        type: string
+        _: steps
+      - name: eval_steps
+        type: int
+        _: 5000
+      - name: key_rain
+        type: string
+        _: "tp_h"
+      - name: ignore_tracking
+        type: string
+        _: ""
+      - name: ignore_tracking
+        tag: itracking
+        type: string
+        _: "--ignore_tracking"
+      - name: model_name
+        tag: "jwb|jwc"
+        _: electra_base
+      - name: model_path
+        tag: "jwb|jwc"
+        _: /p/project/deepacf/maelstrom/ehlert1/models/electra-base-discriminator
+      - name: model_path
+        tag: e4
+        _: /data/maelstrom/kehlert/models/deberta-v3-small
+      - name: path_trained_model_relevance
+        tag: "jwb|jwc"
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000042/000000_submit/work/output_model/relevance_classification_electra_base/checkpoint-4365
+      - name: path_trained_model_raining
+        tag: "jwb|jwc"
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/relevance_classifier/ap2_run/000030/000000_submit/work/output_model/rain_classification/checkpoint-20000
+      - name: indir
+        type: string
+        tag: "jwb|jwc"
+        _: "/p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/tweets/"
+      - name: indir
+        type: string
+        tag: e4
+        _: "/data/maelstrom/kehlert/data/tweets/"
+      - name: data_filename
+        tag: medium
+        _: "2020_text_precipitation.nc"
+      - name: data_filename
+        tag: large
+        _: "2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
+      - name: data_filename
+        tag: "!medium+!large"
+        type: string
+        _: "tweets_2017_01_era5_normed_filtered_predicted_simpledeberta.nc"
+      - name: folder_split
+        type: string
+        _: /p/project/deepacf/maelstrom/ehlert1/data/dataset_split/2017-2020_${model_name}/
+      - name: core_files_name
+        type: string
+        _: 2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar
+      - name: filename_dataset_train_relevance
+        type: string
+        _: ${folder_split}/RelevanceClassifierDataset${core_files_name}_train.nc
+      - name: filename_dataset_validate_relevance
+        type: string
+        _: ${folder_split}/RelevanceClassifierDataset${core_files_name}_validate.nc
+      - name: filename_dataset_test_relevance
+        type: string
+        _: ${folder_split}/RelevanceClassifierDataset${core_files_name}_test.nc
+      - name: filename_dataset_train_rain
+        type: string
+        _: ${folder_split}/RainingClassifierDataset${core_files_name}_relevant_predicted_train.nc
+      - name: filename_dataset_validate_rain
+        type: string
+        _: ${folder_split}/RainingClassifierDataset${core_files_name}_relevant_predicted_validate.nc
+      - name: filename_dataset_test_rain
+        type: string
+        _: ${folder_split}/RainingClassifierDataset${core_files_name}_relevant_predicted_test.nc
+      - name: filename_dataset_predict_relevance
+        type: string
+        _: ${folder_split}/RainingClassifierDataset${core_files_name}.nc
+      - name: filename_dataset_predict_rain
+        type: string
+        _: ${folder_split}/WeatherStationDataset${core_files_name}.nc
+      - name: slurm_output
+        type: string
+        _: "$jube_wp_abspath/slurm-out.%j"
+      - name: slurm_error
+        type: string
+        _: "$jube_wp_abspath/slurm-err.%j"
+      - name: outdir
+        type: string
+        _: "$jube_wp_abspath/output_model"
+      - name: run_name
+        _: "${jube_benchmark_name}_${jube_benchmark_id}"
+      - name: run_folder
+        type: string
+        _: $run_name
+      - name: env_file
+        type: string
+        _: env.sh
+      - name: env_file
+        type: string
+        tag: dev
+        _: env_dev.sh
+  - name: globalParameter
+    parameter:
+      - name: modules
+        tag: "jwb|jwc"
+        separator: |
+        _:
+          module purge &&
+          module load Stages/2023 &&
+          module load cuDNN/8.6.0.163-CUDA-11.7 &&
+          module unload Python/3.10.4
+      - name: modules
+        tag: "e4+!e4amd"
+        separator: |
+        _:
+          module load slurm &&
+          module load nvidia/cuda-11.7
+      - name: modules
+        tag: e4amd
+        separator: |
+        _:
+          module load slurm &&
+          module load amd/rocm-5.2.1
+      - name: systemname
+        tag: jwc
+        _: jwc
+      - name: systemname
+        tag: jwb
+        _: jwb
+  - name: executeset
+    init_with: platform.xml
+  - name: systemParameter
+    init_with: platform.xml
+    parameter:
+      - name: preprocess
+        mode: text
+        separator: |
+        _: |
+          ${power_measure_setup}
+          source ~/.bashrc
+          ${modules}
+          export ${visible_devices}
+          export GIT_PYTHON_REFRESH=quiet
+          conda activate ${conda_env}
+          which python
+          pip list
+      - name: power_measure_setup
+        tag: e4
+        mode: text
+        separator: |
+        _: |
+          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh);
+          echo "POWERMEASUREMENT: Label = $$label";
+          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &;
+      - name: power_measure_setup
+        tag: "jwb|jwc"
+        _: ""
+      - name: postprocess
+        tag: "jwb|jwc"
+        _: ""
+      - name: postprocess
+        tag: e4
+        mode: text
+        separator: |
+        _: |
+          kill -9 $$(cat ~/powerout.$$label.pid)
+          awk '{print "POWERMEASUREMENT: " $0}' ~/powerout.$$label.csv
+      - name: job_name
+        _: $jube_benchmark_name-$jube_benchmark_padid-$jube_wp_padid-$jube_step_name
+      - name: threadspertask
+        _: 1
+      - name: nodes
+        _: 1
+      - name: gpus
+        tag: e4
+        _: 1
+      - name: gpus
+        tag: "jwc|jwb"
+        _: 4
+      - name: timelimit
+        tag: test
+        _: "02:00:00"
+      - name: timelimit
+        tag: "!test"
+        _: "24:00:00"
+      - name: account
+        tag: jwb|jwc
+        _: deepacf
+      - name: account
+        tag: e4
+        _: maelstrom
+      - name: queue
+        tag: jwb+!test
+        _: booster
+      - name: queue
+        tag: jwb+test
+        _: develbooster
+      - name: queue
+        tag: "e4+!e4amd"
+        _: i-gpu-a100
+      - name: queue
+        tag: e4amd
+        _: a-gpu-mi100
+      - name: queue
+        tag: jwc+!test
+        _: gpus
+      - name: queue
+        tag: jwc+test
+        _: develgpus
+      - name: gres
+        _: gpu:$gpus
+      - name: folder_scripts
+        _: $jube_benchmark_home/../../../scripts/relevance_classifier/
+      - name: executable
+        tag: rain | relevance
+        _: python -u ${folder_scripts}/finetune_deberta_classifier.py
+      - name: executable
+        tag: relevanceprediction | rainprediction
+        _: python -u ${folder_scripts}/predict_deberta_classifier.py
+      - name: submit_cmd
+        _: sbatch
+      - name: visible_devices
+        type: string
+        separator: ";"
+        tag: jwc | jwb
+        _: "CUDA_VISIBLE_DEVICES=0"
+      - name: visible_devices
+        tag: e4
+        _: ""
+      - name: args_exec
+        tag: relevance
+        mode: text
+        _: >
+          --model_path ${model_path}
+          --model_name ${model_name}
+          --filename_dataset_train ${filename_dataset_train_relevance}
+          --filename_dataset_validate ${filename_dataset_validate_relevance}
+          --filename_dataset_test ${filename_dataset_test_relevance}
+          --output_dir ${outdir}
+          --log_gpu_memory
+          --run_name ${run_name}
+          -jid $${SLURM_JOBID}
+          --mlflow_experiment_name maelstrom-a2-relevance
+          -lr ${lr}
+          -nepochs ${nepochs}
+          --task_name relevance_classification_${model_name}
+          --classifier_domain relevance
+          --key_output relevant
+          --batch_size ${batch_size}
+          --weight_decay ${weight_decay}
+          --iteration ${iteration}
+          ${ignore_tracking}
+          ${weightsfixed}
+      - name: args_exec
+        tag: rain
+        mode: text
+        _: >
+          --model_path ${model_path}
+          --model_name ${model_name}
+          --filename_dataset_train ${filename_dataset_train_rain}
+          --filename_dataset_validate ${filename_dataset_validate_rain}
+          --filename_dataset_test ${filename_dataset_test_rain}
+          --output_dir ${outdir}
+          --log_gpu_memory
+          --run_name ${run_name}
+          -jid $${SLURM_JOBID}
+          --mlflow_experiment_name maelstrom-a2-rain
+          -lr ${lr}
+          -nepochs ${nepochs}
+          --task_name rain_classification_${model_name}
+          --classifier_domain rain
+          --key_output raining
+          --batch_size ${batch_size}
+          --weight_decay ${weight_decay}
+          --iteration ${iteration}
+          --evaluation_strategy ${evaluation_strategy}
+          --eval_steps ${eval_steps}
+          ${ignore_tracking}
+          ${weightsfixed}
+      - name: args_exec
+        tag: relevanceprediction
+        mode: text
+        _: >
+          --filename_dataset_predict ${filename_dataset_predict_relevance}
+          --path_raw_model ${model_path}
+          --path_trained_model ${path_trained_model_relevance}
+          --output_dir ${folder_split}
+          --task_name rain_prediction
+          --classifier_domain relevance
+          --key_output relevant
+          --mlflow_experiment_name maelstrom-a2-relevance
+          ${ignore_tracking}
+      - name: args_exec
+        tag: rainprediction
+        mode: text
+        _: >
+          --filename_dataset_predict ${filename_dataset_predict_rain}
+          --path_raw_model ${model_path}
+          --path_trained_model ${path_trained_model_raining}
+          --output_dir ${folder_split}
+          --task_name relevance_prediction
+          --classifier_domain rain
+          --key_output raining_station
+          --mlflow_experiment_name maelstrom-a2-relevance
+          ${ignore_tracking}
+
+patternset:
+   - name: perf_patterns
+     pattern:
+      - {name: jobid, type: int, _: "Running finetuning as args.job_id=$jube_pat_int" }
+      - {name: ntweets, type: int, _: "loaded $jube_pat_int tweets"}
+      - {name: epoch, type: int, _: "Epoch\\s+$jube_pat_int"}
+      - {name: run_time, type: float, _: "RUN\\s+: took ${jube_pat_fp}"}
+      - {name: training_time, type: float, _: "TRAINING\\s+: took ${jube_pat_fp}"}
+      - {name: epoch_time, type: float, _: "EPOCH\\s+: took ${jube_pat_fp}"}
+      - {name: io_time, type: float, _: "IO\\s+: took ${jube_pat_fp}"}
+      - {name: forward_time, type: float, _: "FORWARD\\s+: took ${jube_pat_fp}"}
+      - {name: backward_time, type: float, _: "BACKWARD\\s+: took ${jube_pat_fp}"}
+      - {name: batch_time, type: float, _: "BATCH\\s+: took ${jube_pat_fp}"}
+      - {name: evaluation_time, type: float, _: "EVALUATION: took ${jube_pat_fp}"}
+      - {name: saving_model_time, type: float, _: "SAVING_MODEL[\\s+]?: took ${jube_pat_fp}"}
+      - {name: loss, type: float, _: "{'loss': $jube_pat_fp"}
+      - {name: eval_loss, type: float, _: "{'eval_loss': $jube_pat_fp"}
+      - {name: max_memory, type: float, _: "Max memory consumption \\[Gbyte\\]: $jube_pat_fp"}
+      - {name: nsteps, type: int, _: ", 'step': $jube_pat_int"}
+      - {name: ndevices, type: string, _: "CUDA_VISIBLE_DEVICES=${jube_pat_wrd}$"}
+      - {name: gpu_max_mem_allocated, type: float, _: "Gpu max memory allocated: ${jube_pat_fp}"}
+      - {name: gpu_max_mem_reserved, type: float, _: "Gpu max memory reserved: ${jube_pat_fp}"}
+      - {name: label_pat, type: string, _: "POWERMEASUREMENT: Label = $jube_pat_wrd"}
+      - {name: time_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_int,$jube_pat_nint,$jube_pat_nint"}
+      - {name: watt_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_int,$jube_pat_nint"}
+      - {name: va_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_nint,$jube_pat_int"}
+analyser:
+    name: analyse
+    reduce: false
+    use: perf_patterns
+    analyse:
+      step: submit
+      file:
+        - slurm-*.out
+        - slurm-out.*
+        - slurm-err.*
+        - slurm.out
+        - slurm.err
+        - job.err
+        - job.out
+        - stdout
+
+result:
+    use: analyse
+    table:
+      name: result
+      style: pretty
+      sort: iter_pat
+      column:
+        - {title: "JobID", _: jobid}
+        - {title: "#tweets", _: ntweets}
+        - {title: "#steps", _: nsteps_last}
+        - {title: "devices", _: ndevices}
+        - {title: "queue", _: queue}
+        #- {title: "#nodes", _: nodes}
+        #- {title: "#gpu", _: n_gpu}
+        #- {title: "BS", _: batch_size}
+        - {title: "T. IO", format: ".4f", _: io_time_sum}
+        - {title: "T. run", format: ".4f", _: run_time_last}
+        - {title: "T. training", format: ".4f", _: training_time_last}
+        - {title: "Avg. epoch", format: ".4f", _: epoch_time_avg}
+        - {title: "First epoch", format: ".4f", _: epoch_time_first}
+        #- {title: "Min epoch", format: ".4f", _: epoch_time_min}
+        #- {title: "Max epoch", format: ".4f", _: epoch_time_max}
+        #- {title: "Avg. it.", format: ".4f", _: batch_time_avg}
+        #- {title: "Max it.", format: ".4f", _: batch_time_max}
+        #- {title: "Ev. time", format: ".4f", _: evaluation_time_max}
+        #- {title: "F. loss", format: ".4f", _: loss_last}
+        - {title: "F. eval loss", format: ".4f", _: eval_loss_last}
+        - {title: "M. eval loss", format: ".4f", _: eval_loss_min}
+        #- {title: "Saving time", format: ".4f", _: saving_model_time_last}
+        #- {title: "l. rate", _: lr}
+        #- {title: "min loss", format: ".4f", _: loss_min}
+        #- {title: "# epochs", _: nepochs}
+        #- {title: "Mem", format: ".4f",  _: max_memory}
+        - {title: "MaxMemAlloc", format: ".4f", _: gpu_max_mem_allocated_max}
+        - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
+        #- {title: "Job_Time", _: timelimit}
+        #- {title: "Node(s)", _: label_pat}
+        #- {title: "Tstart", _: time_pat_first}
+        #- {title: "Tend", _: time_pat_last}
+        #- {title: "Ma.W", format: ".2f", _: watt_pat_max}
+        #- {title: "A.W", format: ".2f", _: watt_pat_avg}
+        #- {title: "Mi.W", format: ".4f", _: watt_pat_min}
+        #- {title: "Ma.VA", format: ".2f", _: va_pat_max}
+        #- {title: "A.VA", format: ".2f", _: va_pat_avg}
+        #- {title: "Mi.VA", format: ".4f", _: va_pat_min}
+
+step:
+  - name: submit
+    use:
+      - appParameter
+      - globalParameter
+      - systemParameter
+      - executeset
+      - from: platform.xml
+        _: jobfiles
+      - from: platform.xml
+        _: executesub
+    do:
+      done_file: $ready_file
+      error_file: $error_file
+      _:
+        $modules;
+        source ~/.bashrc;
+        source $jube_benchmark_home/$env_file;
+        conda activate $conda_env;
+        $submit $submit_script;

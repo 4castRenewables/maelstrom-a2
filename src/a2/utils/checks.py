@@ -1,7 +1,9 @@
+from typing import Optional
+
 import numpy as np
 
 
-def validate_array(x: np.ndarray, type: str = "float", name: str = None):
+def validate_array(x: np.ndarray, type: str = "float", name: Optional[str] = None):
     """Validate numpy based on `type`, e.g. no nan-values"""
     if type == "float":
         if np.sum(np.isnan(x.astype(float))) > 0:

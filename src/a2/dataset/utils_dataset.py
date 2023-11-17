@@ -1,6 +1,7 @@
 import logging
 import re
 import typing as t
+from typing import Optional
 
 import a2.dataset
 import a2.utils.testing
@@ -16,7 +17,7 @@ def is_same_type_data_array(ds: xarray.Dataset, field: t.Hashable, which_type: t
 def is_nan(
     ds: xarray.Dataset,
     field: t.Union[str, t.Hashable],
-    dims: t.Tuple = None,
+    dims: Optional[t.Tuple] = None,
 ):
     """
     Test element-wise for nan-values and returns boolean mask as DataArray
@@ -44,7 +45,7 @@ def is_na(
     ds: xarray.Dataset,
     field: str,
     check: t.Optional[t.List[str]] = None,
-    dims: t.Tuple = None,
+    dims: Optional[t.Tuple] = None,
 ):
     """
     Returns boolean data array that notes if either field in `check` is matched.
@@ -82,10 +83,14 @@ def print_tweet_sample(
     n: int | None = None,
     fancy: bool = True,
     field_name_tweets: str = "text",
+    additional_fields: list | None = [],
 ):
     """load tweets in filename and print random n_sample or n tweets from
     beginning of file"""
-    print_sample(ds[field_name_tweets].values, n_sample=n_sample, n=n, fancy=fancy)
+    fields = [field_name_tweets]
+    if additional_fields is not None:
+        fields += additional_fields
+    print_sample(np.array([ds[key].values for key in fields]).T, n_sample=n_sample, n=n, fancy=fancy)
 
 
 def print_sample(
@@ -122,9 +127,9 @@ def print_tweet_groupby(
     ds: xarray.Dataset,
     group_by: t.Union[str, xarray.DataArray],
     n_sample: int = 5,
-    n: int = None,
+    n: Optional[int] = None,
     n_groups: int = 20,
-    ds_grouped: xarray.Dataset = None,
+    ds_grouped: Optional[xarray.Dataset] = None,
     fancy: bool = True,
     fields_to_print: list = ["text"],
 ) -> xarray.Dataset:
@@ -385,9 +390,9 @@ def add_precipitation_to_tweets(
 def add_field(
     ds: xarray.Dataset,
     variable: t.Hashable,
-    coordinates: list = None,
+    coordinates: Optional[list] = None,
     overwrite: bool = False,
-    rename_coordinate: str = None,
+    rename_coordinate: Optional[str] = None,
 ):
     if coordinates is None:
         coordinates = list(ds.coords)
@@ -428,7 +433,7 @@ def add_variable(
     ds: xarray.Dataset,
     key: t.Hashable,
     values: np.ndarray,
-    coordinate: list = None,
+    coordinate: list | None = None,
 ) -> xarray.Dataset:
     if coordinate is None:
         coordinate = ["index"]
@@ -489,3 +494,15 @@ def construct_dataset(ds, data_vars, time=None):
     if time is not None:
         coords["time"] = time
     return xarray.Dataset(data_vars=data_vars, coords=coords)
+
+
+def merge_datasets_along_index(ds_top: xarray.Dataset, ds_bottom: xarray.Dataset) -> xarray.Dataset:
+    ds_bottom_reindexed = ds_bottom.copy()
+    ds_top = ds_top.copy()
+
+    ds_top = a2.dataset.load_dataset.reset_index_coordinate(ds_top)
+    ds_bottom_reindexed = a2.dataset.load_dataset.reset_index_coordinate(ds_bottom_reindexed)
+
+    start_index = ds_top.index.shape[0]
+    ds_bottom_reindexed["index"] = range(start_index, start_index + ds_bottom_reindexed.index.shape[0])
+    return xarray.merge([ds_top, ds_bottom_reindexed])

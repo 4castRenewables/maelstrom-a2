@@ -1,0 +1,16 @@
+{
+  "test_analysis.test_plot_confusion_matrix": "738057fb4bc90af9f5eedd093f7baad3fa632c4e7e35f5b668fb59cbb4494628",
+  "test_axes_utils.test_set_axes": "ae95295f33b843e7bf83dd6ca7fa794249b2e4941294147b513ee6a1cbcd21f2",
+  "test_axes_utils.test_set_colorbar": "35c371ecc44146e1001f471e7e4584b2ff2b3bd575ba587c12e85120f2f0495c",
+  "test_histograms.test_plot_histogram_2d_dataset": "e3f2c1f08c7a729f00378f12bfec21d01c8b697122c01ddb984cc1cd246f2ef3",
+  "test_timeseries.test_plot_timeseries_raw_data": "9c7d474d02fad708511e7669fd3ad54f5c05449a8d8b17728c3a7705ca73a666",
+  "test_timeseries.test_plot_timeseries_ds": "b9bf8dfeb756c53b7286ece58aa8ec48c56123e0d887ace2d9adb9a6ad37add2",
+  "test_utils_plotting.test_create_axes_grid": "e261f7016c66e6bef02381647384c98a662bff6eaf5a3c6653923fcb1b00a852",
+  "test_utils_plotting.test_create_axes_grid_no_colorbar": "d9e79c8e32558e3cc46940fbb4539eeb10857cb8aca5d79a3cd9f7f7c786f7a4",
+  "test_weather_maps.test_plot_radar_map_with_tweets": "dff42739a72410480943c1c8e1ac8437f8d5bb71e09fd7b78b96b9ef10f778f8",
+  "test_weather_maps.test_plot_radar_map_with_tweets_cumulative_limits": "b15e2c60b4e7be8d2030a91a7ce3844ff61235a65b21edb612e0dd2f9d86d0c7",
+  "test_weather_maps.test_plot_radar_map_with_tweets_limits_upper": "374807106f9c2bcb79502baa4f54819eed87dd463b3fb3b4c0b21438b790bbd9",
+  "test_weather_maps.test_plot_tp_station_tweets": "db47d400897178c348efed201124a45137bdaa821859cb54a14d30c1d0b4325e",
+  "test_weather_maps.test_plot_radar_from_time": "9c29e20ebd4dc42ff2abf8d5d3388f44d939b566a4ce72c69bd613d93bad632d",
+  "test_weather_maps.test_plot_radar_from_time_cumulative": "4f98f2179c1434cbb2ae3831f555beb73723c21abb4a83728782976a7b412d78"
+}

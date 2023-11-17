@@ -1,4 +1,5 @@
 import typing as t
+from typing import Optional
 
 import a2.plotting.axes_utils
 import a2.plotting.utils_plotting
@@ -42,7 +43,7 @@ def set_axes_timeseries(
 def plot_timeseries(
     time: t.Union[np.ndarray, str],
     y: t.Union[np.ndarray, str],
-    ds: xarray.Dataset = None,
+    ds: Optional[xarray.Dataset] = None,
     ax: t.Optional[plt.axes] = None,
     fig: t.Optional[plt.figure] = None,
     xlim: t.Optional[list] = None,
@@ -50,7 +51,7 @@ def plot_timeseries(
     label_x: t.Optional[str] = None,
     label_y: t.Optional[str] = None,
     sort_by_time: bool = True,
-    label: str = None,
+    label: Optional[str] = None,
     **kwargs
 ):
     """
@@ -73,7 +74,7 @@ def plot_timeseries(
     Returns
     -------
     """
-    fig, ax = a2.plotting.utils_plotting.create_figure_axes(fig=fig, ax=ax, font_size=None)
+    fig, ax = a2.plotting.utils_plotting.create_figure_axes(figure=fig, axes=ax, font_size=None)
     if ds is not None and isinstance(y, str):
         if label_y is None:
             label_y = y

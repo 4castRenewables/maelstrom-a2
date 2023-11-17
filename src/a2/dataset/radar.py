@@ -61,6 +61,7 @@ import re
 import struct
 import typing as t
 import warnings
+from typing import Optional
 
 import a2.dataset
 import a2.utils
@@ -123,9 +124,9 @@ class Nimrod:
 
     def __init__(
         self,
-        filename: pathlib.Path | str = None,
-        filename_zipped: pathlib.Path | str = None,
-        file_content: t.TextIO = None,
+        filename: Optional[pathlib.Path | str] = None,
+        filename_zipped: Optional[pathlib.Path | str] = None,
+        file_content: Optional[t.TextIO] = None,
         fake_data: bool = False,
     ):
         """
@@ -462,14 +463,14 @@ class Nimrod:
 
 
 def _convert_file_to_xarray_dataset(
-    filename_nimrod: str | pathlib.Path = None, file_content_nimrod: t.TextIO = None
+    filename_nimrod: Optional[str | pathlib.Path] = None, file_content_nimrod: Optional[t.TextIO] = None
 ) -> xarray.Dataset:
     """Create xarray dataset from nimrod file"""
     nim = Nimrod(filename=filename_nimrod, file_content=file_content_nimrod)
     return nim.extract_xarray_dataset()
 
 
-def _convert_file(filename: str | pathlib.Path = None):
+def _convert_file(filename: Optional[str | pathlib.Path] = None):
     """Create xarray dataset from zipped nimrod file"""
     with gzip.open(filename, "rb") as file_content:
         try:
@@ -494,6 +495,7 @@ def convert_daily_files_to_multiple_netcdf(
     Returns
     -------
     """
+
     # sort file list as otherwise subsequent merge throws:
     # ValueError: Resulting object does not have monotonic global indexes along dimension time
     def match_date_rain_radar_file(filename):
@@ -881,7 +883,7 @@ def _get_tp_from_ds_radar(
 
 def _prepare_tweet_ds_for_radar(
     ds_tweets: xarray.Dataset,
-    key_tweets: TYPE_KEY_TWEETS = None,
+    key_tweets: Optional[TYPE_KEY_TWEETS] = None,
     round_ngt_offset: int = 500,
     round_ngt_decimal: int = -3,
     round_time_to_base: int = 5,
@@ -935,7 +937,7 @@ def _prepare_tweet_ds_for_radar(
 
 def assign_radar_to_tweets(
     ds_tweets: xarray.Dataset,
-    key_tweets: TYPE_KEY_TWEETS = None,
+    key_tweets: Optional[TYPE_KEY_TWEETS] = None,
     round_ngt_offset: int = 500,
     round_ngt_decimal: int = -3,
     round_time_to_base: int = 5,
@@ -1162,10 +1164,10 @@ def time_series_from_files(
     time_end: np.datetime64,
     longitudes: np.ndarray,
     latitudes: np.ndarray,
-    path_to_dapceda: str | pathlib.Path = None,
+    path_to_dapceda: Optional[str | pathlib.Path] = None,
     time_delta: int = 1,
     time_delta_units: str = "h",
-    key_radar: KeyRadar = None,
+    key_radar: Optional[KeyRadar] = None,
     key_time: str = "time",
     processes: int = -1,
 ) -> t.Tuple[np.ndarray, np.ndarray]:
@@ -1235,10 +1237,10 @@ def _get_values_single_time(
     time: np.datetime64,
     x_ngt_rounded: np.ndarray,
     y_ngt_rounded: np.ndarray,
-    path_to_dapceda: str | pathlib.Path = None,
+    path_to_dapceda: Optional[str | pathlib.Path] = None,
     time_delta: int = 1,
     time_delta_units: str = "h",
-    key_radar: KeyRadar = None,
+    key_radar: Optional[KeyRadar] = None,
     key_time: str = "time",
 ) -> t.Tuple[np.datetime64, np.ndarray]:
     """

@@ -59,6 +59,11 @@ def download_tweets(
     Queries via twitters 'search all' endpoint (see
     https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all
     for more details)
+
+    NOTE, token may have expired. Check simple scripts from here
+    https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/main/Full-Archive-Search/full-archive-search.py
+    for testing.
+
     Parameters:
     ----------
     filename: filename + ending for json and csv files.py

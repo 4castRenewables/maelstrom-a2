@@ -7,15 +7,18 @@ import a2.dataset
 import a2.plotting.analysis
 import a2.training.tracking
 import a2.training.utils_training
+import a2.utils.utils
 import datasets
 import numpy as np
 import sklearn.model_selection
 import transformers
 import xarray
 
+torch = a2.utils.utils._import_torch(__file__)
+
 
 @dataclasses.dataclass
-class HyperParametersDebertaClassifier:
+class HyperParametersHuggingFaceClassifier:
     """
     Hold hyper parameters for Hugging Face DeBERTa classifier
     """
@@ -31,8 +34,31 @@ class HyperParametersDebertaClassifier:
     cls_dropout: float = 0.1
     lr_scheduler_type: str = "linear"
 
+    def update(self, new: dict):
+        for key, value in new.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
-def _compute_metrics(eval_pred):
+
+@dataclasses.dataclass
+class HyperParametersDebertaClassifier(HyperParametersHuggingFaceClassifier):
+    """
+    Hold hyper parameters for Hugging Face DeBERTa classifier
+    """
+
+    learning_rate: float = 3e-05
+
+
+@dataclasses.dataclass
+class HyperParametersElectraClassifier(HyperParametersHuggingFaceClassifier):
+    """
+    Hold hyper parameters for Hugging Face DeBERTa classifier
+    """
+
+    learning_rate: float = 2e-5
+
+
+def _compute_metrics(eval_pred, label="raining"):
     """
     Adopt Hugging Face metric output to prefered metric
     (f1-score) for this project
@@ -40,6 +66,7 @@ def _compute_metrics(eval_pred):
     Parameters:
     ----------
     eval_pred: Predictions and labels of Hugging Face model while training
+    label: Label name of the classification
 
     Returns
     -------
@@ -50,16 +77,16 @@ def _compute_metrics(eval_pred):
     classification_report = a2.plotting.analysis.classification_report(
         labels,
         predictions,
-        target_names=["not raining", "raining"],
+        label=label,
         output_dict=True,
     )
     f1_weighted_average = classification_report["weighted avg"]["f1-score"]
     f1_macro_average = classification_report["macro avg"]["f1-score"]
-    f1_not_raining = classification_report["not raining"]["f1-score"]
-    f1_raining = classification_report["raining"]["f1-score"]
+    f1_not = classification_report[f"not {label}"]["f1-score"]
+    f1 = classification_report[label]["f1-score"]
     return {
-        "f1_not_raining": f1_not_raining,
-        "f1_raining": f1_raining,
+        f"f1_not_{label}": f1_not,
+        f"f1_{label}": f1,
         "f1_weighted_average": f1_weighted_average,
         "f1_macro_average": f1_macro_average,
     }
@@ -75,11 +102,16 @@ class HuggingFaceTrainerClass:
         model_folder: str,
         num_labels: int = 2,
         config: t.Optional[t.Dict] = None,
+        problem_type: str = "single_label_classification",
     ):
         self.model_folder = model_folder
         self.num_labels = num_labels
-        if config is None:
-            self.db_config_base = transformers.AutoConfig.from_pretrained(model_folder, num_labels=num_labels)
+        if config is None and self.num_labels is not None:
+            self.db_config_base = transformers.AutoConfig.from_pretrained(
+                model_folder, num_labels=num_labels, problem_type=problem_type
+            )
+        elif config is None:
+            self.db_config_base = transformers.AutoConfig.from_pretrained(model_folder, problem_type=problem_type)
         else:
             self.db_config_base = config
         self.hyper_parameters = HyperParametersDebertaClassifier()
@@ -88,7 +120,8 @@ class HuggingFaceTrainerClass:
         db_config = self.db_config_base
         if params is not None:
             db_config.update({"cls_dropout": params["cls_dropout"]})
-        db_config.update({"num_labels": self.num_labels})
+        if self.num_labels is not None:
+            db_config.update({"num_labels": self.num_labels})
         model = transformers.AutoModelForSequenceClassification.from_pretrained(self.model_folder, config=db_config)
         if not base_model_trainable:
             for param in model.base_model.parameters():
@@ -112,10 +145,12 @@ class HuggingFaceTrainerClass:
         base_model_trainable: bool = True,
         trainer_class=transformers.Trainer,
         logging_steps: int = 500,
+        save_steps: int = 500,
         evaluation_strategy: str = "steps",
         eval_steps: int | None = 100,
         save_strategy: str = "epoch",
         load_best_model_at_end: bool = True,
+        label: str = "raining",
     ):
         """
         Returns Hugging Face trainer object
@@ -141,6 +176,7 @@ class HuggingFaceTrainerClass:
         eval_steps: Number of steps between evaluation (only used if `evaluation_strategy`="steps")
         save_strategy: When to save best model "steps" or "epoch"
         load_best_model_at_end: Load best model at end of training
+        label: Label name of the classification
 
         Returns
         -------
@@ -149,7 +185,7 @@ class HuggingFaceTrainerClass:
         if not a2.training.utils_training.gpu_available():
             fp16 = False
         if hyper_parameters is None:
-            hyper_parameters = HyperParametersDebertaClassifier()
+            hyper_parameters = HyperParametersHuggingFaceClassifier()
         self.hyper_parameters = hyper_parameters
         if tokenizer is None:
             tokenizer = transformers.AutoTokenizer.from_pretrained(self.model_folder)
@@ -159,6 +195,12 @@ class HuggingFaceTrainerClass:
                 f"(required when {load_best_model_at_end=} = True)"
             )
             save_strategy = evaluation_strategy
+            eval_steps, save_steps, logging_steps = set_evaluation_save_logging_steps(
+                evaluation_strategy=evaluation_strategy,
+                eval_steps=eval_steps,
+                logging_steps=logging_steps,
+                save_steps=save_steps,
+            )
         if not hyper_tuning:
             args = transformers.TrainingArguments(
                 folder_output,
@@ -175,9 +217,10 @@ class HuggingFaceTrainerClass:
                 weight_decay=hyper_parameters.weight_decay,
                 report_to=None,
                 eval_steps=eval_steps,
+                save_steps=save_steps,
                 save_strategy=save_strategy,
-                load_best_model_at_end=load_best_model_at_end,
                 logging_steps=logging_steps,
+                load_best_model_at_end=load_best_model_at_end,
             )
         else:
             args = transformers.TrainingArguments(
@@ -190,23 +233,37 @@ class HuggingFaceTrainerClass:
                 load_best_model_at_end=load_best_model_at_end,
             )
         model_init = functools.partial(self.get_model, mantik=mantik, base_model_trainable=base_model_trainable)
+        _partial_compute_metrics = functools.partial(_compute_metrics, label=label)
         if evaluate:
             return trainer_class(
                 model_init=model_init,
                 args=args,
                 tokenizer=tokenizer,
-                compute_metrics=_compute_metrics,
+                compute_metrics=_partial_compute_metrics,
                 callbacks=callbacks,
             )
+        train_dataset, eval_dataset = _get_training_evaluation_datasets(dataset)
         return trainer_class(
             model_init=model_init,
             args=args,
-            train_dataset=dataset["train"],
-            eval_dataset=dataset["test"],
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
             tokenizer=tokenizer,
-            compute_metrics=_compute_metrics,
+            compute_metrics=_partial_compute_metrics,
             callbacks=callbacks,
         )
+
+
+def _get_training_evaluation_datasets(dataset):
+    if isinstance(dataset, datasets.DatasetDict):
+        train_dataset = dataset["train"]
+        eval_dataset = dataset["test"]
+    elif isinstance(dataset, tuple) and len(dataset) == 2:
+        train_dataset = dataset[0]
+        eval_dataset = dataset[1]
+    else:
+        raise TypeError(f"Couldn't parse {dataset=}!")
+    return train_dataset, eval_dataset
 
 
 def split_training_set(
@@ -233,8 +290,6 @@ def split_training_set(
     -------
     Indices of training, validation and test set
     """
-    print(ds)
-
     if key_stratify is not None:
         stratify = ds[key_stratify].values
     else:
@@ -297,3 +352,49 @@ def split_training_set_tripple(
             shuffle=shuffle,
         )
     return indices_train, indices_validate, indices_test
+
+
+def set_evaluation_save_logging_steps(
+    evaluation_strategy: str, eval_steps: int = 500, logging_steps: None | int = None, save_steps: None | int = None
+):
+    logging.info(f"User choice: {eval_steps=} {logging_steps=} {save_steps=}, ({evaluation_strategy=})")
+    if eval_steps is None:
+        raise ValueError(f"{eval_steps=} cannot be None!")
+    if evaluation_strategy == "epoch":
+        # eval_steps is ignored
+        pass
+    elif evaluation_strategy == "steps":
+        if eval_steps is not None:
+            save_steps = eval_steps
+    elif evaluation_strategy == "no":
+        pass
+    else:
+        raise ValueError(f"{evaluation_strategy=} not known!")
+    if logging_steps is None:
+        logging_steps = eval_steps
+    if save_steps is None:
+        save_steps = eval_steps
+    logging.info(f"Setting: {eval_steps=} {logging_steps=} {save_steps=}, ({evaluation_strategy=})")
+    return eval_steps, save_steps, logging_steps
+
+
+class TrainerWithFocalLoss(transformers.Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False):
+        HP_LOSS_FL = (0.2, 5, 3)
+        labels = inputs.get("labels")
+        # forward pass
+        outputs = model(**inputs)
+        logits = outputs.get("logits")
+        # compute custom loss (suppose one has 3 labels with different weights)
+        # loss_fct = torch.nn.CrossEntropyLoss(weight=torch.tensor([1.0, 2.0, 3.0], device=model.device))
+        # loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
+
+        labels = labels.tile((logits.shape[0],)).unsqueeze(-1)
+        print(f"{labels=}")
+        print(f"{inputs=}")
+        print(f"{logits=}")
+        probabilities = torch.nn.functional.softmax(logits, dim=-1).flatten().gather(1, labels).flatten()
+        # probabilities = torch.nn.functional.softmax(logits, dim=-1).flatten(0, 1).gather(1, labels).flatten()
+        gammas = torch.where(probabilities < HP_LOSS_FL[0], HP_LOSS_FL[1], HP_LOSS_FL[2])
+        loss = -((1 - probabilities) ** gammas * probabilities.log()).mean()
+        return (loss, outputs) if return_outputs else loss

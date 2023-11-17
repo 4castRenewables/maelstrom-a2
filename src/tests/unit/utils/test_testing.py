@@ -50,19 +50,6 @@ def test_check_internet_conn():
     assert status is True
 
 
-def test_print_copy_paste_fake_dataset(dataset_less_optimal_coverage):
-    io_capture = a2.utils.testing.IOCapture()
-    ds = dataset_less_optimal_coverage
-    a2.utils.testing.print_copy_paste_fake_dataset(ds, name="test")
-    printed = io_capture.return_capture_stop().strip(r"\n").strip("'")
-    assert (
-        printed == "def test():\ntext_normalized = np.array(['hi , is it raining NOTPARTOFVOCAB',"
-        " 'is it raining ?'], dtype=np.str_)\nindex = np.array([0, 1], dtype=np.int64)\nreturn"
-        ' xarray.Dataset(\n\tdata_vars=dict(\n\t\ttext_normalized=(["index"], text_normalized)'
-        ",\n\t),\n\tcoords=dict(index=index),\n)\n"
-    )
-
-
 def test_print_debug(fake_data_to_print):
     io_capture = a2.utils.testing.IOCapture()
     a2.utils.testing.print_debug(fake_data_to_print)

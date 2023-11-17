@@ -20,7 +20,7 @@ DATA_FOLDER = FILE_LOC / "../../data"
 def test_print_tweet_sample(fake_dataset_print):
     io_capture = a2.utils.testing.IOCapture()
     a2.dataset.utils_dataset.print_tweet_sample(fake_dataset_print, n=2)
-    assert len(io_capture.return_capture_stop()) == 96
+    assert len(io_capture.return_capture_stop()) == 104
 
 
 def test_print_tweet_groupby(fake_dataset_tweets):

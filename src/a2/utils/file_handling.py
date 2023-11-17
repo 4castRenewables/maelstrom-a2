@@ -232,7 +232,7 @@ def remove_existing_files(files_wildcards: t.Union[str, list[str]], include_subd
 
 def file_exists_and_not_empty(filename: t.Union[str, pathlib.Path]) -> bool:
     """Check if file exists and is not empty"""
-    return os.path.exists(filename) and not os.path.getsize(filename)
+    return os.path.exists(filename) and os.path.getsize(filename) != 0
 
 
 def sort_filenames_by_pattern(file_list: list, pattern_extraction_function: t.Callable) -> list:
@@ -250,7 +250,7 @@ def is_jsc():
 def get_folder_data():
     """Get the name of the folder where data for this project is stored indepent of machine used"""
     if is_jsc():
-        folder_data = pathlib.Path("/p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/")
+        folder_data = pathlib.Path("/p/project/deepacf/maelstrom/ehlert1/data/")
     else:
         folder_data = pathlib.Path("/home/kristian/Projects/a2/data/")
     if not os.path.isdir(folder_data):
@@ -305,3 +305,9 @@ def folder_exists(path: str | pathlib.Path, check_if_empty: bool = False, raise_
             raise ValueError(f"{path=} is empty!")
         return False
     return True
+
+
+def make_directories(path: str | pathlib.Path):
+    if not os.path.isdir(path):
+        logging.info(f"... making {path=}")
+        os.makedirs(path)
