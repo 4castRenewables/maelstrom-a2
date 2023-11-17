@@ -1,183 +1,299 @@
 import logging
 import pathlib
-import typing as t
+from collections.abc import Sequence
 
-import a2.dataset
+import a2.plotting.axes_utils
+import a2.plotting.colormesh
+import a2.plotting.figures
+import a2.plotting.histogram_2d_utils
 import a2.plotting.utils_plotting
 import a2.utils.constants
-import matplotlib.figure
-import matplotlib.offsetbox
-import matplotlib.pyplot as plt
+import a2.utils.utils
+import matplotlib.container
 import numpy as np
-import xarray
+import pandas as pd
 
-
-FILE_LOC = pathlib.Path(__file__).parent
-DATA_FOLDER = FILE_LOC / "../data"
+logger = logging.getLogger(__name__)
 
 
 def plot_histogram_2d(
-    x: t.Union[np.ndarray, str],
-    y: t.Union[np.ndarray, str],
-    ds: xarray.Dataset | None = None,
-    bins: t.Sequence | None = None,
-    xlim: t.Sequence | None = None,
-    ylim: t.Sequence | None = None,
-    ax: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
-    ax_colorbar: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
-    log: t.Union[bool, t.List[bool]] = False,
+    x_key_or_values: np.ndarray | str,
+    y_key_or_values: np.ndarray | str,
+    df: pd.DataFrame | None = None,
+    bin_edges: tuple[np.ndarray, np.ndarray] | None = None,
+    xlim: tuple[float | None, float | None] | None = None,
+    ylim: tuple[float | None, float | None] | None = None,
+    log: str | tuple[str, str] = "false",
     filename: str | pathlib.Path | None = None,
-    n_bins: t.Union[int, t.List[int]] = 60,
+    n_bins: int | tuple[int, int] = 60,
+    n_bins_linear: int = 10,
     norm: str | None = None,
-    linear_thresh: t.Union[float, t.List[float]] = 1e-9,
+    norm_symlog_linear_threshold: float | None = None,
+    axis_symlog_linear_threshold: float | tuple[float, float] = 1e-9,
     label_x: str | None = None,
     label_y: str | None = None,
-    label_colorbar: str | None = None,
-    font_size: int = 12,
-    overplot_values: bool = False,
-    overplot_round_base: int | None = None,
-    overplot_color: str = "gray",
+    label_colorbar: str | None = "counts",
+    font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_SMALL,
+    annotate: bool = False,
+    annotate_round_to_base: int | None = None,
+    annotate_color: str = "gray",
     vmin: float | None = None,
     vmax: float | None = None,
-    facet_column: list | None = None,
-    facet_row: list | None = None,
-    marginal_x: str = "default",
-    marginal_x_label_x: bool = False,
-    marginal_x_label_y: str = "N",
+    facet_column: str | None = None,
+    facet_row: str | None = None,
+    facet_show_label_x: list[int] | str = "minimal",
+    facet_show_label_y: list[int] | str = "minimal",
+    marginal_x: str | None = "default",
+    marginal_x_label_x: str | None = None,
+    marginal_x_label_y: str | None = "counts",
     marginal_x_show_xticks: bool = False,
-    marginal_y: str = "default",
-    marginal_y_label_x: str = "N",
-    marginal_y_label_y: bool = False,
+    marginal_y: str | None = "default",
+    marginal_y_label_x: str | None = "counts",
+    marginal_y_label_y: str | None = None,
     marginal_y_show_yticks: bool = False,
     marginal_color: str | None = "#1f77b4",
-    figure_size: t.List[float] | None = None,
-    colormap: str = "viridis",
+    figure_size: tuple[float, float] | None = None,
+    colormap: str = a2.utils.constants.DEFAULT_COLORMAP,
     colorbar_width: float = 0.02,
-    spacing_x: float = 0.03,
-    spacing_y: float = 0.03,
+    spacing_x: float | None = None,
+    spacing_y: float | None = None,
     spacing_colorbar: float = 0.03,
     title: str = "",
-):
+    convert_zeros_to_nan: bool = True,
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
+    figure: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
+    axes_colorbar: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
+) -> dict:
     """
-    Plots 2d histogram including histograms in margins
+    Plots 2d histogram including histograms in margins and facet
 
-    Log types included `False`, `log`/`True`, `symlog`.
-    Norm takes care of colorbar scale, so far included: `log`
+    Log (axis) types included "false", "symlog", "log"
+    Norm takes care of colorbar scale ("log", "linear"/None, "symlog")
+    Allows for marginal 1D histograms on top and to left,
+        set `marginal_x="histogram"` and `marginal_y="histogram"`
+    Can annotate values on 2d histogram, set `annotate="True"`
+    Allows splitting of 2d histogram into unique values of variable
+        along rows (facet_row) and/or columns (facet_column)
+        (Cannot be used with `marginal_x`/`marginal_y`)
+
     Parameters:
     ----------
-    x: values binned on x-axis
-    y: values binned on y-axis
-    bins: if None computed based on data provided, otherwise should
-          provide [x_edges, y_edges]
-    xlim: limits of x-axis and bin_edges, if None determined from x
-    ylim: limits of y-axis and bin_edges, if None determined from y
-    ax: matplotlib axes for histogram
-    ax_colorbar: matplotlib axes for colorbar
-    log: type of bins
-    filename: plot saved to file if provided
-    fig: matplotlib figure
-    n_bins: number of bins
-    norm: scaling of colorbar
-    linear_thresh: required if using log='symlog' to indicate
-                   where scale turns linear
-    label_x: label of x-axis
-    label_y: label of y-axis
-    label_colorbar: label of colorbar
-    font_size: size of font
-    overplot_values: show number of samples on plot
-    overplot_round_base: Round values to be overplotted to this base int
-    overplot_color: Color of samples to be overplotted
-    vmin: Minimum value of colormap
-    vmax: Maximum value of colormap
-    facet_column: Assign all samples belonging to unique value from this field to histogram as columns
-    facet_row: Assign all samples belonging to unique value from this field to histogram as rows
-    marginal_x: Add additional plot on top of histogram plot ("histogram"/None)
-    marginal_x_label_x: Label along x-axis for plot `marginal_x`
-    marginal_x_label_y: Label along y-axis for plot `marginal_x`
-    marginal_x_show_xticks: Wether to show ticks along the x-axis for plot `marginal_x`
-    marginal_y: Add additional plot on top of histogram plot ("histogram"/None)
-    marginal_y_label_x: Label along x-axis for plot `marginal_y`
-    marginal_y_label_y: Label along y-axis for plot `marginal_y`
-    marginal_y_show_yticks: Wether to show ticks along the y-axis for plot `marginal_y`
-    marginal_color: Color of histogram bars in marginal plots
-    figure_size: Size of figure (height, width), default (10, 6)
-    colormap: Matplotlib colormap name
-    colorbar_width: Width of the colorbars
-    spacing_x: Spacing between axes along horizontal direction
-    spacing_y: Spacing between axes along vertical direction
-    spacing_colorbar: Spacing between axes and colorbar axes
-    title: Title of figure
+    x_key_or_values:
+        Values binned along x-axis, array(N) or column name found in `df`
+    y_key_or_values:
+        Values binned along y-axis, array(N) or column name found in `df`
+    df:
+        Dataframe used for `x`, `y`, `facet_column`, `facet_row`
+    bin_edges:
+        Bin edges provided as [x_edges, y_edges],
+        if `None` computed based on data and `xlim`/`ylim` provided and `n_bins`.
+    xlim:
+        Limits of x-axis and bin_edges, if None determined from (min, max) of x-values
+    ylim:
+        Limits of y-axis and bin_edges, if None determined from (min, max) of y-values
+    log:
+        Type of bins ("false", "symlog", "log")
+    filename:
+        Figure saved to file if provided
+    n_bins:
+        Number of bins if `bin_edges` is None,
+        can be provided as (x-axis n_bins, y-axis n_bins) or n_bins used for both x-axis/y-axis
+    n_bins_linear:
+        Only relevant if `log="symlog"`, Number of bins for linear part of bins (around zero)
+    norm:
+        Scaling of colorbar (None/"linear", "log", "symlog")
+    norm_symlog_linear_threshold:
+        Required when `norm="symlog"`.
+        Threshold value below which symlog of norm becomes linear.
+    axis_symlog_linear_threshold:
+        Required when `log="symlog"`.
+        Threshold value below which symlog of axis becomes linear.
+    label_x:
+        Label of x-axis
+    label_y:
+        Label of y-axis
+    label_colorbar:
+        Label of colorbar
+    font_size:
+        Size of font
+    annotate:
+        Whether to show number of samples on plot
+    annotate_round_to_base:
+        Round annotated values to this base integer
+    annotate_color:
+        Color of samples to be annotated
+    vmin:
+        Minimum value of colormap
+    vmax:
+        Maximum value of colormap
+    facet_column:
+        Assign all samples belonging to unique value from this field to histogram as columns
+    facet_row:
+        Assign all samples belonging to unique value from this field to histogram as rows
+    facet_show_label_x:
+        Which x-labels to show along rows provided as list of integers or use presets "off"/"all"/"minimal".
+    facet_show_label_y:
+        Which y-labels to show along columns provided as list of integers or use presets "off"/"all"/"minimal".
+    marginal_x:
+        Add additional plot next to histogram plot ("histogram"/"default"/None)
+    marginal_x_label_x:
+        X-axis label for plot `marginal_x`
+    marginal_x_label_y:
+        Y-axis label for plot `marginal_x`
+    marginal_x_show_xticks:
+        Wether to show ticks along the x-axis for plot `marginal_x`
+    marginal_y:
+        Add additional plot on top of histogram plot ("histogram"/"default"/None)
+    marginal_y_label_x:
+        X-axis label for plot `marginal_y`
+    marginal_y_label_y:
+        Y-axis label for plot `marginal_y`
+    marginal_y_show_yticks:
+        Wether to show ticks along the y-axis for plot `marginal_y`
+    marginal_color:
+        Color of histogram bars in marginal plots
+    figure_size:
+        Size of figure (height, width)
+    colormap:
+        Matplotlib colormap name
+    colorbar_width:
+        Width of the colorbars
+    spacing_x:
+        Spacing between axes along horizontal direction
+    spacing_y:
+        Spacing between axes along vertical direction
+    spacing_colorbar:
+        Spacing between axes and colorbar axes
+    title:
+        Title of figure
+    convert_zeros_to_nan:
+        Whether to convert all zero values in histogram 2d to nan.
+        This will exclude these values from being colored according to colormap but render them white.
+    axes:
+        Plots 2d histogram on specified axes.
+        Excludes usage of `marginal_x`, `marginal_y`, `facet_column` and/or `facet_row`.
+    figure:
+        Used as matplotlib figure for plot of 2d histogram when `axes` specified.
+    axes_colorbar:
+        Used as axes for colorbar of 2d histogram when `axes` specified.
 
     Returns
     -------
-    axes, histogram values
+    Dictionary of axes `axes_2d_histograms_{i_row}{i_column}`
+    and histograms `2d_histograms_{i_row}{i_column}`
     """
-    marginal_x, marginal_y = _resolve_defaults(facet_column, facet_row, marginal_x, marginal_y)
-    _check_histogram_parameter_consistency(facet_column, facet_row, marginal_x, marginal_y, ds)
 
-    facet_column_values, column_masks, n_facet_column_values, facet_column_title = prepare_facet(ds, facet_column)
-    facet_row_values, row_masks, n_facet_row_values, facet_row_title = prepare_facet(ds, facet_row)
+    axes_style = a2.plotting.histogram_2d_utils._resolve_axes_style(axes)
 
-    n_columns, n_rows = _set_number_rows_and_columns(marginal_x, marginal_y, n_facet_column_values, n_facet_row_values)
+    (
+        no_marginal_plots,
+        marginal_x,
+        marginal_y,
+        spacing_x,
+        spacing_y,
+    ) = a2.plotting.histogram_2d_utils._resolve_defaults(
+        facet_column,
+        facet_row,
+        marginal_x,
+        marginal_y,
+        spacing_x,
+        spacing_y,
+        axes_style,
+    )
+    a2.plotting.histogram_2d_utils._check_parameter_consistency(facet_column, facet_row, marginal_x, marginal_y, df)
 
-    masks = _set_masks(column_masks, row_masks, n_columns, n_rows)
+    (
+        column_masks,
+        n_facet_column_values,
+        facet_column_title,
+    ) = a2.plotting.histogram_2d_utils._prepare_facet(df, facet_column)
+    (
+        row_masks,
+        n_facet_row_values,
+        facet_row_title,
+    ) = a2.plotting.histogram_2d_utils._prepare_facet(df, facet_row)
 
-    titles = _set_axes_titles(facet_column, facet_row, title, facet_column_title, facet_row_title, n_columns, n_rows)
-
-    skip_row_col, widths_along_x, heights_along_y, colorbar_include_row_col, colorbar_off = _prepare_axes_grid_creation(
-        marginal_x, marginal_y
+    n_columns, n_rows = a2.plotting.histogram_2d_utils._set_number_rows_and_columns(
+        marginal_x, marginal_y, n_facet_column_values, n_facet_row_values
     )
 
-    fig, axes, axes_colorbar = a2.plotting.utils_plotting.create_axes_grid(
-        n_cols=n_columns,
-        n_rows=n_rows,
-        figure_size=figure_size,
-        skip_row_col=skip_row_col,
-        colorbar_width=colorbar_width,
-        spacing_x=spacing_x,
-        spacing_y=spacing_y,
-        widths_along_x=widths_along_x,
-        heights_along_y=heights_along_y,
-        colorbar_include_row_col=colorbar_include_row_col,
-        spacing_colorbar=spacing_colorbar,
-        colorbar_off=colorbar_off,
+    xaxis_labels, yaxis_labels = a2.plotting.histogram_2d_utils._set_axis_labels(
+        n_columns, n_rows, facet_show_label_x, facet_show_label_y, label_x, label_y, facet_column, facet_row
     )
 
-    if font_size is not None:
-        a2.plotting.utils_plotting.set_font(font_size=font_size)
+    masks = a2.plotting.histogram_2d_utils._set_masks(column_masks, row_masks, n_columns, n_rows)
 
-    results_dic = {"axes": [], "histograms": []}
+    titles = a2.plotting.histogram_2d_utils._determine_axes_titles(
+        facet_column,
+        facet_row,
+        title,
+        facet_column_title,
+        facet_row_title,
+        n_columns,
+        n_rows,
+    )
+
+    (
+        skip_row_col,
+        widths_along_x,
+        heights_along_y,
+        colorbar_include_row_col,
+        colorbar_off,
+    ) = a2.plotting.histogram_2d_utils._prepare_axes_grid_creation(marginal_x, marginal_y)
+    if axes_style == "axes_grid":
+        fig, axes_grid, axes_colorbar_grid = a2.plotting.utils_plotting.create_axes_grid(
+            n_columns=n_columns,
+            n_rows=n_rows,
+            figure_size=figure_size,
+            skip_row_column=skip_row_col,
+            colorbar_width=colorbar_width,
+            spacing_x=spacing_x,
+            spacing_y=spacing_y,
+            widths_along_x=widths_along_x,
+            heights_along_y=heights_along_y,
+            colorbar_include_row_columns=colorbar_include_row_col,
+            spacing_colorbar=spacing_colorbar,
+            colorbar_off=colorbar_off,
+            left=0.08,
+            bottom=0.1,
+        )
+    else:
+        fig, axes = a2.utils.figures.create_figure_axes(figure=figure, axes=axes)
+    results_dic = {}
     for i_row in range(n_rows):
         for i_column in range(n_columns):
-            ax = axes[i_row, i_column]
-            ax_colorbar = axes_colorbar[i_row, i_column]
             axes_marginal = None
-            if marginal_x is not None and marginal_y is not None:
-                ax = axes[1][0]
-                ax_colorbar = axes_colorbar[1][1]
-                axes_marginal = axes
+            if axes_style == "axes_grid":
+                axes = axes_grid[i_row, i_column]
+                axes_colorbar = axes_colorbar_grid[i_row, i_column]
+                if not no_marginal_plots:
+                    axes = axes_grid[1][0]
+                    axes_colorbar = axes_colorbar_grid[1][1]
+                    axes_marginal = axes_grid
             mask = masks[i_row, i_column]
             title = titles[i_row, i_column]
             _ax, _hist = _plot_histogram_2d(
-                x,
-                y,
-                ds=ds,
-                bins=bins,
+                x_key_or_values,
+                y_key_or_values,
+                axes=axes,
+                axes_colorbar=axes_colorbar,
+                df=df,
+                bin_edges=bin_edges,
                 xlim=xlim,
                 ylim=ylim,
-                ax=ax,
-                ax_colorbar=ax_colorbar,
                 log=log,
                 n_bins=n_bins,
+                n_bins_linear=n_bins_linear,
                 norm=norm,
-                linear_thresh=linear_thresh,
-                label_x=label_x,
-                label_y=label_y,
+                norm_symlog_linear_threshold=norm_symlog_linear_threshold,
+                linear_thresh=axis_symlog_linear_threshold,
+                label_x=xaxis_labels[i_row, i_column],
+                label_y=yaxis_labels[i_row, i_column],
                 label_colorbar=label_colorbar,
                 font_size=font_size,
-                overplot_values=overplot_values,
-                overplot_round_base=overplot_round_base,
-                overplot_color=overplot_color,
+                annotate=annotate,
+                annotate_round_to_base=annotate_round_to_base,
+                annotate_color=annotate_color,
                 vmin=vmin,
                 vmax=vmax,
                 marginal_x=marginal_x,
@@ -193,557 +309,540 @@ def plot_histogram_2d(
                 colormap=colormap,
                 title=title,
                 mask=mask,
+                convert_zeros_to_nan=convert_zeros_to_nan,
             )
-
-            results_dic["axes"].append(_ax)
-            results_dic["histograms"].append(_hist)
-
-            if marginal_x is not None and marginal_y is not None:
+            if no_marginal_plots:
+                results_dic[f"axes_2d_histograms_{i_row}{i_column}"] = _ax
+                results_dic[f"2d_histograms_{i_row}{i_column}"] = _hist
+            else:
+                results_dic["axes_2d_histograms_10"] = _ax
+                results_dic["2d_histograms_10"] = _hist
+                results_dic["axes_histograms_00"] = axes_grid[0, 0]
+                results_dic["axes_histograms_11"] = axes_grid[1, 1]
+            if not no_marginal_plots:
                 break
-    a2.plotting.utils_plotting.save_figure(fig, filename)
+        if not no_marginal_plots:
+            break
+    a2.plotting.figures.save_figure(fig, filename)
     return results_dic
 
 
-def _prepare_axes_grid_creation(marginal_x, marginal_y):
-    skip_row_col = None
-    widths_along_x = None
-    heights_along_y = None
-    colorbar_include_row_col = None
-
-    colorbar_off = False
-    if marginal_x is not None and marginal_y is not None:
-        skip_row_col = [[0, 1]]
-        widths_along_x = [0.2, 0.1]
-        heights_along_y = [0.1, 0.2]
-        colorbar_include_row_col = [[1, 1]]
-    return skip_row_col, widths_along_x, heights_along_y, colorbar_include_row_col, colorbar_off
-
-
-def _set_axes_titles(facet_column, facet_row, title, facet_column_title, facet_row_title, n_columns, n_rows):
-    titles = np.full((n_rows, n_columns), title, dtype=object)
-    for i_row in range(n_rows):
-        for i_column in range(n_columns):
-            if facet_row:
-                titles[i_row, i_column] = _add_titles([titles[i_row, i_column], facet_row_title[i_row]])
-            if facet_column:
-                titles[i_row, i_column] = _add_titles([titles[i_row, i_column], facet_column_title[i_column]])
-    return titles
-
-
-def _add_titles(titles, delimeter=", "):
-    return f"{delimeter}".join([t for t in titles if len(t)])
-
-
-def _set_masks(column_masks, row_masks, n_columns, n_rows):
-    masks = np.full((n_rows, n_columns), None, dtype=object)
-    for i_row in range(n_rows):
-        for i_column in range(n_columns):
-            if column_masks is not None:
-                masks[i_row, i_column] = _add_masks(masks[i_row, i_column], column_masks[i_column])
-            if row_masks is not None:
-                masks[i_row, i_column] = _add_masks(masks[i_row, i_column], row_masks[i_row])
-    return masks
-
-
-def _add_masks(mask, to_add):
-    if to_add is None:
-        return mask
-    if mask is None:
-        return to_add
+def _get_label(label: str | None) -> str:
+    if label is not None and label:
+        return label
     else:
-        return mask & to_add
+        return ""
 
 
-def _set_number_rows_and_columns(marginal_x, marginal_y, n_facet_column_values, n_facet_row_values):
-    n_columns = 1
-    if n_facet_column_values:
-        n_columns = n_facet_column_values
-    elif marginal_x is not None:
-        n_columns = 2
-
-    n_rows = 1
-    if n_facet_row_values:
-        n_rows = n_facet_row_values
-    elif marginal_y is not None:
-        n_rows = 2
-    return n_columns, n_rows
-
-
-def _resolve_defaults(facet_column, facet_row, marginal_x, marginal_y):
-    if marginal_x == "default":
-        if facet_column is None and facet_row is None:
-            marginal_x = "histogram"
+def _get_values_and_axis_label_from_dataframe(
+    df: pd.DataFrame | None, key_or_values: np.ndarray | str, label: str | None
+) -> tuple[np.ndarray, str | None]:
+    if isinstance(key_or_values, str):
+        if df is not None:
+            if label is None:
+                label = key_or_values
+            if label == "off":
+                label = None
+            values = df[key_or_values].values
         else:
-            marginal_x = None
-    if marginal_y == "default":
-        if facet_column is None and facet_row is None:
-            marginal_y = "histogram"
-        else:
-            marginal_y = None
-    return marginal_x, marginal_y
-
-
-def _check_histogram_parameter_consistency(facet_column, facet_row, marginal_x, marginal_y, ds):
-    if (bool(marginal_x) + bool(marginal_y)) not in [0, 2]:
-        raise NotImplementedError(f"{bool(marginal_x)=} anbool(d) {marginal_y=} both have to be on/off")
-    if (bool(marginal_x) or bool(marginal_y)) and (facet_column or facet_row):
-        raise NotImplementedError(
-            f"Cannot use ({marginal_x=} or {marginal_y}) at the same time as ({facet_column=} or {facet_row})"
-        )
-    if (facet_column or facet_row) and ds is None:
-        raise NotImplementedError(f"Cannnot use {facet_column=} and/or {facet_row}, when {ds=} is not given!")
-
-
-def prepare_facet(ds, facet):
-    if facet is not None and facet in ds:
-        facet_values = np.unique(ds[facet].values)
-        masks = [ds[facet] == val for val in facet_values]
-        n_facet_values = len(facet_values)
-        facet_title = [f"{facet} == {val}" for val in facet_values]
+            raise ValueError(f"{df=}, if {key_or_values=} given as string, dataset required")
     else:
-        facet_values, masks, n_facet_values, facet_title = None, None, 0, ""
-    return facet_values, masks, n_facet_values, facet_title
+        values = key_or_values
+    return values, label
 
 
 def _plot_histogram_2d(
-    x: t.Union[np.ndarray, str],
-    y: t.Union[np.ndarray, str],
-    ds: xarray.Dataset | None = None,
-    bins: t.Sequence | None = None,
-    xlim: t.Sequence | None = None,
-    ylim: t.Sequence | None = None,
-    ax: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
-    ax_colorbar: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
-    log: t.Union[bool, t.List[bool]] = False,
+    x_key_or_values: np.ndarray | str,
+    y_key_or_values: np.ndarray | str,
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES,
+    axes_colorbar: a2.utils.constants.TYPE_MATPLOTLIB_AXES,
+    xlim: tuple[float | None, float | None] | None = None,
+    ylim: tuple[float | None, float | None] | None = None,
+    df: pd.DataFrame | None = None,
+    bin_edges: tuple[np.ndarray, np.ndarray] | None = None,
+    log: str | tuple[str, str] = "false",
     fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
-    n_bins: t.Union[int, t.List[int]] = 60,
+    n_bins: int | tuple[int, int] = 60,
+    n_bins_linear: int = 10,
     norm: str | None = None,
-    linear_thresh: t.Union[float, t.List[float]] = 1e-9,
+    norm_symlog_linear_threshold: float | None = None,
+    linear_thresh: float | tuple[float, float] = 1e-9,
     label_x: str | None = None,
     label_y: str | None = None,
     label_colorbar: str | None = None,
-    font_size: int = 12,
-    overplot_values: bool = False,
-    overplot_round_base: int | None = None,
-    overplot_color: str = "gray",
+    font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_SMALL,
+    annotate: bool = False,
+    annotate_round_to_base: int | None = None,
+    annotate_color: str = "gray",
     vmin: float | None = None,
     vmax: float | None = None,
-    marginal_x: str = "histogram",
-    marginal_x_label_x: bool = False,
-    marginal_x_label_y: str = "N",
+    marginal_x: str | None = "histogram",
+    marginal_x_label_x: str | None = None,
+    marginal_x_label_y: str | None = "N",
     marginal_x_show_xticks: bool = False,
-    marginal_y: str = "histogram",
-    marginal_y_label_x: str = "N",
-    marginal_y_label_y: bool = False,
+    marginal_y: str | None = "histogram",
+    marginal_y_label_x: str | None = "N",
+    marginal_y_label_y: str | None = None,
     marginal_y_show_yticks: bool = False,
     marginal_color: str | None = None,
-    colormap: str = "viridis",
+    colormap: str = a2.utils.constants.DEFAULT_COLORMAP,
     title: None | str = None,
     axes_marginal: list | None = None,
     mask: np.ndarray | None = None,
-) -> t.Tuple[plt.axes, t.Sequence]:
+    convert_zeros_to_nan: bool = True,
+) -> tuple[a2.utils.constants.TYPE_MATPLOTLIB_AXES, np.ndarray]:
     """
     Plots 2d histogram
 
     Parameters:
     ----------
-    axes_marginal: Matplotlib axes to plot margins into
-    mask: Mask x/y values (required shape same as shape of x/y)
+    axes_marginal:
+        Matplotlib axes to plot margins into
+    mask:
+        Mask x/y values (require same shape as x/y)
 
-    See definition of `plot_histogram_2d` for explanation of same parameters
+    See definition of `plot_histogram_2d` for explanation of parameters
 
     Returns
     -------
-    axes, histogram values
+    Axes, histogram values
     """
 
-    def get_label(label):
-        if label is not None and label:
-            return label
-        else:
-            return ""
+    x_values, label_x = _get_values_and_axis_label_from_dataframe(df, x_key_or_values, label_x)
+    y_values, label_y = _get_values_and_axis_label_from_dataframe(df, y_key_or_values, label_y)
 
-    if isinstance(x, str):
-        if ds is not None:
-            if label_x is None:
-                label_x = x
-            x = ds[x].values
-        else:
-            ValueError(f"{ds=}, if {x=} given as string, dataset required")
-    if isinstance(y, str):
-        if ds is not None:
-            if label_y is None:
-                label_y = y
-            y = ds[y].values
-        else:
-            ValueError(f"{ds=}, if {y=} given as string, dataset required")
+    x_values, y_values = _get_xy_values(x_values, y_values, mask)
 
-    x, y = _get_xy_values(x, y, mask)
+    xlim, ylim, log, n_bins, n_bins_linear, linear_thresh = _prepare_parameters(
+        xlim, ylim, log, n_bins, n_bins_linear, linear_thresh
+    )
 
-    xlim, ylim, log, n_bins, linear_thresh = _prepare_parameters(xlim, ylim, log, n_bins, linear_thresh)
-
-    if bins is None:
+    if bin_edges is None:
         bin_edges_x = get_bin_edges(
-            data=x,
+            data=x_values,
             n_bins=n_bins[0],
-            linear_thresh=linear_thresh[0],
+            n_bins_linear=n_bins_linear[0],
+            symlog_linear_threshold=linear_thresh[0],
             log=log[0],
             vmin=xlim[0],
             vmax=xlim[1],
         )
         bin_edges_y = get_bin_edges(
-            data=y,
+            data=y_values,
             n_bins=n_bins[1],
-            linear_thresh=linear_thresh[1],
+            n_bins_linear=n_bins_linear[1],
+            symlog_linear_threshold=linear_thresh[1],
             log=log[1],
             vmin=ylim[0],
             vmax=ylim[1],
         )
     else:
-        bin_edges_x, bin_edges_y = bins
+        bin_edges_x, bin_edges_y = bin_edges
 
-    a2.utils.checks.validate_array(bin_edges_x)  # type: ignore
-    a2.utils.checks.validate_array(bin_edges_y)  # type: ignore
+    a2.utils.utils.validate_array(bin_edges_x, name="bin_edges_x")  # type: ignore
+    a2.utils.utils.validate_array(bin_edges_y, name="bin_edges_y")  # type: ignore
 
-    norm_object = a2.plotting.utils_plotting.get_norm(norm, vmin=vmin, vmax=vmax)
-    H, bin_edges_x, bin_edges_y = np.histogram2d(x, y, bins=[np.array(bin_edges_x), np.array(bin_edges_y)])
+    norm_object = a2.plotting.utils_plotting.get_norm(
+        norm,
+        vmin=vmin,
+        vmax=vmax,
+        norm_symlog_linear_threshold=norm_symlog_linear_threshold,
+    )
+    H, bin_edges_x, bin_edges_y = np.histogram2d(
+        x_values,
+        y_values,
+        bins=[np.array(bin_edges_x), np.array(bin_edges_y)],
+    )
     H_plot = H.T
     X, Y = np.meshgrid(bin_edges_x, bin_edges_y)
-    plot = ax.pcolormesh(X, Y, H_plot, norm=norm_object, cmap=colormap)
-    if overplot_values:
-        a2.plotting.utils_plotting.overplot_values(
-            H, ax, len(bin_edges_x) - 1, len(bin_edges_y) - 1, color=overplot_color, round_to_base=overplot_round_base
+    plot = a2.plotting.colormesh._plot_colormesh(
+        axes,
+        X,
+        Y,
+        H_plot,
+        norm_object,
+        colormap,
+        linewidth=0,
+        rasterized=True,
+        convert_zeros_to_nan=convert_zeros_to_nan,
+    )
+    if annotate:
+        a2.plotting.utils_plotting.annotate_values(
+            H=H_plot,
+            axes=axes,
+            size_x=len(bin_edges_x) - 1,
+            size_y=len(bin_edges_y) - 1,
+            color=annotate_color,
+            round_to_base=annotate_round_to_base,
+            font_size=font_size,
         )
-    colorbar = plt.colorbar(plot, cax=ax_colorbar)
-    ax_colorbar = colorbar.ax
-    if label_colorbar is not None:
-        ax_colorbar.set_ylabel(label_colorbar)
+    a2.plotting.utils_plotting.plot_colorbar(plot, cax=axes_colorbar, label=label_colorbar, font_size=font_size)
 
-    if xlim[0] is None:
-        xlim[0] = bin_edges_x[0]
-    if xlim[1] is None:
-        xlim[1] = bin_edges_x[-1]
-    if ylim[0] is None:
-        ylim[0] = bin_edges_y[0]
-    if ylim[1] is None:
-        ylim[1] = bin_edges_y[-1]
+    xlim, ylim = _find_axis_limits(xlim, ylim, bin_edges_x, bin_edges_y)
 
-    a2.plotting.utils_plotting.set_x_log(ax, log[0], linear_thresh=linear_thresh[0])
-    a2.plotting.utils_plotting.set_y_log(ax, log[1], linear_thresh=linear_thresh[1])
-    ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
+    a2.plotting.utils_plotting.set_x_log(axes, log[0], axis_symlog_linear_threshold=linear_thresh[0])
+    a2.plotting.utils_plotting.set_y_log(axes, log[1], axis_symlog_linear_threshold=linear_thresh[1])
+    a2.plotting.axes_utils.set_x_lim(axes, xlim)
+    a2.plotting.axes_utils.set_y_lim(axes, ylim)
 
-    a2.plotting.utils_plotting.set_title(ax, title)
+    a2.plotting.utils_plotting.set_title(axes, title, font_size=font_size)
 
-    if marginal_x == "histogram":
+    if marginal_x == "histogram" and axes_marginal is not None:
         plot_histogram(
-            x,
+            x_values,
             bin_edges=bin_edges_x,
             xlim=xlim,
             ylim=None,
-            ax=axes_marginal[0][0],
+            axes=axes_marginal[0][0],
             log=log[0],
-            fig=fig,
+            figure=fig,
             n_bins=n_bins[0],
-            linear_thresh=linear_thresh[0],
-            label_x=get_label(marginal_x_label_x),
-            label_y=get_label(marginal_x_label_y),
+            n_bins_linear=n_bins_linear[0],
+            symlog_linear_threshold=linear_thresh[0],
+            label_x=_get_label(marginal_x_label_x),
+            label_y=_get_label(marginal_x_label_y),
             font_size=font_size,
-            return_plot=False,
             color=marginal_color,
+            tight_layout=False,
         )
         if not marginal_x_show_xticks:
             a2.plotting.utils_plotting.remove_tick_labels(axes_marginal[0][0], "x")
-    if marginal_y == "histogram":
+    if marginal_y == "histogram" and axes_marginal is not None:
         plot_histogram(
-            y,
+            y_values,
             bin_edges=bin_edges_y,
             xlim=None,
             ylim=ylim,
-            ax=axes_marginal[1][1],
+            axes=axes_marginal[1][1],
             log=log[1],
-            fig=fig,
+            figure=fig,
             n_bins=n_bins[1],
-            linear_thresh=linear_thresh[1],
-            label_x=get_label(marginal_y_label_x),
-            label_y=get_label(marginal_y_label_y),
+            n_bins_linear=n_bins_linear[1],
+            symlog_linear_threshold=linear_thresh[1],
+            label_x=_get_label(marginal_y_label_x),
+            label_y=_get_label(marginal_y_label_y),
             font_size=font_size,
             vertical=True,
             color=marginal_color,
+            tight_layout=False,
+            rotation_x_labels=270,
         )
         if not marginal_y_show_yticks:
             a2.plotting.utils_plotting.remove_tick_labels(axes_marginal[1][1], "y")
-    if fig is not None and marginal_x is None and marginal_y is None:
-        fig.tight_layout()
-    return ax, H
+    a2.plotting.utils_plotting.set_axis_tick_labels(axes, font_size=font_size, axis="x")
+    a2.plotting.utils_plotting.set_axis_tick_labels(axes, font_size=font_size, axis="y")
+    a2.plotting.utils_plotting.set_axes_label(axes, label_x, "x", font_size=font_size)
+    a2.plotting.utils_plotting.set_axes_label(axes, label_y, "y", font_size=font_size)
+    return axes, H
 
 
-def _prepare_parameters(xlim, ylim, log, n_bins, linear_thresh):
-    log = a2.plotting.utils_plotting.to_list(log)
-    n_bins = a2.plotting.utils_plotting.to_list(n_bins)
-    xlim = a2.plotting.utils_plotting.to_list(xlim)
-    ylim = a2.plotting.utils_plotting.to_list(ylim)
-    n_bins = [i + 1 if i is not None else i for i in n_bins]  # using bin edges later, where n_edges = n_bins + 1
-    linear_thresh = a2.plotting.utils_plotting.to_list(linear_thresh)
-    return xlim, ylim, log, n_bins, linear_thresh
+def _prepare_parameters(
+    xlim: tuple[float | None, float | None] | None,
+    ylim: tuple[float | None, float | None] | None,
+    log: str | tuple[str, str],
+    n_bins: int | tuple[int, int],
+    n_bins_linear: int | tuple[int, int],
+    linear_thresh: float | tuple[float, float],
+) -> tuple[
+    tuple[float | None, float | None],
+    tuple[float | None, float | None],
+    tuple[str, str],
+    tuple[int, int],
+    tuple[float, float],
+]:
+    log = a2.utils.utils.to_nlength_tuple(log)  # type: ignore
+    n_bins = a2.utils.utils.to_nlength_tuple(n_bins)  # type: ignore
+    n_bins_linear = a2.utils.utils.to_nlength_tuple(n_bins_linear)  # type: ignore
+    xlim = a2.utils.utils.to_nlength_tuple(xlim)  # type: ignore
+    ylim = a2.utils.utils.to_nlength_tuple(ylim)  # type: ignore
+    n_bins = tuple(
+        [i + 1 if i is not None else i for i in n_bins]  # type: ignore
+    )  # using bin edges later, where n_edges = n_bins + 1
+    n_bins_linear = tuple(
+        [i + 1 if i is not None else i for i in n_bins_linear]  # type: ignore
+    )  # using bin edges later, where n_edges = n_bins + 1
+    linear_thresh = a2.utils.utils.to_nlength_tuple(linear_thresh)  # type: ignore
+    return xlim, ylim, log, n_bins, n_bins_linear, linear_thresh  # type: ignore
 
 
-def _get_xy_values(x, y, mask):
+def _get_xy_values(x: np.ndarray, y: np.ndarray, mask: np.ndarray | None) -> tuple[np.ndarray, np.ndarray]:
     x = np.ndarray.flatten(x)  # type: ignore
-    a2.utils.checks.validate_array(x)
+    a2.utils.utils.validate_array(x)
     y = np.ndarray.flatten(y)  # type: ignore
-    a2.utils.checks.validate_array(y)
+    a2.utils.utils.validate_array(y)
     if x.shape != y.shape:
-        raise Exception(f"x and y need to be of same shape: {np.shape(x)} != {np.shape(y)}")
+        raise ValueError(f"x and y need to be of same shape: {np.shape(x)} != {np.shape(y)}")
     if mask is not None:
         x = x[mask]
         y = y[mask]
     return x, y
 
 
-def annotate_histogram(
-    ax: plt.axes, plot, labels: list, fontproperties=None, as_label: str | None = None, fontsize: int = 8
-):
-    """
-    annotate labels to individual bar of histogram plot
-    To download emoji images refer to `download_emoji` in
-    notebooks/dataset/visualize_raw_tweets.ipynb
-
-    Parameters:
-    ----------
-    ax: matplotlib axes
-    plot: matplotlib plot object
-    labels: List of labels for individual bars
-    fontproperties: matplotlib fontproperties
-    as_label: Annotate the labels of an axis instead of the bars directly
-    font_size: size of font
-
-    Returns
-    -------
-    """
-    xycoords = "data"
-    zoom = 0.5
-    verticalalignment = "bottom"
-    for num_label, (rect1, label) in enumerate(zip(plot, labels)):
-        height = rect1.get_height()
-        x_y = (rect1.get_x() + rect1.get_width() / 2, height + 5)
-        x_y = [int(i) for i in x_y]
-        x_y_images = x_y
-        if as_label == "x":
-            xycoords = "axes fraction"
-            zoom = 0.3
-            spacing_labels = 1 / len(labels)
-            x_y = [spacing_labels / 2 + num_label * spacing_labels, -0.03]
-            x_y_images = x_y[:]
-            ax.tick_params(labelbottom=False)
-            verticalalignment = "top"
-            x_y_images[1] -= 0.05
-        if a2.dataset.emojis.is_emoji(label):
-            png = a2.dataset.emojis.get_emoji_filename(label)
-            try:
-                emoj = plt.imread(f"{DATA_FOLDER.__str__()}/emoji/emoji_images/{png}")
-            except FileNotFoundError:
-                png_alternative = png.replace("_fe0f", "")
-                emoj = plt.imread(f"{DATA_FOLDER.__str__()}/emoji/emoji_images/{png_alternative}")
-            imagebox = matplotlib.offsetbox.OffsetImage(emoj, zoom=zoom)
-            ab = matplotlib.offsetbox.AnnotationBbox(imagebox, x_y_images, frameon=False, xycoords=xycoords)
-            ax.add_artist(ab)
-        else:
-            ax.annotate(
-                label,
-                x_y,
-                ha="center",
-                va=verticalalignment,
-                fontsize=fontsize,
-                fontproperties=fontproperties,
-                rotation=90,
-                xycoords=xycoords,
-            )
-
-
 def plot_histogram(
-    x: np.ndarray,
-    ds=None,
-    bin_edges=None,
-    xlim: t.Optional[t.Sequence] = None,
-    ylim: t.Optional[t.Sequence] = None,
-    ax: t.Optional[plt.axes] = None,
-    log: t.Union[bool, t.List[bool]] = False,
-    filename: t.Union[str, pathlib.Path] = None,
-    fig: t.Optional[plt.figure] = None,
+    key_or_values: np.ndarray | str,
+    df: pd.DataFrame | None = None,
+    xlim: tuple[float | None, float | None] | None = None,
+    ylim: tuple[float | None, float | None] | None = None,
+    log: str | tuple[str, str] = "false",
+    symlog_linear_threshold: float | None = None,
+    bin_edges: np.ndarray | None = None,
     n_bins: int = 60,
-    linear_thresh: t.Optional[float] = None,
-    label_x: t.Optional[str] = None,
-    label_y: t.Optional[str] = None,
-    font_size: int = 12,
-    return_plot: bool = False,
+    n_bins_linear: int = 10,
+    label_x: str | None = None,
+    label_y: str | None = "counts",
+    figure: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
+    filename: str | pathlib.Path | None = None,
+    font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_LARGE,
     vertical: bool = False,
     alpha: float = 1,
-    annotatations_bars: t.Optional[list] = None,
     color: str | None = None,
-    min_counts: int = 0,
-) -> t.Union[plt.axes, t.Tuple[plt.figure, plt.axes]]:
+    horizontal_line: int | None = None,
+    tight_layout: bool = True,
+    rotation_x_labels: int = 0,
+    rotation_y_labels: int = 0,
+    title: str = "",
+) -> a2.utils.constants.TYPE_MATPLOTLIB_AXES:
     """
     plots 1d histogram
 
-    Log types included `False`, `log`/`True`, `symlog`. Norm takes care of
-    colorbar scale, so far included: `log`
+    Log (axis) types included "false", "symlog", "log"
+    Norm takes care of colorbar scale ("log", "linear"/None, "symlog")
+    Can include a horizontal line at value `horizontal_line`
+
     Parameters:
     ----------
-    x: values binned on x-axis
-    bin_edges: if None computed based on data provided, otherwise should
-               provide [x_edges, y_edges]
-    xlim: limits of x-axis and bin_edges, if None determined from x
-    ylim: limits of y-axis and bin_edges, if None determined from y
-    ax: matplotlib axes
-    log: type of bins
-    filename: plot saved to file if provided
-    fig: matplotlib figure
-    n_bins: number of bins
-    norm: scaling of colorbar
-    linear_thresh: required if using log='symlog' to indicate where
-                   scale turns linear
-    label_x: label of x-axis
-    label_y: label of y-axis
-    font_size: size of font
-    alpha: alpha value of plot
-    return_plot: return axes and bar plot object
+    x_key_or_values:
+        Values binned along x-axis, array(N) or column name found in `df`
+    df:
+        Dataframe used for `key_or_values`
+    xlim:
+        Limits of x-axis and bin_edges, if None determined from (min, max) of x-values
+    ylim:
+        Limits of y-axis and bin_edges, if None determined from (min, max) of y-values
+    log:
+        Type of bins ("false", "symlog", "log")
+    symlog_linear_threshold:
+        Required when `log="symlog"`.
+        Threshold value below which symlog becomes linear.
+    bin_edges:
+        Bin edges, if `None` computed based on data `xlim` provided and `n_bins`.
+    n_bins:
+        Number of bins if `bin_edges` is None.
+    n_bins_linear:
+        Only relevant if `log="symlog"`, Number of bins for linear part of bins (around zero)
+    label_x:
+        Label of x-axis
+    label_y:
+        Label of y-axis
+    figure:
+        Matplotlib figure
+    axes:
+        Matplotlib axes
+    filename:
+        Figure saved to file if provided
+    font_size:
+        Size of font
+    vertical:
+        Plot bars along vertical axis instead of default horizontal direction
+    alpha:
+        Alpha value of bars
+    color:
+        Color of bars
+    horizontal_line:
+        Plot horizontal at specified value (not shown if None)
+    tight_layout:
+        Adjusts padding around axis and removes unnecessary white space
+    rotation_x_labels:
+        Angle of rotation of x-axis labels
+    rotation_y_labels:
+        Angle of rotation of y-axis labels
+    title:
+        Title of figure
 
     Returns
     -------
-    axes
+    Axes of bar plot
     """
-    if all([isinstance(i, str) for i in x]):
-        labels_bars, x, counts = np.unique(x, return_inverse=True, return_counts=True)
-        n_bins = len(labels_bars)
-        annotatations_bars = [_la if c >= min_counts else "" for _la, c in zip(labels_bars, counts)]
-        xlim = [0, np.max(x)]
-    log = a2.plotting.utils_plotting.to_list(log)
-    xlim = a2.plotting.utils_plotting.to_list(xlim)
-    ylim = a2.plotting.utils_plotting.to_list(ylim)
+    _log = a2.utils.utils.to_nlength_tuple(log, 2)
+    _xlim = a2.utils.utils.to_nlength_tuple(xlim, 2)
+    _ylim = a2.utils.utils.to_nlength_tuple(ylim, 2)
 
-    if ds is not None and isinstance(x, str):
+    values: np.ndarray
+    if df is not None and isinstance(key_or_values, str):
         if label_x is None:
-            label_x = x
-        x = ds[x].values
-    x = flatten_array(x)
-
-    fig, ax = a2.plotting.utils_plotting.create_figure_axes(fig=fig, ax=ax, font_size=font_size)
-    if min_counts > 0:
-        ax.axhline(min_counts)
+            label_x = key_or_values
+        values = df[key_or_values].values
+    elif isinstance(key_or_values, str):
+        raise ValueError(f"Need to specify {df=} when specifying key name {key_or_values=}.")
+    else:
+        values = np.array(key_or_values)
+    values = flatten_array(values)
+    figure, axes = a2.plotting.utils_plotting.create_figure_axes(figure=figure, axes=axes)
 
     if bin_edges is None:
-        bin_edges, linear_thresh = get_bin_edges(
-            data=x,
+        bin_edges, symlog_linear_threshold = get_bin_edges(
+            data=values,
             n_bins=n_bins,
-            linear_thresh=linear_thresh,
-            log=log[0],
-            return_linear_thresh=True,
-            vmin=xlim[0],
-            vmax=xlim[1],
+            n_bins_linear=n_bins_linear,
+            symlog_linear_threshold=symlog_linear_threshold,
+            log=_log[0],
+            return_symlog_linear_threshold=True,
+            vmin=_xlim[0],
+            vmax=_xlim[1],
         )
     (
         hist,
         bin_edges,
-    ) = np.histogram(x, bins=bin_edges)
+    ) = np.histogram(values, bins=bin_edges)
     bin_centers = bin_edges[:-1] + np.diff(bin_edges) / 2.0
 
-    plot = plot_bar(
+    _ = plot_bar(
         bin_centers,
         hist,
         width_bars=np.diff(bin_edges),
-        xlim=xlim,
-        ylim=ylim,
-        ax=ax,
-        log=log,
-        linear_thresh=linear_thresh,
+        xlim=_xlim,  # type: ignore
+        ylim=_ylim,  # type: ignore
+        axes=axes,
+        log=_log,  # type: ignore
+        symlog_linear_threshold=symlog_linear_threshold,
         label_x=label_x,
         label_y=label_y,
         vertical=vertical,
         alpha=alpha,
         color=color,
+        rotation_x_labels=rotation_x_labels,
+        rotation_y_labels=rotation_y_labels,
+        font_size=font_size,
     )
-    if annotatations_bars is not None:
-        annotate_histogram(ax, plot, labels=annotatations_bars, as_label="x", fontsize=font_size)
-    fig.tight_layout()
-    a2.plotting.utils_plotting.save_figure(fig, filename)
-    print(f"{log=}")
-    if return_plot:
-        return ax, plot
-    return ax
+    if horizontal_line is not None:
+        axes.axhline(horizontal_line)
+
+    if tight_layout:
+        figure.tight_layout()
+    a2.plotting.utils_plotting.set_title(axes, title, font_size=font_size)
+    a2.plotting.figures.save_figure(figure, filename)
+    return axes
 
 
 def plot_bar(
     bin_centers: np.ndarray,
-    hist: np.ndarray,
-    width_bars: np.ndarray | None = None,
-    xlim: t.Optional[t.Sequence] = None,
-    ylim: t.Optional[t.Sequence] = None,
-    ax: t.Optional[plt.axes] = None,
-    fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
-    log: t.Union[bool, t.List[bool]] = False,
-    linear_thresh: t.Optional[float] = None,
-    label_x: t.Optional[str] = None,
-    label_y: t.Optional[str] = None,
+    height_bars: np.ndarray,
+    width_bars: np.ndarray,
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES,
+    xlim: tuple[float | None, float | None] | None = None,
+    ylim: tuple[float | None, float | None] | None = None,
+    log: str | tuple[str, str] = "false",
+    symlog_linear_threshold: None | float = None,
+    label_x: None | str = None,
+    label_y: None | str = None,
     vertical: bool = False,
     alpha: float = 1,
-    font_size: int = 8,
-    replace_x_labels_at: t.Sequence | None = None,
-    replace_x_labels_with: t.Sequence | None = None,
-    replace_y_labels_at: t.Sequence | None = None,
-    replace_y_labels_with: t.Sequence | None = None,
     color: str | None = None,
-):
+    font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_LARGE,
+    replace_x_labels_at: Sequence | None = None,
+    replace_x_labels_with: Sequence | None = None,
+    replace_y_labels_at: Sequence | None = None,
+    replace_y_labels_with: Sequence | None = None,
+    rotation_x_labels: int = 0,
+    rotation_y_labels: int = 0,
+) -> matplotlib.container.BarContainer:
     """
     plots 1d bar plot
 
     Parameters:
     ----------
-    bin_centers: Center position of bars
-    hist: Bar values
-    width_bars: Bar widths
-    xlim: limits of x-axis and bin_edges, if None determined from x
-    ylim: limits of y-axis and bin_edges, if None determined from y
-    ax: matplotlib axes
-    fig: matplotlib figure
-    log: type of bins
-    linear_thresh: required if using log='symlog' to indicate where
-    label_x: label of x-axis
-    label_y: label of y-axis
-    Vertical: Plot bar plot along vertical axis instead of default horizontal
-    alpha: Alpha value of bars
-    font_size: Size of font
-    replace_x_labels_at: Tick values of x-axis to be replaced
-    replace_x_labels_with: Replacement values for tick values of x-axis
-    replace_y_labels_at: Tick values of y-axis to be replaced
-    replace_y_labels_with: Replacement values for tick values of y-axis
-    color: Color of bars
+    bin_centers:
+        Center position of bins, array(N)
+    height_bars:
+        Bar heights at corresponding `bin_centers`, array(N)
+    width_bars:
+        Bar widths, array(N)
+    axes:
+        Matplotlib axes
+    xlim:
+        Limits of x-axis and bin_edges, if None determined from (min, max) of x-values
+    ylim:
+        Limits of y-axis and bin_edges, if None determined from (min, max) of y-values
+    log:
+        Type of bins ("false", "symlog", "log")
+    symlog_linear_threshold:
+        Required when `log="symlog"`.
+        Threshold value below which symlog becomes linear.
+    label_x:
+        Label of x-axis
+    label_y:
+        Label of y-axis
+    vertical:
+        Plot bars along vertical axis instead of default horizontal direction
+    alpha:
+        Alpha value of bars
+    color:
+        Color of bars
+    font_size:
+        Size of font
+    replace_x_labels_at:
+        Tick values of x-axis to be replaced
+    replace_x_labels_with:
+        Replacement values for tick values of x-axis
+    replace_y_labels_at:
+        Tick values of y-axis to be replaced
+    replace_y_labels_with:
+        Replacement values for tick values of y-axis
+    rotation_x_labels:
+        Angle of rotation of x-axis labels
+    rotation_y_labels:
+        Angle of rotation of y-axis labels
 
     Returns
     -------
-    plot
+    Bar plot object
     """
-    log = a2.plotting.utils_plotting.to_list(log)
-    xlim = a2.plotting.utils_plotting.to_list(xlim)
-    ylim = a2.plotting.utils_plotting.to_list(ylim)
+    _log = a2.utils.utils.to_nlength_tuple(log)
+    _xlim = a2.utils.utils.to_nlength_tuple(xlim)
+    _ylim = a2.utils.utils.to_nlength_tuple(ylim)
 
-    if ax is None:
-        fig, ax = a2.plotting.utils_plotting.create_figure_axes(fig=fig, ax=ax, font_size=font_size)
     if vertical:
-        plot = ax.barh(bin_centers, hist, height=width_bars, edgecolor="black", alpha=alpha, color=color)
+        plot = axes.barh(
+            bin_centers,
+            height_bars,
+            height=width_bars,
+            edgecolor="black",
+            alpha=alpha,
+            color=color,
+        )
     else:
-        plot = ax.bar(bin_centers, hist, width=width_bars, edgecolor="black", alpha=alpha, color=color)
+        plot = axes.bar(
+            bin_centers,
+            height_bars,
+            width=width_bars,
+            edgecolor="black",
+            alpha=alpha,
+            color=color,
+        )
 
-    a2.plotting.utils_plotting.set_x_log(ax, log[0], linear_thresh=linear_thresh)
-    a2.plotting.utils_plotting.set_y_log(ax, log[1], linear_thresh=linear_thresh)
-    a2.plotting.utils_plotting.set_axis_tick_labels(ax, replace_x_labels_at, replace_x_labels_with, axis="x")
-    a2.plotting.utils_plotting.set_axis_tick_labels(ax, replace_y_labels_at, replace_y_labels_with, axis="y")
-    if label_x is not None:
-        ax.set_xlabel(label_x)
-    if label_y is not None:
-        ax.set_ylabel(label_y)
-    ax.set_ylim(ylim)
-    ax.set_xlim(xlim)
+    a2.plotting.utils_plotting.set_x_log(axes, _log[0], axis_symlog_linear_threshold=symlog_linear_threshold)
+    a2.plotting.utils_plotting.set_y_log(axes, _log[1], axis_symlog_linear_threshold=symlog_linear_threshold)
+    a2.plotting.utils_plotting.set_axis_tick_labels(
+        axes,
+        replace_x_labels_at,
+        replace_x_labels_with,
+        axis="x",
+        rotation=rotation_x_labels,
+        font_size=font_size,
+    )
+    a2.plotting.utils_plotting.set_axis_tick_labels(
+        axes,
+        replace_y_labels_at,
+        replace_y_labels_with,
+        axis="y",
+        rotation=rotation_y_labels,
+        font_size=font_size,
+    )
+    a2.plotting.utils_plotting.set_axes_label(axes, label_x, "x", font_size=font_size)
+    a2.plotting.utils_plotting.set_axes_label(axes, label_y, "y", font_size=font_size)
+    axes.set_ylim(_ylim)
+    axes.set_xlim(_xlim)
     return plot
 
 
@@ -754,51 +853,72 @@ def flatten_array(x):
 
 
 def get_bin_edges(
-    vmin: t.Optional[float] = None,
-    vmax: t.Optional[float] = None,
-    linear_thresh: t.Optional[float] = None,
+    vmin: float | None = None,
+    vmax: float | None = None,
+    data: np.ndarray | None = None,
     n_bins: int = 60,
-    data: t.Optional[np.ndarray] = None,
-    log: t.Union[str, bool] = False,
-    return_linear_thresh: bool = False,
-) -> t.Union[t.Tuple[np.ndarray, t.Optional[float]], np.ndarray]:
+    n_bins_linear: int = 10,
+    log: str = "false",
+    symlog_linear_threshold: float | None = None,
+    return_symlog_linear_threshold: bool = False,
+) -> tuple[np.ndarray, float | None] | np.ndarray:
     """
-    returns bin edges for plots
+    Computes bin edges for plots
 
-    Log types included `False`, `log`/`True`, `symlog`
+    Log types included `"false"`, `"symlog"`, `"log"`
     Parameters:
     ----------
-    vmin: minimum value of data
-    vmax: maximum value of data
-    linear_thresh: threshold below which bins are linear to include zero values
-    n_bins: number of bins for logarithmic part of bins
-    data: if provided used to compute `vmin` and `vmax`
-    log: type of bins
+    vmin:
+        Minimum value of bin edge
+    vmax:
+        Maximum value of bin edge
+    data:
+        Used to compute `vmin`/`vmax` if None
+    n_bins:
+        Number of bins
+    n_bins_linear:
+        Only relevant if `log="symlog"`, Number of bins for linear part of bins (around zero)
+    log:
+        Type of bins ("false", "symlog", "log")
+    symlog_linear_threshold:
+        Required when `log="symlog"`.
+        Threshold value below which symlog becomes linear.
+    return_symlog_linear_threshold:
+        Return symlog_linear_threshold in addition to bin edges
 
     Returns
     -------
-    bin edges
+    Bin edges, Optionally(symlog_linear_threshold)
     """
     if data is not None and vmin is None:
         vmin = data.min()
     if data is not None and vmax is None:
         vmax = data.max()
     if vmin is None or vmax is None:
-        raise Exception(f"Need to specify vmin {vmin} and {vmax} or provide data: {data}!")
-    if not log:
-        bins = np.linspace(vmin, vmax, n_bins)
-    elif log == "symlog":
-        if linear_thresh is None:
+        raise ValueError(f"Need to specify vmin {vmin} and {vmax} or provide data: {data}!")
+    if vmin > vmax:
+        raise ValueError(f"{vmin=} > {vmax=}")
+    if vmin <= 0 and log == "log":
+        raise ValueError(f"For {log=}, cannot have {vmin=} <= 0")
+    if log == "symlog":
+        if symlog_linear_threshold is None:
             abs_max = abs(vmax)
             abs_min = abs(vmin)
-            linear_thresh = abs_min if abs_min < abs_max or abs_min == 0 else abs_max if abs_max != 0 else abs_min
-            logging.info(f"Setting: linear_thresh: {linear_thresh} with vmin: {vmin}" " and vmax: {vmax}!")
-        bins = _get_bin_edges_symlog(vmin, vmax, linear_thresh, n_bins=n_bins)
-    else:
-        bins = 10 ** np.linspace(np.log10(vmin), np.log10(vmax), n_bins)
+            symlog_linear_threshold = abs_min if abs_min < abs_max else abs_max if abs_max != 0 else abs_min
+            if symlog_linear_threshold == 0:
+                raise ValueError(
+                    f"{symlog_linear_threshold=}, which is not allowed. Please set manually to different value!"
+                )
+            logger.info(f"Setting: linear_thresh: {symlog_linear_threshold} with vmin: {vmin}" " and vmax: {vmax}!")
 
-    if return_linear_thresh:
-        return bins, linear_thresh
+        bins = _get_bin_edges_symlog(vmin, vmax, symlog_linear_threshold, n_bins=n_bins, n_bins_linear=n_bins_linear)
+    elif log == "log":
+        bins = 10 ** np.linspace(np.log10(vmin), np.log10(vmax), n_bins)
+    else:
+        bins = np.linspace(vmin, vmax, n_bins)
+
+    if return_symlog_linear_threshold:
+        return bins, symlog_linear_threshold
     else:
         return bins
 
@@ -811,16 +931,21 @@ def _get_bin_edges_symlog(
     n_bins_linear: int = 10,
 ) -> np.ndarray:
     """
-    returns symmetrical logarithmic bins
+    Computes symmetrical logarithmic bins
 
-    Bins have same absolute vmin, vmax if vmin is negative
+    Bins have same absolute vmin/vmax if vmin is negative
     Parameters:
     ----------
-    vmin: minimum value of data
-    vmax: maximum value of data
-    linear_thresh: threshold below which bins are linear to include zero values
-    n_bins: number of bins for logarithmic part of bins
-    n_bins_linear: number of bins for linear part of bins
+    vmin:
+        Minimum value of bin edge
+    vmax:
+        Maximum value of bin edge
+    linear_thresh:
+        Threshold value below which symlog becomes linear.
+    n_bins:
+        Number of bins for logarithmic part of bins
+    n_bins_linear:
+        Number of bins for linear part of bins (around zero)
 
     Returns
     -------
@@ -832,7 +957,7 @@ def _get_bin_edges_symlog(
         bins = np.hstack(
             (
                 np.linspace(0, linear_thresh, n_bins_linear),
-                10 ** np.linspace(np.log10(linear_thresh), np.log10(vmax)),
+                10 ** np.linspace(np.log10(linear_thresh), np.log10(vmax), n_bins),
             )
         )
     else:
@@ -852,3 +977,82 @@ def _get_bin_edges_symlog(
             )
         )
     return bins
+
+
+def plot_circular_histogram(
+    angles: np.ndarray,
+    n_bins: int = 12,
+    density: bool = False,
+    figure: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
+    figure_size: tuple[float, float] | None = None,
+    font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_SMALL,
+) -> a2.utils.constants.TYPE_MATPLOTLIB_AXES:
+    """
+    Circular histogram of angles, e.g. wind directions.
+    Plotting using matplotlib.pyplot
+
+    Parameters:
+    ----------
+    angles:
+        List of angles to be binned
+    n_bins:
+        Number of bins if `bin_edges` is None.
+    density:
+        Whether to normalize histogram with total sum
+    figure:
+        Matplotlib figure
+    axes:
+        Matplotlib axes
+    figure_size:
+        Size of figure (height, width)
+    font_size:
+        Size of font
+
+    Returns
+    -------
+    Axes of plot
+    """
+
+    figure, axes = a2.utils.figures.create_figure_axes(
+        figure=figure,
+        axes=axes,
+        figure_size=figure_size,
+        projection="polar",
+        aspect="equal",
+    )
+    assigned_sector_centers, _ = a2.utils.ergaleiothiki.degrees2sector(angles, n_bins)
+    bin_centers, hist = np.unique(assigned_sector_centers, return_counts=True)
+    if density:
+        hist = hist / np.sum(hist)
+    bin_centers_radians = np.deg2rad(bin_centers)
+    width_bars = np.diff(bin_centers_radians)[0]
+    plot_bar(
+        bin_centers_radians,
+        hist,
+        width_bars,
+        axes=axes,
+        log="false",
+        font_size=font_size,
+    )
+
+    axes.set_theta_zero_location("N")
+    axes.set_theta_direction(-1)
+    return axes
+
+
+def _find_axis_limits(
+    xlim: tuple[float | None, float | None],
+    ylim: tuple[float | None, float | None],
+    bin_edges_x: np.ndarray,
+    bin_edges_y: np.ndarray,
+) -> tuple[tuple[float, float], tuple[float, float]]:
+    if xlim[0] is None:
+        xlim = (bin_edges_x[0], xlim[1])
+    if xlim[1] is None:
+        xlim = (xlim[0], bin_edges_x[-1])
+    if ylim[0] is None:
+        ylim = (bin_edges_y[0], ylim[1])
+    if ylim[1] is None:
+        ylim = (ylim[0], bin_edges_y[-1])
+    return xlim, ylim  # type: ignore

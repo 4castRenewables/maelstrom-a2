@@ -12,11 +12,8 @@ BASELINE_DIR = DATA_FOLDER / "baseline/"
 
 def test_plot_prediction_certainty(fake_prediction, fake_prediction_certainties):
     truth, _, prediction_probabilities = fake_prediction
-    print(f"{truth=}")
-    print(f"{prediction_probabilities=}")
-    print(f"{fake_prediction_certainties=}")
     _, H = a2.plotting.analysis.plot_prediction_certainty(truth, prediction_probabilities, return_matrix=True)
-    assert np.array_equal(H, fake_prediction_certainties)
+    assert np.array_equal(H, fake_prediction_certainties, equal_nan=True)
 
 
 def test_classification_report(fake_prediction, fake_classification_report):

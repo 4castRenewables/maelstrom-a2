@@ -94,18 +94,18 @@ def save_location_to_file(
         place_ids = set(place_ids) - set(df["id"].values)
         del df
     if os.path.isfile(filename_location_not_found):
-        df = pd.read_csv(
-            filename_location_not_found,
-            skiprows=1,
-            skip_blank_lines=False,
-            names=["id"],
-        )
+        print(f"{filename_location_not_found=}")
+        print(f"{os.path.exists(filename_location_not_found)=}")
+        df = load_location_to_not_found(filename_location_not_found)
         place_ids = set(place_ids) - set(df["id"].values)
         del df
     if len(place_ids):
         logging.info(f"Need to query {len(place_ids)} place_id's ...")
 
     for p_id in tqdm.tqdm(place_ids):
+        df = load_location_to_not_found(filename_location_not_found)
+        if p_id in df["id"].values:
+            continue
         if queried >= 74:
             time.sleep(60 * 15 + 15)
             queried = 0
@@ -115,7 +115,7 @@ def save_location_to_file(
         queried += 1
         try:
             location = api.geo_id(place_id=p_id)
-            print(f"{location=}")
+            logging.info(f"{location=}")
         except Exception as e:
             _append_not_found(p_id, filename_location_not_found)
             logging.info(f"couldn't query: {p_id}")
@@ -126,6 +126,17 @@ def save_location_to_file(
         else:
             data.append(location)
         a2.utils.file_handling.json_dump(filename_location, data, log_if_new_file=True)
+
+
+def load_location_to_not_found(filename_location_not_found):
+    df = pd.read_csv(
+        filename_location_not_found,
+        skiprows=1,
+        skip_blank_lines=False,
+        names=["id"],
+    )
+
+    return df
 
 
 def convert_coordinates_to_lat_long(

@@ -7,14 +7,14 @@ KERNEL_NAME=${1}
 SINGULARITY_IMAGE=${2}
 
 [[ ! -z "$KERNEL_NAME" ]] || echo "Provide a Jupyter kernel name, please."
-[[ ! -z "$SINGULARITY_IMAGE" ]] || echo "Provide a Singularity container image, please."
+[[ ! -z "$SINGULARITY_IMAGE" ]] || echo "Provide a Apptainer container image, please."
 
 USER_KERNEL_DIR=${HOME}/.local/share/jupyter/kernels/${KERNEL_NAME}
 mkdir -p ${USER_KERNEL_DIR} || exit
 
 echo '{
  "argv": [
-   "singularity",
+   "apptainer",
    "exec",
    "--nv",
    "--cleanenv",

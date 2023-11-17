@@ -5,10 +5,14 @@ import functools
 import itertools
 import logging
 import multiprocessing
+import pathlib
 import re
 import typing as t
+import warnings
+from collections.abc import Iterable
 from functools import wraps
 from time import time
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -158,7 +162,7 @@ def _assert_same_type(variable, type_from_variable):
             raise TypeError(f"Variable {variable=} different type than expected {type_from_variable=}")
 
 
-def assert_same_type_as(variable: object, type_from_variable: object, alternative: object = None):
+def assert_same_type_as(variable: object, type_from_variable: object, alternative: Optional[object] = None):
     """Check if `variable` is same type as `type_from_variable` unless `variable` is `alternative`"""
     if variable is alternative:
         return
@@ -174,7 +178,7 @@ def all_same_type(variable_list: t.Iterable, type_: type):
             raise ValueError(f"{var} not of type {type_.__name__}!")
 
 
-def assert_shape(variable, shape: t.Tuple, name: str = None, ignore_none: bool = True):
+def assert_shape(variable, shape: t.Tuple, name: Optional[str] = None, ignore_none: bool = True):
     if ignore_none:
         if variable is None:
             return
@@ -189,3 +193,55 @@ def flatten_list(lis: list[list]) -> list:
 def str_to_delta_time(string: str) -> t.Tuple[float, str]:
     time, units, _ = re.split("([a-zA-Z]+)$", string)
     return float(time), units
+
+
+def to_nlength_tuple(x: object, n: int = 2) -> tuple:
+    if not (isinstance(x, list) or isinstance(x, tuple) or isinstance(x, np.ndarray)):
+        return tuple([x] * n)
+    elif isinstance(x, list) or isinstance(x, np.ndarray):
+        x = tuple(x)
+    if len(x) != n:
+        raise ValueError(f"{x} doesn't have expected length {n=}")
+    return x
+
+
+def assert_all_same_type(variable_list: Iterable, type_: type):
+    for var in variable_list:
+        if not isinstance(var, type_):
+            raise ValueError(f"{var} not of type {type_.__name__}!")
+
+
+def validate_array(array: np.ndarray, type_: str = "float", name: str | None = None):
+    """Validate numpy based on `type`, e.g. no nan-values"""
+    if type_ == "float":
+        if np.sum(np.isnan(array.astype(float))) > 0:
+            raise ValueError(f"Found nan-values {f'in {name}' if name is not None else ''}!")
+    else:
+        raise ValueError(f"{type_=} unknown!")
+
+
+def override_class_method(class_instance, method_name, target_class):
+    class_method = getattr(target_class, method_name)
+
+    def new_method(*args, **kwargs):
+        return class_method(class_instance, *args, **kwargs)
+
+    setattr(class_instance, method_name, new_method)
+
+
+def is_in_list_and_remove(to_check, _list):
+    is_in = False
+    if to_check in _list:
+        is_in = True
+    if is_in:
+        _list.remove(to_check)
+    return is_in
+
+
+def _import_torch(file):
+    try:
+        import torch as torch  # noqa: E501
+    except ModuleNotFoundError:
+        warnings.warn(f"Need to install `torch` to use all functionality in {pathlib.Path(file).parent}.")
+    else:
+        return torch

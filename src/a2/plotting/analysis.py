@@ -1,7 +1,9 @@
 import pathlib
 import typing as t
+from typing import Optional
 
 import a2.plotting.axes_utils
+import a2.plotting.figures
 import a2.plotting.utils_plotting
 import matplotlib.pyplot as plt
 import numpy as np
@@ -20,14 +22,14 @@ def plot_prediction_certainty(
     label_x: str = "True label",
     label_y: str = "Prediction probability for 'raining'",
     label_colorbar: str = "Number of Tweets",
-    filename: t.Union[str, pathlib.Path] = None,
+    filename: Optional[t.Union[str, pathlib.Path]] = None,
     font_size: int = 12,
     vmin=None,
     vmax=None,
     cmap="viridis",
-    figure_size: t.Sequence = None,
+    figure_size: Optional[t.Sequence] = None,
     return_matrix: bool = False,
-    ax: plt.axes = None,
+    axes: Optional[plt.axes] = None,
     **kwargs,
 ) -> t.Union[plt.Axes, t.Tuple[plt.Axes, np.ndarray]]:
     """
@@ -45,10 +47,12 @@ def plot_prediction_certainty(
     label_colorbar: label of colorbar axis
     filename: save figure to this file, not saved if `None`
     font_size: font size of all labels of plot
-    figure_size: size of figure [width, height]
     vmin: Minimum value for colorbar
     vmax: Maximum value for colorbar
+    cmap: Colormap used for confusion matrix
+    figure_size: size of figure [width, height]
     return_matrix: return 2d histogram matrix and axes
+    axes: Matplotlib axes object
 
     Returns
     -------
@@ -61,24 +65,23 @@ def plot_prediction_certainty(
         label_x=label_x,
         label_colorbar=label_colorbar,
         label_y=label_y,
-        overplot_values=True,
+        annotate=True,
         filename=filename,
         vmin=vmin,
         vmax=vmax,
         colormap=cmap,
         font_size=font_size,
+        axes=axes,
+        figure_size=figure_size,
         **kwargs,
     )
     if return_matrix:
-        return results_dic["axes"][0], results_dic["histograms"][0]
-    return results_dic["axes"][0]
+        return results_dic["axes_2d_histograms_10"], results_dic["2d_histograms_10"]
+    return results_dic["axes_2d_histograms_10"]
 
 
 def classification_report(
-    truth: t.Sequence,
-    prediction: t.Sequence,
-    target_names: t.Optional[t.Sequence[str]] = None,
-    output_dict: bool = True,
+    truth: t.Sequence, prediction: t.Sequence, output_dict: bool = True, label: str = "raining"
 ) -> t.Union[str, t.Mapping]:
     """
     Compute classification report, returns precision, recall, f1-score
@@ -89,15 +92,14 @@ def classification_report(
     ----------
     truth: true labels
     prediction: predicted labels
-    target_names: names of labels
     output_dict: return report as dictionary rather than string
+    label: Label name of the classification
 
     Returns
     -------
     report
     """
-    if target_names is None:
-        target_names = ["not raining", "raining"]
+    target_names = [f"not {label}", label]
     report = sklearn.metrics.classification_report(
         truth,
         prediction,
@@ -112,18 +114,23 @@ def check_prediction(
     prediction: t.Sequence,
     output_dict: bool = True,
     filename: t.Union[str, pathlib.Path] | None = None,
+    label: str = "raining",
+    font_size: int = 14,
 ):
     plot_confusion_matrix(
         truth,
         prediction,
         filename=filename,
         overplot_round_base=2,
+        tick_labels_x=(f"not {label}", f"{label}"),
+        tick_labels_y=(f"{label}", f"not {label}"),
+        font_size=font_size,
     )
 
     report = classification_report(
         truth,
         prediction,
-        target_names=["not raining", "raining"],
+        label=label,
         output_dict=output_dict,
     )
     return report
@@ -142,7 +149,7 @@ def plot_confusion_matrix(
     vmax: float | None = None,
     text_color: str | None = "firebrick",
     colormap: str | None = "Blues",
-    overplot_round_base: int | None = None,
+    overplot_round_base: int | None = 2,
     tick_labels_x: tuple | None = ("not raining", "raining"),
     tick_labels_y: tuple | None = ("raining", "not raining"),
     colorbar_label: str | None = "Fraction",
@@ -151,7 +158,7 @@ def plot_confusion_matrix(
     ax_colorbar: object | None = None,
 ):
     """
-    Computes classification report and plots confusion matrix
+    Computes and plots confusion matrix
 
     Parameters:
     ----------
@@ -165,12 +172,11 @@ def plot_confusion_matrix(
 
     Returns
     -------
-    classification report
+    Confusion matrix figure
     """
     if figure_size is None:
         figure_size = [6, 6]
     cm = sklearn.metrics.confusion_matrix(truth, prediction, normalize=normalize)
-    print(f"{cm=}")
     if ax is None:
         fig, ax, ax_colorbar = a2.plotting.utils_plotting.create_axes_grid(
             1, 1, figure_size=figure_size, unravel=True, colorbar_off=False, colorbar_width=colorbar_width
@@ -180,15 +186,23 @@ def plot_confusion_matrix(
     norm = a2.plotting.utils_plotting.get_norm("linear", vmin=vmin, vmax=vmax)
     xedges = [0, 0.5, 1]
     yedges = [0, 0.5, 1]
-    cm = cm[::-1, :].T
-    mesh = ax.pcolormesh(xedges, yedges, cm.T, norm=norm, cmap=colormap)
-    cbar = plt.colorbar(mesh, cax=ax_colorbar, orientation="vertical")
-    a2.plotting.axes_utils.set_colorbar(cbar.ax, label_y=colorbar_label, fontsize=font_size)
-    a2.plotting.utils_plotting.overplot_values(
+    X, Y = np.meshgrid(xedges, yedges)
+    mesh = a2.plotting.colormesh._plot_colormesh(
+        ax,
+        X,
+        Y,
+        cm[::-1],
+        norm,
+        colormap,
+        linewidth=0,
+        rasterized=True,
+    )
+    a2.plotting.utils_plotting.plot_colorbar(mesh, cax=ax_colorbar, label=colorbar_label, font_size=font_size)
+    a2.plotting.utils_plotting.annotate_values(
         np.array(cm), ax, 2, 2, color=text_color, round_to_base=overplot_round_base, font_size=font_size
     )
-    a2.plotting.utils_plotting.set_axis_tick_labels(ax, [0.25, 0.75], tick_labels_x, "x")
-    a2.plotting.utils_plotting.set_axis_tick_labels(ax, [0.25, 0.75], tick_labels_y, "y")
+    a2.plotting.utils_plotting.set_axis_tick_labels(axes=ax, values=[0.25, 0.75], labels=tick_labels_x, axis="x")
+    a2.plotting.utils_plotting.set_axis_tick_labels(axes=ax, values=[0.25, 0.75], labels=tick_labels_y, axis="y")
     a2.plotting.axes_utils.set_axes(
         ax,
         xlim=[0, 1],
@@ -198,16 +212,16 @@ def plot_confusion_matrix(
         label_y=label_y,
     )
 
-    a2.plotting.utils_plotting.save_figure(fig, filename)
+    a2.plotting.figures.save_figure(fig, filename)
     return fig
 
 
 def plot_roc(
     truth: t.Sequence,
     prediction_probabilities: t.Sequence,
-    filename: t.Union[str, pathlib.Path] = None,
+    filename: Optional[t.Union[str, pathlib.Path]] = None,
     font_size: int = 12,
-    figure_size: t.Sequence = None,
+    figure_size: Optional[t.Sequence] = None,
     ax: object | None = None,
     fig: object | None = None,
     label_x: str | None = "False Positive Rate",
@@ -239,7 +253,7 @@ def plot_roc(
     )
     roc_auc = sklearn.metrics.auc(false_positive_rate, true_positive_rate)
     fig, ax = a2.plotting.utils_plotting.create_figure_axes(
-        fig=fig, ax=ax, figure_size=figure_size, font_size=font_size
+        figure=fig, axes=ax, figure_size=figure_size, font_size=font_size
     )
     lw = 2
     ax.plot(
@@ -260,7 +274,7 @@ def plot_roc(
     )
 
     ax.legend(loc="lower right")
-    a2.plotting.utils_plotting.save_figure(fig, filename)
+    a2.plotting.figures.save_figure(fig, filename)
     if return_rates:
         return ax, true_positive_rate, false_positive_rate
     return ax

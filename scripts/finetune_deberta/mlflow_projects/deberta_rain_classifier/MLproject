@@ -1,0 +1,121 @@
+entry_points:
+  split:
+    parameters:
+      filename_dataset_to_split:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/data/tweets/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar.nc
+      output_dir:
+        type: str
+        default: dataset_split/
+      task_name:
+        type: str
+        default: dataset_rain_split
+      test_size:
+        type: float
+        default: 0.2
+      validation_size:
+        type: str
+        default: 0.2
+      key_stratify:
+        type: str
+        default: raining
+      classifier_domain:
+        type: str
+        default: rain
+      key_input:
+        type: str
+        default: text
+      key_rain:
+        type: str
+        default: tp_h
+      threshold_rain:
+        type: float
+        default: 7e-6
+      key_relevance:
+        type: str
+        default: prediction_relevant
+      select_relevant:
+        type: str
+        default: False
+    command: >
+      python build_dataset_rain_classifier.py
+        --filename_dataset_to_split {filename_dataset_to_split}
+        --output_dir {output_dir}
+        --task_name {task_name}
+        --test_size {test_size}
+        --validation_size {validation_size}
+        --key_stratify {key_stratify}
+        --classifier_domain {classifier_domain}
+        --key_input {key_input}
+        --key_rain {key_rain}
+        --threshold_rain {threshold_rain}
+        --key_relevance {key_relevance}
+        --select_relevant {select_relevant}
+  train:
+    parameters:
+      learning_rate:
+        type: float
+        default: 0.00003
+      batch_size:
+        type: int
+        default: 32
+      weight_decay:
+        type: float
+        default: 0.01
+      iteration:
+        type: int
+        default: 1
+      evaluation_strategy:
+        type: str
+        default: steps
+      eval_steps:
+        type: int
+        default: 500
+      epochs:
+        type: int
+        default: 1
+      model_path:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-base/
+      model_name:
+        type: str
+        default: deberta_base
+      filename_dataset_train_rain:
+        type: str
+        default:
+          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_train.nc
+      filename_dataset_validate_rain:
+        type: str
+        default:
+          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_validate.nc
+      filename_dataset_test_rain:
+        type: str
+        default:
+          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_test.nc
+      outdir:
+        type: str
+        default: "./"
+      run_name:
+        type: str
+        default: "RUNNAME"
+
+    command: >
+      python finetune_deberta_classifier.py
+        --model_path {model_path}
+        --model_name {model_name}
+        --filename_dataset_train {filename_dataset_train_rain}
+        --filename_dataset_validate {filename_dataset_validate_rain}
+        --filename_dataset_test {filename_dataset_test_rain}
+        --output_dir {outdir}
+        --log_gpu_memory
+        --run_name {run_name}
+        --learning_rate {learning_rate}
+        --epochs {epochs}
+        --classifier_domain rain
+        --key_output raining
+        --batch_size {batch_size}
+        --weight_decay {weight_decay}
+        --iteration {iteration}
+        --evaluation_strategy {evaluation_strategy}
+        --eval_steps {eval_steps}
+        --task_name finetune_rain

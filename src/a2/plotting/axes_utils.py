@@ -1,5 +1,6 @@
 import typing as t
 
+import a2.utils.constants
 import matplotlib.pyplot as plt
 
 
@@ -65,3 +66,13 @@ def set_colorbar(ax_colorbar: plt.axes, label_y: str, fontsize: float):
     ax_colorbar.set_ylabel(label_y, fontsize=fontsize)
     ax_colorbar.tick_params(axis="both", which="major", labelsize=fontsize)
     ax_colorbar.tick_params(axis="both", which="minor", labelsize=fontsize)
+
+
+def set_x_lim(axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES, xlim: tuple | None):
+    if xlim is not None:
+        axes.set_xlim(*xlim)
+
+
+def set_y_lim(axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES, ylim: tuple | None):
+    if ylim is not None:
+        axes.set_ylim(*ylim)

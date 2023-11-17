@@ -196,7 +196,7 @@ parameterset:
       - name: args_exec
         mode: text
         _: >
-          --log_gpu_memory
+          --log_gpu_memory verbose
           --run_name ${run_name}
           --data_filename ${data_filename}
           --data_dir ${indir}

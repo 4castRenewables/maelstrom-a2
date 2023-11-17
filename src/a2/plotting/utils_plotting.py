@@ -1,9 +1,9 @@
 import collections
-import logging
-import os
-import pathlib
 import typing as t
+from collections.abc import Sequence
+from typing import Optional
 
+import a2.utils.constants
 import a2.utils.utils
 import matplotlib.colors
 import matplotlib.figure
@@ -11,76 +11,64 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def set_x_log(ax: plt.axes, log: bool = False, linear_thresh: t.Optional[float] = None) -> plt.axes:
+def set_x_log(
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES,
+    log: str = "false",
+    axis_symlog_linear_threshold: float | None = None,
+) -> a2.utils.constants.TYPE_MATPLOTLIB_AXES:
     """
     Sets scale of x-axis
 
     Parameters:
     ----------
-    ax: Matplotlib axes
-    log: Type of bins. Log types included `False`, `log`/`True`, `symlog`
-    linear_thresh: Threshold below which bins are linear to include zero values
+    axes:
+        Matplotlib axes
+    log:
+        Type of bins. Log types included "false", "symlog", "log"
+    axis_symlog_linear_threshold:
+        Threshold below which bins are linear to include zero values (when `log`="symlog")
 
     Returns
     -------
     axes
     """
     if log == "symlog":
-        if linear_thresh is None:
-            raise ValueError(f"If log=='symlog', setting linear_thresh: " f"{linear_thresh} required!")
-        ax.set_xscale("symlog", linthresh=linear_thresh)
-    elif log:
-        ax.set_xscale("log")
-    return ax
+        if axis_symlog_linear_threshold is None:
+            raise ValueError(f"If log=='symlog', setting " f"{axis_symlog_linear_threshold=} required!")
+        axes.set_xscale("symlog", linthresh=axis_symlog_linear_threshold)
+    elif log == "log":
+        axes.set_xscale("log")
+    return axes
 
 
-def set_y_log(ax: plt.axes, log: bool = False, linear_thresh: t.Optional[float] = None) -> plt.axes:
+def set_y_log(
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES,
+    log: str = "false",
+    axis_symlog_linear_threshold: float | None = None,
+) -> a2.utils.constants.TYPE_MATPLOTLIB_AXES:
     """
     Sets scale of y-axis
 
     Parameters:
     ----------
-    ax: Matplotlib axes
-    log: Type of bins. Log types included `False`, `log`/`True`, `symlog`
-    linear_thresh: Threshold below which bins are linear to include zero values
+    axes:
+        Matplotlib axes
+    log:
+        Type of bins. Log types included "false", "symlog", "log"
+    axis_symlog_linear_threshold:
+        Threshold below which bins are linear to include zero values (when `log`="symlog")
 
     Returns
     -------
     axes
     """
     if log == "symlog":
-        if linear_thresh is None:
-            raise ValueError("If log=='symlog', " f"setting linear_thresh: {linear_thresh} required!")
-        ax.set_yscale("symlog", linthresh=linear_thresh)
-    elif log:
-        ax.set_yscale("log")
-    return ax
-
-
-def get_norm(
-    norm: t.Optional[str] = None,
-    vmin: t.Optional[float] = None,
-    vmax: t.Optional[float] = None,
-) -> t.Union[matplotlib.colors.LogNorm, matplotlib.colors.Normalize]:
-    """
-    Returns matplotlib norm used for normalizing matplotlib's colorbars
-
-    Parameters:
-    ----------
-    norm: Normalization type: `log` or `linear`/None
-    vmin: Minimum
-    vmax: Maximum
-
-    Returns
-    -------
-    Norm object from matplotlib.colors
-    """
-    if norm == "log":
-        return matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
-    elif norm == "linear" or norm is None:
-        return matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
-    else:
-        raise Exception(f"Norm: {norm} unknown!")
+        if axis_symlog_linear_threshold is None:
+            raise ValueError("If log=='symlog', " f"setting: {axis_symlog_linear_threshold=} required!")
+        axes.set_yscale("symlog", linthresh=axis_symlog_linear_threshold)
+    elif log == "log":
+        axes.set_yscale("log")
+    return axes
 
 
 def _create_figure(figure_size):
@@ -101,16 +89,34 @@ def set_font(font_size=10):
     plt.rc("figure", titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 
-def set_title(ax, title):
+def set_title(
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES,
+    title: str | None,
+    font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_SMALL,
+):
     if title is not None:
         if isinstance(title, str) and len(title) > 0:
-            ax.set_title(title)
+            axes.set_title(title, fontdict={"fontsize": font_size})
+
+
+def set_axes_label(
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES,
+    label: str | None,
+    axis: str = "x",
+    font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_SMALL,
+):
+    if label is None:
+        return
+    if axis == "x":
+        axes.set_xlabel(label, fontdict={"fontsize": font_size})
+    if axis == "y":
+        axes.set_ylabel(label, fontdict={"fontsize": font_size})
 
 
 def create_figure_axes(
-    fig: t.Optional[plt.figure] = None,
-    ax: t.Optional[plt.axes] = None,
-    figure_size: t.Sequence = None,
+    figure: t.Optional[plt.figure] = None,
+    axes: t.Optional[plt.axes] = None,
+    figure_size: Optional[t.Sequence] = None,
     font_size: t.Optional[int] = 10,
     aspect: str = "auto",
 ) -> t.Tuple[plt.figure, plt.axes]:
@@ -132,20 +138,20 @@ def create_figure_axes(
         set_font(font_size=font_size)
     if figure_size is None:
         figure_size = (10, 6)
-    if fig is None and ax is None:
-        fig = plt.figure(figsize=figure_size)
-        ax = plt.gca()
-        ax.set_aspect(aspect)
-    if ax is None:
-        ax = plt.gca()
-        ax.set_aspect(aspect)
-    if fig is None:
-        fig = ax.get_figure()
-    return fig, ax
+    if figure is None and axes is None:
+        figure = plt.figure(figsize=figure_size)
+        axes = plt.gca()
+        axes.set_aspect(aspect)
+    if axes is None:
+        axes = plt.gca()
+        axes.set_aspect(aspect)
+    if figure is None:
+        figure = axes.get_figure()
+    return figure, axes
 
 
 def create_axes_grid(
-    n_cols: int,
+    n_columns: int,
     n_rows: int,
     figure_size: t.Optional[t.List[float]] = None,
     widths_along_x: t.Optional[t.List] = None,
@@ -159,11 +165,11 @@ def create_axes_grid(
     spacing_colorbar: float = 0.04,
     colorbar_width: float = 0.07,
     colorbar_skip_row_col: t.Optional[t.List] = None,
-    colorbar_include_row_col: t.Optional[t.List] = None,
+    colorbar_include_row_columns: t.Optional[t.List] = None,
     colorbar_off: bool = True,
-    skip_cols: t.Optional[t.List] = None,
+    skip_columns: t.Optional[t.List] = None,
     skip_rows: t.Optional[t.List] = None,
-    skip_row_col: t.Optional[t.List] = None,
+    skip_row_column: t.Optional[t.List] = None,
     unravel: bool = False,
 ) -> t.Tuple[plt.figure, np.ndarray, np.ndarray]:
     """
@@ -172,7 +178,7 @@ def create_axes_grid(
     See also https://docs.google.com/presentation/d/1Ec-000rszefjCsv_sgUO62eGyT0-YbYzbk1aLQkU2gM/edit?usp=sharing
     Parameters:
     ----------
-    n_cols: Number of columns
+    n_columns: Number of columns
     n_rows: Number of rows
     figure_size: Size of figure
     widths_along_x: Normalized width ratios along horizontal direction
@@ -198,48 +204,48 @@ def create_axes_grid(
     """
     if figure_size is None:
         figure_size = [10.0, 6.0]
-    if colorbar_off and colorbar_include_row_col is None and colorbar_skip_row_col is None:
-        colorbar_skip_row_col = [[j, i] for i in range(n_cols) for j in range(n_rows)]
+    if colorbar_off and colorbar_include_row_columns is None and colorbar_skip_row_col is None:
+        colorbar_skip_row_col = [[j, i] for i in range(n_columns) for j in range(n_rows)]
     fig = _create_figure(figure_size)
-    a2.utils.utils.all_same_type([n_cols, n_rows], int)
+    a2.utils.utils.all_same_type([n_columns, n_rows], int)
     a2.utils.utils.all_same_type(
         [top, bottom, right, left, spacing_x, spacing_y, spacing_colorbar, colorbar_width], float
     )
-    a2.utils.utils.assert_same_type_as(skip_row_col, [[]])
+    a2.utils.utils.assert_same_type_as(skip_row_column, [[]])
     a2.utils.utils.assert_same_type_as(colorbar_skip_row_col, [[]])
-    a2.utils.utils.assert_same_type_as(colorbar_include_row_col, [[]])
-    a2.utils.utils.assert_shape(widths_along_x, (n_cols,), "widths_along_x")
+    a2.utils.utils.assert_same_type_as(colorbar_include_row_columns, [[]])
+    a2.utils.utils.assert_shape(widths_along_x, (n_columns,), "widths_along_x")
     a2.utils.utils.assert_shape(heights_along_y, (n_rows,), "heights_along_y")
 
     if skip_rows is None:
         skip_rows = []
-    if skip_cols is None:
-        skip_cols = []
-    if skip_row_col is None:
-        skip_row_col = []
+    if skip_columns is None:
+        skip_columns = []
+    if skip_row_column is None:
+        skip_row_column = []
 
     height_total = 1 - (n_rows - 1) * spacing_y - top - bottom
     if heights_along_y is not None:
         heights_along_y = [x / sum(heights_along_y) * height_total for x in heights_along_y]
-        axes_heights = np.array([[x for i in range(n_cols)] for x in heights_along_y])
+        axes_heights = np.array([[x for i in range(n_columns)] for x in heights_along_y])
     else:
         height = height_total / n_rows
-        axes_heights = np.array([[height for i in range(n_cols)] for j in range(n_rows)])
+        axes_heights = np.array([[height for i in range(n_columns)] for j in range(n_rows)])
 
-    colorbar_heights = np.zeros((n_rows, n_cols))
-    colorbar_widths = np.zeros((n_rows, n_cols))
-    spacings_colorbar = np.zeros((n_rows, n_cols))
+    colorbar_heights = np.zeros((n_rows, n_columns))
+    colorbar_widths = np.zeros((n_rows, n_columns))
+    spacings_colorbar = np.zeros((n_rows, n_columns))
     skip_col_colorbar = []
-    if colorbar_include_row_col is not None:
-        include_col_colorbar = [x[1] for x in colorbar_include_row_col]
-        skip_col_colorbar = [x for x in range(n_cols) if x not in include_col_colorbar]
+    if colorbar_include_row_columns is not None:
+        include_col_colorbar = [x[1] for x in colorbar_include_row_columns]
+        skip_col_colorbar = [x for x in range(n_columns) if x not in include_col_colorbar]
     if colorbar_skip_row_col is not None:
         skip_col = [x[1] for x in colorbar_skip_row_col]
         counts = collections.Counter(skip_col)
         for k, v in counts.items():
             if v == n_rows:
                 skip_col_colorbar.append(k)
-    for i_col in range(n_cols):
+    for i_col in range(n_columns):
         for i_row in range(n_rows):
             if i_col in skip_col_colorbar:
                 continue
@@ -248,7 +254,7 @@ def create_axes_grid(
             spacings_colorbar[i_row, i_col] = spacing_colorbar
     width_total = (
         1
-        - (n_cols - 1) * spacing_x
+        - (n_columns - 1) * spacing_x
         - left
         - right
         - max(sum(colorbar_widths[i, :]) for i in range(n_rows))
@@ -258,18 +264,18 @@ def create_axes_grid(
         widths_along_x = [x / sum(widths_along_x) * width_total for x in widths_along_x]
         axes_widths = np.array([widths_along_x for x in range(n_rows)])
     else:
-        width = width_total / n_cols
-        axes_widths = np.array([[width for i in range(n_cols)] for j in range(n_rows)])
+        width = width_total / n_columns
+        axes_widths = np.array([[width for i in range(n_columns)] for j in range(n_rows)])
 
-    axes = [[None for i in range(n_cols)] for j in range(n_rows)]
-    axes_colorbar = [[None for i in range(n_cols)] for j in range(n_rows)]
-    for i_col in range(n_cols):
-        if i_col in skip_cols:
+    axes = [[None for i in range(n_columns)] for j in range(n_rows)]
+    axes_colorbar = [[None for i in range(n_columns)] for j in range(n_rows)]
+    for i_col in range(n_columns):
+        if i_col in skip_columns:
             continue
         for i_row in range(n_rows):
             if i_row in skip_rows:
                 continue
-            if [i_row, i_col] in skip_row_col:
+            if pair_in_list([i_row, i_col], skip_row_column):
                 continue
             axes_left, axes_bottom, axes_width, axes_height = _determine_axes_dimensions(
                 n_rows,
@@ -285,24 +291,28 @@ def create_axes_grid(
                 axes_widths,
             )
             axes[i_row][i_col] = plt.axes([axes_left, axes_bottom, axes_width, axes_height])
-            if colorbar_skip_row_col is not None and [i_row, i_col] in colorbar_skip_row_col:
+            if colorbar_skip_row_col is not None and pair_in_list([i_row, i_col], colorbar_skip_row_col):
                 continue
-            if colorbar_include_row_col is not None and [i_row, i_col] not in colorbar_include_row_col:
+            if colorbar_include_row_columns is not None and not pair_in_list(
+                [i_row, i_col], colorbar_include_row_columns
+            ):
                 continue
             colorbar_width, colorbar_left, colorbar_bottom, colorbar_height = _determine_colorbar_axes_dimensions(
                 colorbar_heights, colorbar_widths, spacings_colorbar, i_col, i_row, axes_left, axes_bottom, axes_width
             )
             axes_colorbar[i_row][i_col] = plt.axes([colorbar_left, colorbar_bottom, colorbar_width, colorbar_height])
     axes, axes_colorbar = np.array(axes, dtype=object), np.array(axes_colorbar, dtype=object)
-    print(f"{axes=}")
     if unravel:
         axes = a2.utils.utils.flatten_list(axes)
         axes_colorbar = a2.utils.utils.flatten_list(axes_colorbar)
-        if n_cols * n_rows == 1:
+        if n_columns * n_rows == 1:
             axes = axes[0]
             axes_colorbar = axes_colorbar[0]
-    print(f"{axes=}")
     return fig, axes, axes_colorbar
+
+
+def pair_in_list(pair, _list):
+    return tuple(pair) in _list or list(pair) in _list
 
 
 def _determine_colorbar_axes_dimensions(
@@ -342,9 +352,9 @@ def _determine_axes_dimensions(
     return axes_left, axes_bottom, axes_width, axes_height
 
 
-def overplot_values(
+def annotate_values(
     H: np.ndarray,
-    ax: plt.axes,
+    axes: plt.axes,
     size_x: int,
     size_y: int,
     color: str = "black",
@@ -375,68 +385,92 @@ def overplot_values(
     x_positions = np.linspace(start=x_start, stop=x_end, num=size_x, endpoint=False)
     y_positions = np.linspace(start=y_start, stop=y_end, num=size_y, endpoint=False)
     H_processed = H.copy()
+    H_processed = np.flip(H_processed, axis=0)
     if round_to_base is not None:
         H_processed = np.round(H, round_to_base)
         if round_to_base < 0:
             H_processed = np.array(H_processed, int)
     for x_index, x in enumerate(x_positions):
         for y_index, y in enumerate(y_positions):
-            label = H_processed[x_index, y_index]
+            label = H_processed[y_index, x_index]
             text_x = x + jump_x
             text_y = y + jump_y
-            ax.text(
+            text_y = 1 - text_y
+            axes.text(
                 text_x,
                 text_y,
                 label,
                 color=color,
                 ha="center",
                 va="center",
-                transform=ax.transAxes,
+                transform=axes.transAxes,
                 fontsize=font_size,
             )
 
 
-def set_axis_tick_labels(ax: plt.axes, values: t.Sequence[float], labels: t.Sequence, axis: str = "x") -> plt.axes:
+def set_axis_tick_labels(
+    axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES,
+    values: Sequence[float] | np.ndarray | None = None,
+    labels: Sequence | np.ndarray | None = None,
+    date_formatter: str | None = None,
+    axis: str = "x",
+    rotation: int = 0,
+    font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_SMALL,
+    max_tick_labels: int | None = None,
+) -> a2.utils.constants.TYPE_MATPLOTLIB_AXES:
     """
     Set new tick labels for given values
 
     Parameters:
     ----------
-    ax: Matplotlib axes
-    values: Values for corresponding new labels
-    labels: New labels
-    axis: Which axis to set, i.e. 'x' or 'y'
+    axes:
+        Matplotlib axes
+    values:
+        Values for corresponding new labels (should also set labels)
+    labels:
+        New labels for corresponding values (should also set values)
+    date_formatter:
+        Format string to datetime values as tick labels, e.g. "%Y-%m-%d"
+        See https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior for format codes.
+    axis:
+        Axis to set, i.e. "x" or "y"
+    rotation:
+        Angle of rotation of tick labels
+    font_size:
+        Fontsize of axis tick labels
+    max_tick_labels:
+        Maximum number of tick labels
 
     Returns
     -------
     axes
     """
-    if values is None or labels is None:
-        return ax
     if axis == "x":
-        ax.set_xticks(values)
-        ax.set_xticklabels(labels)
+        if values is not None:
+            axes.set_xticks(values)
+        if labels is not None:
+            axes.set_xticklabels(labels)
+        if date_formatter is not None:
+            axes.xaxis.set_major_formatter(matplotlib.dates.DateFormatter(date_formatter))
+        if max_tick_labels is not None:
+            axes.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(max_tick_labels))
+        axes.tick_params(axis="x", labelrotation=rotation, labelsize=font_size)
     elif axis == "y":
-        ax.set_yticks(values)
-        ax.set_yticklabels(labels)
-    return ax
+        if values is not None:
+            axes.set_yticks(values)
+        if labels is not None:
+            axes.set_yticklabels(labels)
+        if date_formatter is not None:
+            axes.yaxis.set_major_formatter(matplotlib.dates.DateFormatter(date_formatter))
+        if max_tick_labels is not None:
+            axes.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(max_tick_labels))
+        axes.tick_params(axis="y", labelrotation=rotation, labelsize=font_size)
+    return axes
 
 
 def remove_tick_labels(ax: plt.axes, axis: str = "x"):
     """Remove ticks and tick labels for specified axis"""
-    set_axis_tick_labels(ax=ax, values=[], labels=[], axis=axis)
-
-
-def save_figure(
-    fig: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES, filename: str | pathlib.Path | None = None, dpi: int = 450
-) -> None:
-    """Save figure to filename"""
-    if filename is not None:
-        logging.info(f"... saving {filename}")
-        folder = os.path.split(filename.__str__())[0]
-        if folder:
-            os.makedirs(folder, exist_ok=True)
-        fig.savefig(filename, bbox_inches="tight", dpi=dpi)
+    set_axis_tick_labels(axes=ax, values=[], labels=[], axis=axis)
 
 
 def _get_values_from_bar_object(
@@ -489,3 +523,60 @@ def to_list(x, n=2):
     if len(x) != n:
         raise ValueError(f"{x} doesn't have expected length {n=}")
     return x
+
+
+def _plot_colorbar(
+    plot, cax: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None
+) -> a2.utils.constants.TYPE_MATPLOTLIB_COLORBAR:
+    colorbar = plt.colorbar(plot, cax=cax)
+    return colorbar
+
+
+def plot_colorbar(
+    plot: matplotlib.cm.ScalarMappable,
+    cax: Optional[a2.utils.constants.TYPE_MATPLOTLIB_AXES] = None,
+    label: str | None = None,
+    font_size: float = a2.utils.constants.DEFAULT_FONTSIZE_SMALL,
+) -> a2.utils.constants.TYPE_MATPLOTLIB_COLORBAR:
+    colorbar = _plot_colorbar(plot, cax=cax)
+    ax_colorbar = colorbar.ax
+    if label is not None:
+        ax_colorbar.set_ylabel(label, fontdict={"fontsize": font_size})
+    set_axis_tick_labels(ax_colorbar, font_size=font_size, axis="y")
+    return colorbar
+
+
+def get_norm(
+    norm: str | None = None,
+    vmin: float | None = None,
+    vmax: float | None = None,
+    norm_symlog_linear_threshold: float | None = None,
+) -> matplotlib.colors.LogNorm | matplotlib.colors.Normalize:
+    """
+    Returns matplotlib norm used for normalizing matplotlib's colorbars
+
+    Parameters:
+    ----------
+    norm:
+        Normalization type (None/"linear", "log", "symlog")
+    vmin:
+        Minimum value of normalized colors
+    vmax:
+        Maximum value of normalized colors
+    norm_symlog_linear_threshold:
+        Threshold value below which symlog of norm becomes linear.
+
+    Returns
+    -------
+    Norm object from matplotlib.colors
+    """
+    if norm == "log":
+        return matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
+    elif norm == "symlog":
+        if norm_symlog_linear_threshold is None:
+            raise ValueError(f"{norm_symlog_linear_threshold=} needs to specified to use {norm=}")
+        return matplotlib.colors.SymLogNorm(vmin=vmin, vmax=vmax, linthresh=norm_symlog_linear_threshold)
+    elif norm == "linear" or norm is None:
+        return matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
+    else:
+        raise ValueError(f"Norm: {norm} unknown!")

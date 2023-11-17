@@ -1,9 +1,10 @@
 import contextlib
 import logging
+import pathlib
 import typing as t
 import warnings
 
-import a2.plotting
+import a2.plotting.analysis
 import mantik
 import mlflow
 
@@ -94,7 +95,7 @@ class Tracker:
         if not experiment_id:
             experiment_id = mlflow.create_experiment(name, **kwargs)
             logging.info(f"create new: {experiment_id}")
-        if experiment_id is not None:
+        if experiment_id is not None and not isinstance(experiment_id, str):
             experiment_id = experiment_id.experiment_id
         return experiment_id
 
@@ -103,7 +104,15 @@ class Tracker:
         return mlflow.get_experiment_by_name(*args, **kwargs)
 
 
-def log_metric_classification_report(tracker: Tracker, truth: t.Sequence, predictions: t.Sequence, step: int = 1):
+def log_metric_classification_report(
+    tracker: Tracker,
+    truth: t.Sequence,
+    predictions: t.Sequence,
+    step: int | None = 1,
+    label: str = "raining",
+    filename_confusion_matrix: pathlib.Path | str = "confusion_matrix.pdf",
+    font_size: int = 14,
+):
     """
     Compute f1 score and logs results to mlflow
 
@@ -113,6 +122,7 @@ def log_metric_classification_report(tracker: Tracker, truth: t.Sequence, predic
     predictions: Predicted labels
     prediction_probabilities: Prediction probability for both labels, shape = [n_tests, 2]
     Step: Current training stop (epoch)
+    label: Label name of the classification
 
     Returns
     -------
@@ -121,24 +131,26 @@ def log_metric_classification_report(tracker: Tracker, truth: t.Sequence, predic
     classification_report = a2.plotting.analysis.check_prediction(
         truth=truth,
         prediction=predictions,
-        filename="confusion_matrix.pdf",
+        filename=filename_confusion_matrix,
         output_dict=True,
+        label=label,
+        font_size=font_size,
     )
     logging.info(classification_report)
-    log_classification_report(tracker, classification_report, step)
-    tracker.log_artifact("confusion_matrix.pdf")
+    log_classification_report(tracker, classification_report, step, label)
+    tracker.log_artifact(filename_confusion_matrix)
 
 
-def log_classification_report(tracker, classification_report, step):
+def log_classification_report(tracker, classification_report, step, label):
     initialize_mantik()
     tracker.log_metric(
-        key="eval_f1_raining",
-        value=classification_report["raining"]["f1-score"],
+        key=f"eval_f1_{label}",
+        value=classification_report[label]["f1-score"],
         step=step,
     )
     tracker.log_metric(
-        key="eval_f1_not_raining",
-        value=classification_report["not raining"]["f1-score"],
+        key=f"eval_f1_not_{label}",
+        value=classification_report[f"not {label}"]["f1-score"],
         step=step,
     )
     tracker.log_metric(

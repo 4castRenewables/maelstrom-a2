@@ -11,14 +11,6 @@ pytest_plugins = [
 ]
 
 
-@pytest.fixture(scope="module")
-def vcr_config():
-    return {
-        # Replace the Authorization request header with "DUMMY" in cassettes
-        "filter_headers": [("Authorization", "DUMMY")],
-    }
-
-
 def pytest_addoption(parser):
     parser.addoption("--skip_optional", action="store_true", default=False, help="skip running optional tests")
 
