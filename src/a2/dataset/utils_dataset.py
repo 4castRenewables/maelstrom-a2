@@ -41,6 +41,23 @@ def is_nan(
         return xarray.DataArray(pd.isna(ds[field].values), dims=dims)
 
 
+def drop_nan(
+    ds,
+    columns,
+    dims: Optional[t.Tuple] = None,
+):
+    def _compute_mask(ds, column, dims):
+        if dims is None:
+            dims = ds[column].coords.dims
+        return xarray.DataArray(~is_nan(ds, column).values, dims=dims)
+
+    mask = _compute_mask(ds, columns.pop(0), dims)
+    for c in columns:
+        mask = np.logical_and(mask, _compute_mask(ds, c, dims))
+    logging.info(f"Dropping {np.sum(~mask.values)}/{len(ds.index)} nan-values.")
+    return ds.where(mask, drop=True)
+
+
 def is_na(
     ds: xarray.Dataset,
     field: str,

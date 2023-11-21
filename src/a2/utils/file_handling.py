@@ -311,3 +311,7 @@ def make_directories(path: str | pathlib.Path):
     if not os.path.isdir(path):
         logging.info(f"... making {path=}")
         os.makedirs(path)
+
+
+def stem_filename(filename):
+    return pathlib.Path(filename).stem

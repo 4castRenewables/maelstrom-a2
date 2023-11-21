@@ -12,7 +12,7 @@ FONTSIZE = 16
 
 
 def _determine_path_output(args):
-    path_output = f"{args.output_dir}/{args.task_name}/"
+    path_output = f"{args.output_dir}/"
     logging.info(f".... using {path_output=}")
     a2.utils.file_handling.make_directories(path_output)
     return path_output
@@ -21,50 +21,33 @@ def _determine_path_output(args):
 def get_dataset(
     args,
     filename,
-    dataset_object,
-    set_labels=False,
-    build_hugging_dataset=True,
     plot_key_distribution=False,
     path_figures=None,
     tracker=None,
     prefix_histogram="",
 ):
-    ds_raw = a2.dataset.load_dataset.load_tweets_dataset(filename, raw=True)
+    ds = a2.dataset.load_dataset.load_tweets_dataset(filename, raw=True, reset_index_raw=True)
     if args.debug:
-        ds_raw = ds_raw.sel(index=slice(0, 100))
-    ds_raw[args.key_input] = (["index"], ds_raw[args.key_text].values.copy())
+        ds = ds.sel(index=slice(0, 100))
+    ds[args.key_input] = (["index"], ds[args.key_text].values.copy())
 
-    N_tweets = ds_raw.index.shape[0]
+    N_tweets = ds.index.shape[0]
     logging.info(f"loaded {N_tweets} tweets: from {filename}")
-    if set_labels:
-        if args.classifier_domain == "rain":
-            ds_raw[args.key_output] = (
-                ["index"],
-                np.array(ds_raw[args.key_rain].values > args.threshold_rain, dtype=int),
-            )
-        elif args.classifier_domain == "relevance":
-            ds_raw[args.key_output] = (["index"], np.array(ds_raw[args.key_relevance].values, dtype=int))
-        else:
-            raise NotImplementedError(f"{args.classifier_domain} not implemented!")
-    dataset = None
-    if build_hugging_dataset:
-        dataset = dataset_object.build(
-            ds_raw,
-            None,
-            None,
-            key_inputs=args.key_input,
-            key_label=args.key_output,
-            prediction_dataset=not set_labels,
-        )
+
+    ds[args.key_output] = (
+        ["index"],
+        np.array(ds[args.key_precipitation].values > args.precipitation_threshold_rain, dtype=int),
+    )
+
     if plot_key_distribution and path_figures is not None:
         plot_and_log_histogram(
-            ds_raw,
+            ds,
             args.key_output,
             path_figures,
             tracker=tracker,
             filename=f"{prefix_histogram}_{args.output}_histogram.pdf",
         )
-    return dataset, ds_raw
+    return ds
 
 
 def evaluate_model(
@@ -126,39 +109,80 @@ def plot_and_log_histogram(ds, key, path_figures, tracker=None, filename="predic
         tracker.log_artifact(filename_prediction_histogram)
 
 
+def plot_and_log_histogram_2d(ds, x, y, n_bins, path_figures, tracker=None, filename="prediction_histogram.pdf"):
+    filename_prediction_histogram = os.path.join(path_figures, filename)
+    a2.plotting.histograms.plot_histogram_2d(
+        x,
+        y,
+        df=ds,
+        filename=filename_prediction_histogram,
+        font_size=FONTSIZE,
+        n_bins=n_bins,
+        annotate=True,
+        annotate_color="firebrick",
+    )
+    if tracker is not None:
+        tracker.log_artifact(filename_prediction_histogram)
+
+
 def exclude_and_save_weather_stations_dataset(
-    args, ds_tweets, path_output, filename_prefix, tracker=None, path_figures=None
+    args,
+    ds_tweets,
+    path_output,
+    tweets_dataset_stem,
+    weather_dataset_prefix="Weather_stations_",
+    tracker=None,
+    path_figures=None,
 ):
     ds_weather_stations = ds_tweets.where(
-        ds_tweets[args.key_distance_weather_station] <= args.kms_within_station, drop=True
+        ds_tweets[args.key_distance_weather_station] <= args.maximum_distance_to_station, drop=True
     )
+
+    ds_weather_stations[args.key_raining_station] = (
+        ["index"],
+        np.array(
+            ds_weather_stations[args.key_precipitation_station].values > args.precipitation_threshold_rain_station,
+            dtype=int,
+        ),
+    )
+
     try:
         plot_and_log_histogram(
             ds_weather_stations,
-            key="raining_station",
+            key=args.key_raining_station,
             path_figures=path_figures,
             tracker=tracker,
-            filename="weather_stations_raining_histogram.pdf",
+            filename=f"weather_stations_{args.key_raining_station}_histogram.pdf",
         )
         plot_and_log_histogram(
             ds_weather_stations,
-            key="station_tp_mm",
+            key=args.key_precipitation_station,
             path_figures=path_figures,
             tracker=tracker,
-            filename="weather_stations_precipitation_histogram.pdf",
+            filename=f"weather_stations_{args.key_precipitation_station}_histogram.pdf",
+        )
+        plot_and_log_histogram_2d(
+            ds_weather_stations,
+            x=args.key_raining_station,
+            y=args.key_output,
+            n_bins=2,
+            path_figures=path_figures,
+            tracker=tracker,
+            filename=f"weather_stations_{args.key_raining_station}-{args.key_output}_histogram2d.pdf",
         )
     except Exception as e:
         raise ValueError("Cannot save plots for weather station dataset!") from e
     a2.dataset.load_dataset.save_dataset(
         ds_weather_stations,
-        filename=f"{path_output}{args.weather_station_dataset_prefix}{filename_prefix}.nc",
+        filename=f"{path_output}{weather_dataset_prefix}{tweets_dataset_stem}.nc",
     )
     # https://stackoverflow.com/questions/52417929/remove-elements-from-one-array-if-present-in-another-array-keep-duplicates-nu
     all_indices = ds_tweets.index.values
     weather_station_indices = ds_weather_stations.index.values
-    print(f"{all_indices=}")
-    print(f"{weather_station_indices=}")
     remaining_indices = all_indices[np.isin(all_indices, weather_station_indices, invert=True)]
-    print(f"{remaining_indices=}")
     ds_tweets_keywords_near_stations_excluded = ds_tweets.sel(index=remaining_indices)
+    logging.info(
+        f"Weather station dataset contains {len(weather_station_indices)} Tweets. "
+        f"Remaining indices are {len(remaining_indices)} Tweets."
+    )
     return ds_tweets_keywords_near_stations_excluded

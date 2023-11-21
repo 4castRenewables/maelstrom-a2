@@ -63,6 +63,7 @@ def plot_histogram_2d(
     axes: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
     figure: a2.utils.constants.TYPE_MATPLOTLIB_FIGURES | None = None,
     axes_colorbar: a2.utils.constants.TYPE_MATPLOTLIB_AXES | None = None,
+    drop_nan: bool = False,
 ) -> dict:
     """
     Plots 2d histogram including histograms in margins and facet
@@ -176,12 +177,18 @@ def plot_histogram_2d(
         Used as matplotlib figure for plot of 2d histogram when `axes` specified.
     axes_colorbar:
         Used as axes for colorbar of 2d histogram when `axes` specified.
+    drop_nan:
+        Drop nan-values present in x or y-values of df.
 
     Returns
     -------
     Dictionary of axes `axes_2d_histograms_{i_row}{i_column}`
     and histograms `2d_histograms_{i_row}{i_column}`
     """
+
+    if drop_nan and df is not None:
+        columns_remove_nans = [c for c in [x_key_or_values, y_key_or_values] if isinstance(c, str)]
+        df = a2.dataset.utils_dataset.drop_nan(ds=df, columns=columns_remove_nans)
 
     axes_style = a2.plotting.histogram_2d_utils._resolve_axes_style(axes)
 
@@ -890,10 +897,13 @@ def get_bin_edges(
     -------
     Bin edges, Optionally(symlog_linear_threshold)
     """
+    n_nan_values = np.sum(pd.isna(data))
+    if n_nan_values:
+        logger.info(f"When plotting histogram {n_nan_values}/{len(data)} nan-values will be ignored")
     if data is not None and vmin is None:
-        vmin = data.min()
+        vmin = np.nanmin(data)
     if data is not None and vmax is None:
-        vmax = data.max()
+        vmax = np.nanmax(data)
     if vmin is None or vmax is None:
         raise ValueError(f"Need to specify vmin {vmin} and {vmax} or provide data: {data}!")
     if vmin > vmax:

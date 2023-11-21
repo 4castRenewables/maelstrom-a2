@@ -5,3 +5,4 @@ import a2.dataset.stations
 import a2.dataset.tweets
 import a2.dataset.units
 import a2.dataset.utils_dataset
+from a2.dataset.utils_dataset import is_nan

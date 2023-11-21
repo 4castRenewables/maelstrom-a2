@@ -20,22 +20,24 @@ def main(args):
     logging.info(f"Args used: {args.__dict__}")
     path_output = utils_scripts._determine_path_output(args)
     path_figures = os.path.join(path_output, args.figure_folder)
-    filename_prefix = ""
-    _, ds_raw = utils_scripts.get_dataset(
-        args, args.filename_dataset_to_split, dataset_object=None, set_labels=True, build_hugging_dataset=False
-    )
+    tweets_dataset_stem = a2.utils.file_handling.stem_filename(args.filename_tweets)
 
-    ds_selected = select_dataset(args, ds_raw)
+    ds_raw = utils_scripts.get_dataset(args=args, filename=args.filename_tweets)
 
-    logging.info(f"Dataset contains {ds_selected.index.shape[0]=} Tweets.")
+    logging.info(f"Dataset contains {ds_raw.index.shape[0]=} Tweets.")
 
     ds_exclude_weather_stations = utils_scripts.exclude_and_save_weather_stations_dataset(
-        args, ds_selected, path_output, filename_prefix, tracker=tracker, path_figures=path_figures
+        args=args,
+        ds_tweets=ds_raw,
+        path_output=path_output,
+        tweets_dataset_stem=tweets_dataset_stem,
+        tracker=tracker,
+        path_figures=path_figures,
     )
 
     indices_train, indices_validate, indices_test = a2.training.training_hugging.split_training_set_tripple(
         ds=ds_exclude_weather_stations,
-        key_stratify=args.key_stratify,
+        key_stratify=args.key_output,
         validation_size=args.validation_size,
         test_size=args.test_size,
         random_state=args.random_seed,
@@ -52,29 +54,33 @@ def main(args):
     for suffix, indices in zip(["train", "validate", "test"], [indices_train, indices_validate, indices_test]):
         save_subsection_dataset(
             ds=ds,
-            filename=f"{path_output}/{args.filename_dataset_to_split.stem}_{suffix}.nc",
+            filename=f"{path_output}/{tweets_dataset_stem}_{suffix}.nc",
             indices=indices,
         )
     utils_scripts.plot_and_log_histogram(
-        ds, key="raining", path_figures=path_figures, tracker=tracker, filename="raining_histogram.pdf"
+        ds, key=args.key_output, path_figures=path_figures, tracker=tracker, filename=f"{args.key_output}_histogram.pdf"
     )
     utils_scripts.plot_and_log_histogram(
-        ds, key=args.key_rain, path_figures=path_figures, tracker=tracker, filename="precipitation_histogram.pdf"
+        ds,
+        key=args.key_precipitation,
+        path_figures=path_figures,
+        tracker=tracker,
+        filename=f"{args.key_precipitation}_histogram.pdf",
     )
     for suffix, indices in zip(["train", "validate", "test"], [indices_train, indices_validate, indices_test]):
         utils_scripts.plot_and_log_histogram(
             ds.sel(index=indices),
-            key="raining",
+            key=args.key_output,
             path_figures=path_figures,
             tracker=tracker,
-            filename=f"raining_histogram_{suffix}.pdf",
+            filename=f"{args.key_output}_histogram_{suffix}.pdf",
         )
         utils_scripts.plot_and_log_histogram(
             ds.sel(index=indices),
-            key=args.key_rain,
+            key=args.key_precipitation,
             path_figures=path_figures,
             tracker=tracker,
-            filename=f"precipitation_histogram_{suffix}.pdf",
+            filename=f"{args.key_precipitation}_histogram_{suffix}.pdf",
         )
 
 
@@ -83,27 +89,114 @@ def save_subsection_dataset(ds, filename, indices):
     a2.dataset.load_dataset.save_dataset(ds_subsection, filename=filename, reset_index=True, no_conversion=False)
 
 
-def select_dataset(args, ds):
-    if args.select_relevant:
-        logging.info(f"Selecting all Tweets where {args.key_relevance}==True")
-        logging.info(f"Before selection {ds.index.shape[0]} Tweets.")
-        ds = ds.where(ds[args.key_relevance] == 1, drop=True)
-        logging.info(f"After selection {ds.index.shape[0]} Tweets.")
-    return ds
-
-
 if __name__ == "__main__":
     parser = a2.utils.argparse.get_parser()
-    a2.utils.argparse.dataset_split(parser)
-    a2.utils.argparse.dataset_select(parser)
-    a2.utils.argparse.dataset_relevance(parser)
-    a2.utils.argparse.dataset_weather_stations(parser)
-    a2.utils.argparse.classifier(parser)
-    a2.utils.argparse.dataset_rain(parser)
-    a2.utils.argparse.hyperparameter_basic(parser)
-    a2.utils.argparse.tracking(parser)
-    a2.utils.argparse.output(parser)
-    a2.utils.argparse.figures(parser)
-    a2.utils.argparse.debug(parser)
+    parser.add_argument(
+        "--filename_tweets",
+        type=str,
+        default="/p/project/training2330/a2/data/bootcamp2023/tweets/tweets_2017_01_era5_normed_filtered.nc",
+        help="Filename of training data.",
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="/p/project/deepacf/maelstrom/ehlert1/rain_classifier/deberta_baseline/dataset/",
+        help="Path to model.",
+    )
+    parser.add_argument(
+        "--figure_folder",
+        type=str,
+        default="figures/",
+        help="Path to model.",
+    )
+    parser.add_argument(
+        "--key_input",
+        type=str,
+        default="text",
+        help="Key that is used for input values.",
+    )
+    parser.add_argument(
+        "--key_output",
+        type=str,
+        default="raining",
+        help="Key that is used for output values.",
+    )
+    parser.add_argument(
+        "--key_precipitation",
+        type=str,
+        default="tp_h_mm",
+        help="Key that specifies precipitation level in dataset.",
+    )
+    parser.add_argument(
+        "--key_precipitation_station",
+        type=str,
+        default="station_tp_mm",
+        help="Key that specifies precipitation level in dataset.",
+    )
+    parser.add_argument(
+        "--key_text",
+        type=str,
+        default="text_normalized",
+        help="Key that specifies texts used in dataset.",
+    )
+    parser.add_argument(
+        "--key_distance_weather_station",
+        type=str,
+        default="station_distance_km",
+        help="Key that specifies distance to nearest weather station.",
+    )
+    parser.add_argument(
+        "--key_raining_station",
+        type=str,
+        default="raining_station",
+        help="Key that specifies presence of rain in weather station dataset.",
+    )
+    parser.add_argument(
+        "--precipitation_threshold_rain_station",
+        type=float,
+        default=0.1,
+        help="Values equal or higher are considered rain.",
+    )
+    parser.add_argument(
+        "--precipitation_threshold_rain",
+        type=float,
+        default=6e-3,
+        help="Values equal or higher are considered rain.",
+    )
+    parser.add_argument(
+        "--maximum_distance_to_station",
+        type=float,
+        default=1,
+        help="Maximum distance to nearest weather station to be considered for weather station dataset.",
+    )
+    parser.add_argument(
+        "--validation_size",
+        type=float,
+        default=0.2,
+        help="Percentage of dataset used for validation of model performance.",
+    )
+    parser.add_argument(
+        "--test_size",
+        type=float,
+        default=0.2,
+        help="Percentage of dataset used for testing of model performance.",
+    )
+    parser.add_argument(
+        "--random_seed",
+        type=int,
+        default=42,
+        help="Random seed to reproduce results.",
+    )
+    parser.add_argument(
+        "--ignore_tracking",
+        action="store_true",
+        help="Do not use mantik tracking.",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Whether to toggle debug mode.",
+    )
+
     args = parser.parse_args()
     main(args)
