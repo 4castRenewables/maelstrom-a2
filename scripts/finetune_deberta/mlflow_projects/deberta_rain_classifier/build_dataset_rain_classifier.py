@@ -94,13 +94,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--filename_tweets",
         type=str,
-        default="/p/project/training2330/a2/data/bootcamp2023/tweets/tweets_2017_01_era5_normed_filtered.nc",
+        default="/p/project/deepacf/maelstrom/ehlert1/data/tweets/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc",  # noqa
         help="Filename of training data.",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="/p/project/deepacf/maelstrom/ehlert1/rain_classifier/deberta_baseline/dataset/",
+        default="/p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/",
         help="Path to model.",
     )
     parser.add_argument(

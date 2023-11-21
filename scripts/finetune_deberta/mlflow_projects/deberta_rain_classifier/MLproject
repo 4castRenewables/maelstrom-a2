@@ -1,56 +1,48 @@
 entry_points:
-  split:
+  split_rain_classifier:
     parameters:
-      filename_dataset_to_split:
+      filename_tweets:
         type: str
-        default: /p/project/deepacf/maelstrom/ehlert1/data/tweets/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar.nc
+        default: /p/project/deepacf/maelstrom/ehlert1/data/tweets/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc
       output_dir:
         type: str
-        default: dataset_split/
-      task_name:
+        default: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/
+      key_precipitation:
         type: str
-        default: dataset_rain_split
+        default: tp_h_mm
+      precipitation_threshold_rain:
+        type: float
+        default: 6e-3
+      key_precipitation_station:
+        type: str
+        default: station_tp_mm
+      precipitation_threshold_rain_station:
+        type: float
+        default: 0.1
+      key_distance_weather_station:
+        type: str
+        default: station_distance_km
+      maximum_distance_to_station:
+        type: float
+        default: 1
+      validation_size:
+        type: float
+        default: 0.2
       test_size:
         type: float
         default: 0.2
-      validation_size:
-        type: str
-        default: 0.2
-      key_stratify:
-        type: str
-        default: raining
-      classifier_domain:
-        type: str
-        default: rain
-      key_input:
-        type: str
-        default: text
-      key_rain:
-        type: str
-        default: tp_h
-      threshold_rain:
-        type: float
-        default: 7e-6
-      key_relevance:
-        type: str
-        default: prediction_relevant
-      select_relevant:
-        type: str
-        default: False
     command: >
       python build_dataset_rain_classifier.py
-        --filename_dataset_to_split {filename_dataset_to_split}
+        --filename_tweets {filename_tweets}
         --output_dir {output_dir}
-        --task_name {task_name}
-        --test_size {test_size}
+        --key_precipitation {key_precipitation}
+        --precipitation_threshold_rain {precipitation_threshold_rain}
+        --key_precipitation_station {key_precipitation_station}
+        --precipitation_threshold_rain_station {precipitation_threshold_rain_station}
+        --key_distance_weather_station {key_distance_weather_station}
+        --maximum_distance_to_station {maximum_distance_to_station}
         --validation_size {validation_size}
-        --key_stratify {key_stratify}
-        --classifier_domain {classifier_domain}
-        --key_input {key_input}
-        --key_rain {key_rain}
-        --threshold_rain {threshold_rain}
-        --key_relevance {key_relevance}
-        --select_relevant {select_relevant}
+        --test_size {test_size}
   train:
     parameters:
       learning_rate:
