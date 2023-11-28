@@ -4,7 +4,7 @@ SHELL := /bin/bash
 CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate
 ROOT_DIR = $(PWD)
 NOTEBOOKS_DIR = $(ROOT_DIR)/notebooks
-JSC_DIR = $(NOTEBOOKS_DIR)/containers/jsc
+APPTAINER_DIR = $(NOTEBOOKS_DIR)/containers/jsc
 CERTAIN_TRANSFORMER_DIR = $(ROOT_DIR)/modelling/certain-transformer-rain-prediction
 CERTAIN_TRANSFORMER_JSC_DIR = certain_transformer
 MANTIK_UNICORE_USERNAME = ehlert1
@@ -15,7 +15,7 @@ JSC_PROJECT = ${MANTIK_UNICORE_PROJECT}
 JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 
-IMAGE_TYPE = bootcamp2023
+IMAGE_TYPE = ap2deberta
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -37,13 +37,20 @@ else ifeq ($(IMAGE_TYPE), HFfinetuningBnB)
 	JSC_IMAGE_FOLDER := /p/project/training2330/ehlert1/jupyter/images/
 	KERNEL_DISPLAY_NAME := ap2_HF-LLM-BnB
 else ifeq ($(IMAGE_TYPE), bootcamp2023)
-	JSC_DIR := bootcamp2023/solutions/
+	APPTAINER_DIR := bootcamp2023/solutions/
 	POETRY_GROUPS := train
 	IMAGE_NAME := bootcamp2023
 	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_NAME)
 	KERNEL_PATH := /p/project/training2330/ehlert1/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/training2330/ehlert1/jupyter/images/
 	KERNEL_DISPLAY_NAME := ap2
+else ifeq ($(IMAGE_TYPE), ap2deberta)
+	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/
+	IMAGE_NAME := $(IMAGE_TYPE)
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_NAME)
+	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
+	KERNEL_DISPLAY_NAME := ap2deberta
 else
 	POETRY_EXTRAS := TRAIN
 	IMAGE_NAME := ap2python3p10
@@ -106,17 +113,16 @@ test-view-images:
 test-generate-images:
 	poetry run pytest --mpl-generate-hash-library=src/tests/data/mpl_baselines/hash_json.json --mpl-generate-path=src/tests/data/mpl_baselines/ --record-mode=once src/tests/
 
-upload:
-	rsync -Pvra $(JSC_SSH_PRIVATE_KEY_FILE) \
-		mlflow/$(IMAGE_NAME).sif \
-		$(JSC_SSH):/p/project/$(JSC_PROJECT)/$(JSC_USER)/$(IMAGE_NAME).sif
+upload-image:
+	# Copy kernel image file
+	rsync -Pvra \
+		$(APPTAINER_DIR)/$(IMAGE_NAME).sif \
+		$(JSC_SSH):$(JSC_IMAGE_FOLDER)/$(IMAGE_NAME).sif
 
-deploy: build upload
-
-build-jsc-kernel:
+build-image:
 	sudo apptainer build --force \
-		$(JSC_DIR)/$(IMAGE_NAME).sif \
-		$(JSC_DIR)/$(KERNEL_IMAGE_DEFINITION_FILENAME).def
+		$(APPTAINER_DIR)/$(IMAGE_NAME).sif \
+		$(APPTAINER_DIR)/$(KERNEL_IMAGE_DEFINITION_FILENAME).def
 
 build-certain-transformer-image: build-python
 	sudo apptainer build --force \
@@ -152,15 +158,14 @@ export JSC_KERNEL_JSON
 sync-bootcamp-data:
 	. ~/.bashrc && rsynctojuwels /home/kristian/Projects/a2/data/bootcamp2023/ /p/project/training2330/a2/data/bootcamp2023/
 
-upload-jsc-kernel:
+upload-jsc-kernel: upload-image
 	echo $(KERNEL_PATH)
-	# Copy kernel image file
 	rsync -Pvra \
-		$(JSC_DIR)/$(IMAGE_NAME).sif \
+		$(APPTAINER_DIR)/$(IMAGE_NAME).sif \
 		$(JSC_SSH):$(JSC_IMAGE_FOLDER)/$(IMAGE_NAME).sif
 
 	# Create kernel.json file
-	$(eval KERNEL_FILE := $(JSC_DIR)/kernel.json)
+	$(eval KERNEL_FILE := $(APPTAINER_DIR)/kernel.json)
 	echo "$${JSC_KERNEL_JSON}" > $(KERNEL_FILE)
 
 	# Upload kernel.json file
@@ -168,5 +173,6 @@ upload-jsc-kernel:
 	rsync -Pvra  $(KERNEL_FILE) $(JSC_SSH):$(KERNEL_PATH)
 	rm $(KERNEL_FILE)
 
-deploy-jsc-kernel: build-jsc-kernel upload-jsc-kernel
+deploy-jsc-kernel: build-image upload-jsc-kernel
 
+deploy-image: build-image upload-image

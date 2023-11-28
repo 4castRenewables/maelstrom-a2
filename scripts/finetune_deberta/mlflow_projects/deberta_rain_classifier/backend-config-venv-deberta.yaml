@@ -1,10 +1,10 @@
 UnicoreApiUrl: https://zam2125.zam.kfa-juelich.de:9112/JUWELS/rest/core
 Environment:
-  PreRunCommand:
-    Command: >
-      module load Stages/2023 GCCcore/.11.3.0 Python/3.10.4 CUDA/11.7;
-      source /p/scratch/deepacf/maelstrom/maelstrom_data/ap2/venvs/ap2_deberta/bin/activate;
-    ExecuteOnLoginNode: false
+  Apptainer:
+    Path: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/ap2deberta.sif
+    Type: remote
+    Options:
+      - --nv
   Variables:
     GIT_PYTHON_REFRESH: quiet
 Resources:
