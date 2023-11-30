@@ -121,7 +121,17 @@ def plot_and_log_histogram(ds, key, path_figures, tracker=None, filename="predic
         tracker.log_artifact(filename_prediction_histogram)
 
 
-def plot_and_log_histogram_2d(ds, x, y, n_bins, path_figures, tracker=None, filename="prediction_histogram.pdf"):
+def plot_and_log_histogram_2d(
+    ds,
+    x,
+    y,
+    path_figures,
+    n_bins=60,
+    tracker=None,
+    filename="prediction_histogram.pdf",
+    annotate=True,
+    **kwargs_histogram,
+):
     filename_prediction_histogram = os.path.join(path_figures, filename)
     a2.plotting.histograms.plot_histogram_2d(
         x,
@@ -130,8 +140,9 @@ def plot_and_log_histogram_2d(ds, x, y, n_bins, path_figures, tracker=None, file
         filename=filename_prediction_histogram,
         font_size=FONTSIZE,
         n_bins=n_bins,
-        annotate=True,
+        annotate=annotate,
         annotate_color="firebrick",
+        **kwargs_histogram,
     )
     if tracker is not None:
         tracker.log_artifact(filename_prediction_histogram)

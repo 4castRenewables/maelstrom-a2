@@ -85,6 +85,18 @@ def main(args):
             tracker=tracker,
             filename=f"{args.key_precipitation}_histogram_{suffix}.pdf",
         )
+        utils_scripts.plot_and_log_histogram_2d(
+            ds=ds.sel(index=indices),
+            x=args.key_output,
+            y=args.key_precipitation,
+            path_figures=path_figures,
+            tracker=tracker,
+            annotate=False,
+            n_bins=[2, 60],
+            ylim=[1e-8, None],
+            log=["false", "log"],
+            filename=f"{args.key_output}-vs-{args.key_precipitation}_histogram_2d_{suffix}.pdf",
+        )
 
 
 def save_subsection_dataset(ds, filename, indices):
