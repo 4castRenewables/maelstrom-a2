@@ -12,19 +12,22 @@ import utils_scripts
 logging.basicConfig(
     format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
 )
+logger = logging.getLogger(__name__)
 
 
 def main(args):
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     """Split labeled Tweets into train, test, validation set"""
-    logging.info(f"Args used: {args.__dict__}")
+    logger.info(f"Args used: {args.__dict__}")
     path_output = utils_scripts._determine_path_output(args)
     path_figures = os.path.join(path_output, args.figure_folder)
     tweets_dataset_stem = a2.utils.file_handling.stem_filename(args.filename_tweets)
 
-    ds_raw = utils_scripts.get_dataset(args=args, filename=args.filename_tweets)
+    ds_raw = utils_scripts.get_dataset(
+        args=args, filename=args.filename_tweets, path_figures=path_figures, tracker=tracker
+    )
 
-    logging.info(f"Dataset contains {ds_raw.index.shape[0]=} Tweets.")
+    logger.info(f"Dataset contains {ds_raw.index.shape[0]=} Tweets.")
 
     ds_exclude_weather_stations = utils_scripts.exclude_and_save_weather_stations_dataset(
         args=args,
@@ -45,7 +48,7 @@ def main(args):
     )
     ds = a2.dataset.load_dataset.reset_index_coordinate(ds_exclude_weather_stations)
 
-    logging.info(
+    logger.info(
         f"Using {len(indices_validate)} for evaluation, "
         f"{len(indices_test)} for testing and "
         f"{len(indices_train)} for training."
@@ -101,13 +104,13 @@ if __name__ == "__main__":
         "--output_dir",
         type=str,
         default="/p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/",
-        help="Path to model.",
+        help="Path where data saved.",
     )
     parser.add_argument(
         "--figure_folder",
         type=str,
         default="figures/",
-        help="Path to model.",
+        help="Path to saved figures.",
     )
     parser.add_argument(
         "--key_input",

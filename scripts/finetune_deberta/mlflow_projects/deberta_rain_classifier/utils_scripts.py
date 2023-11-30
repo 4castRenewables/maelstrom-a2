@@ -50,6 +50,18 @@ def get_dataset(
     return ds
 
 
+def to_hugging_face_dataset(args, ds, dataset_object):
+    dataset = dataset_object.build(
+        ds,
+        None,
+        None,
+        key_inputs=args.key_input,
+        key_label=args.key_output,
+        prediction_dataset=False,
+    )
+    return dataset
+
+
 def evaluate_model(
     args,
     ds_test_predicted,
