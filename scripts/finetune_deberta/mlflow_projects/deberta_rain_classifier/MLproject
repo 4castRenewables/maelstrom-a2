@@ -45,69 +45,124 @@ entry_points:
         --test_size {test_size}
   train:
     parameters:
-      learning_rate:
+      filename_dataset_train:
+        type: str
+        default:
+          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc
+      filename_dataset_validate:
+        type: str
+        default:
+          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc
+      filename_dataset_test:
+        type: str
+        default:
+          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc
+      key_input:
+        type: str
+        default: text
+      key_output:
+        type: str
+        default: raining
+      key_precipitation:
+        type: str
+        default: tp_h_mm
+      key_text:
+        type: str
+        default: text_normalized
+      precipitation_threshold_rain:
         type: float
-        default: 0.00003
+        default: 6e-3
+
+      model_path:
+        type: float
+        default: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
+      model_name:
+        default: deberta_small
+      num_labels:
+        default: 2
+      trainer_name:
+        default: default
+      output_dir:
+        default: /p/project/deepacf/maelstrom/ehlert1/models/trained_models/rain_classification/dataset_split_thresh6M3/
+      
+      random_seed:
+        type: int
+        default: 42
+      epochs:
+        type: int
+        default: 1
       batch_size:
         type: int
         default: 32
+      learning_rate:
+        type: float
+        default: 0.00003
       weight_decay:
         type: float
-        default: 0.01
-      iteration:
+        default: 0
+      warmup_ratio:
+        type: float
+        default: 0
+      warmup_steps:
+        type: float
+        default: 0
+      hidden_dropout_prob:
+        type: float
+        default: 0.1
+      cls_dropout:
+        type: float
+        default: 0.1
+      lr_scheduler_type:
+        type: str
+        default: linear
+      loss:
+        type: str
+        default: default_loss
+      
+      save_steps:
+        type: int
+        default: 500
+      logging_steps:
         type: int
         default: 1
       evaluation_strategy:
         type: str
-        default: steps
+        default: epoch
       eval_steps:
         type: int
-        default: 500
-      epochs:
-        type: int
-        default: 1
-      model_path:
+        default: None
+      STORE_TRUE_ARGS_log_gpu_memory_OR_ignore_tracking_OR_debug_OR_base_model_weights_fixed:
         type: str
-        default: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-base/
-      model_name:
-        type: str
-        default: deberta_base
-      filename_dataset_train_rain:
-        type: str
-        default:
-          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_train.nc
-      filename_dataset_validate_rain:
-        type: str
-        default:
-          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_validate.nc
-      filename_dataset_test_rain:
-        type: str
-        default:
-          /p/scratch/deepacf/unicore-jobs/98a76f21-83be-4422-9515-d557705e4414/dataset_split/dataset_rain_split/2017_2020_tweets_vocab_emojis_locations_era5_stations_simpledeberta_radar_test.nc
-      outdir:
-        type: str
-        default: "./"
-      run_name:
-        type: str
-        default: "RUNNAME"
+        default: ""
 
     command: >
       python3 finetune_deberta_classifier.py
+        --filename_dataset_train {filename_dataset_train}
+        --filename_dataset_validate {filename_dataset_validate}
+        --filename_dataset_test {filename_dataset_test}
+        --key_input {key_input}
+        --key_output {key_output}
+        --key_precipitation {key_precipitation}
+        --key_text {key_text}
+        --precipitation_threshold_rain {precipitation_threshold_rain}
         --model_path {model_path}
         --model_name {model_name}
-        --filename_dataset_train {filename_dataset_train_rain}
-        --filename_dataset_validate {filename_dataset_validate_rain}
-        --filename_dataset_test {filename_dataset_test_rain}
-        --output_dir {outdir}
-        --log_gpu_memory
-        --run_name {run_name}
-        --learning_rate {learning_rate}
+        --num_labels {num_labels}
+        --trainer_name {trainer_name}
+        --output_dir {output_dir}
+        --random_seed {random_seed}
         --epochs {epochs}
-        --classifier_domain rain
-        --key_output raining
         --batch_size {batch_size}
+        --learning_rate {learning_rate}
         --weight_decay {weight_decay}
-        --iteration {iteration}
+        --warmup_ratio {warmup_ratio}
+        --model_name {model_name}
+        --warmup_steps {warmup_steps}
+        --hidden_dropout_prob {hidden_dropout_prob}
+        --cls_dropout {cls_dropout}
+        --lr_scheduler_type {lr_scheduler_type}
+        --loss {loss}
+        --logging_steps {logging_steps}
         --evaluation_strategy {evaluation_strategy}
         --eval_steps {eval_steps}
-        --task_name finetune_rain
+        {STORE_TRUE_ARGS_log_gpu_memory_OR_ignore_tracking_OR_debug_OR_base_model_weights_fixed}

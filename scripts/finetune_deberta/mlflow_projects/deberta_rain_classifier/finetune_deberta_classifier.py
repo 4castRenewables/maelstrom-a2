@@ -229,7 +229,7 @@ if __name__ == "__main__":
         "--figure_folder",
         type=str,
         default="figures/",
-        help="Path to saved figures.",
+        help="Relative path to `output_dir` for saving figures.",
     )
 
     # HYPERPARAMETERS
