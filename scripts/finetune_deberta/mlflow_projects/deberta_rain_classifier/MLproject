@@ -131,9 +131,6 @@ entry_points:
       eval_steps:
         type: int
         default: 500
-      STORE_TRUE_ARGS_log_gpu_memory_OR_ignore_tracking_OR_debug_OR_base_model_weights_fixed:
-        type: str
-        default: ""
 
     command: >
       python3 finetune_deberta_classifier.py
@@ -165,4 +162,4 @@ entry_points:
         --logging_steps {logging_steps}
         --evaluation_strategy {evaluation_strategy}
         --eval_steps {eval_steps}
-        {STORE_TRUE_ARGS_log_gpu_memory_OR_ignore_tracking_OR_debug_OR_base_model_weights_fixed}
+        --log_gpu_memory
