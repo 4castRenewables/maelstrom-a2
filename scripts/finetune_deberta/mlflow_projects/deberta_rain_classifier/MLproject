@@ -130,7 +130,7 @@ entry_points:
         default: epoch
       eval_steps:
         type: int
-        default: None
+        default: 500
       STORE_TRUE_ARGS_log_gpu_memory_OR_ignore_tracking_OR_debug_OR_base_model_weights_fixed:
         type: str
         default: ""
