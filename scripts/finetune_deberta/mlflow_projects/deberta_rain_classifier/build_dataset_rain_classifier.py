@@ -19,8 +19,10 @@ def main(args):
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     """Split labeled Tweets into train, test, validation set"""
     logger.info(f"Args used: {args.__dict__}")
+
     path_output = utils_scripts._determine_path_output(args)
-    path_figures = os.path.join(path_output, args.figure_folder)
+    path_figures = os.path.join(path_output, args.folder_figures)
+
     tweets_dataset_stem = a2.utils.file_handling.stem_filename(args.filename_tweets)
 
     ds_raw = utils_scripts.get_dataset(
@@ -113,18 +115,6 @@ if __name__ == "__main__":
         help="Filename of training data.",
     )
     parser.add_argument(
-        "--output_dir",
-        type=str,
-        default="/p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/",
-        help="Path where data saved.",
-    )
-    parser.add_argument(
-        "--figure_folder",
-        type=str,
-        default="figures/",
-        help="Path to saved figures.",
-    )
-    parser.add_argument(
         "--key_input",
         type=str,
         default="text",
@@ -211,6 +201,24 @@ if __name__ == "__main__":
         "--debug",
         action="store_true",
         help="Whether to toggle debug mode.",
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="/p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/",
+        help="Path where data saved.",
+    )
+    parser.add_argument(
+        "--folder_run",
+        type=str,
+        default="dataset_split_thresh6M3/",
+        help="Relative path to all ouputs connected to this run.",
+    )
+    parser.add_argument(
+        "--folder_figures",
+        type=str,
+        default="figures/",
+        help="Relative path to `output_dir` for saving figures.",
     )
 
     args = parser.parse_args()

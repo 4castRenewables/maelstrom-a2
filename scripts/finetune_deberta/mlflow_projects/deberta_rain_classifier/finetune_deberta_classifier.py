@@ -37,7 +37,8 @@ def main(args):
     dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
 
     path_output = utils_scripts._determine_path_output(args)
-    path_figures = os.path.join(path_output, args.figure_folder)
+    path_figures = os.path.join(path_output, args.folder_figures)
+    path_save_models = os.path.join(path_output, args.folder_saved_models)
 
     ds_train = utils_scripts.get_dataset(
         args,
@@ -96,7 +97,7 @@ def main(args):
         (dataset_train, dataset_validate),
         hyper_parameters=hyper_parameters,
         tokenizer=dataset_object.tokenizer,
-        folder_output=path_output,
+        folder_output=path_save_models,
         hyper_tuning=False,
         disable_tqdm=True,
         fp16=True if a2.training.utils_training.gpu_available() else False,
@@ -219,18 +220,6 @@ if __name__ == "__main__":
         choices=a2.training.model_configs.SUPPORTED_TRAINERS,
         help="Trainer class selected by its name.",
     )
-    parser.add_argument(
-        "--output_dir",
-        type=str,
-        default="/p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/",
-        help="Path to model.",
-    )
-    parser.add_argument(
-        "--figure_folder",
-        type=str,
-        default="figures/",
-        help="Relative path to `output_dir` for saving figures.",
-    )
 
     # HYPERPARAMETERS
     parser.add_argument("--random_seed", "-rs", type=int, default=42, help="Random seed value.")
@@ -287,6 +276,32 @@ if __name__ == "__main__":
         "--debug",
         action="store_true",
         help="Whether to toggle debug mode.",
+    )
+
+    # OUTPUTS
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="/p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/",
+        help="Path to model.",
+    )
+    parser.add_argument(
+        "--folder_run",
+        type=str,
+        default="dataset_split_thresh6M3/",
+        help="Relative path to all ouputs connected to this run.",
+    )
+    parser.add_argument(
+        "--folder_saved_models",
+        type=str,
+        default="saved_model/",
+        help="Relative path to trained model.",
+    )
+    parser.add_argument(
+        "--folder_figures",
+        type=str,
+        default="figures/",
+        help="Relative path to `output_dir` for saving figures.",
     )
 
     parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
