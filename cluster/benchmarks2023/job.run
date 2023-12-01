@@ -1,0 +1,18 @@
+#!/bin/bash -x
+#SBATCH --nodes=1
+#SBATCH --time=24:00:00
+#SBATCH -A deepacf
+#SBATCH --gres=gpu:4
+#SBATCH --partition=gpus
+#SBATCH --output=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks2023/ap2_eval/000042/000001_submit/work/slurm-out.%j
+#SBATCH --error=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks2023/ap2_eval/000042/000001_submit/work/slurm-err.%j
+
+### start of jobscript
+
+source ~/.bashrc
+conda activate a2-benchmarking
+which python
+pip list
+module list
+CUDA_VISIBLE_DEVICES=0,1,2,3 python -u /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks2023/../../scripts/evaluate_deberta.py --log_gpu_memory verbose --run_name ap2-all_42 --data_filename 2020_text_precipitation.nc --data_dir /p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/tweets/ -jid ${SLURM_JOBID} --key_rain tp_h --model_path /p/project/deepacf/maelstrom/ehlert1/a2/jobs/ap2_run/000101/000001_submit/work/output_model/ap2-all_101/checkpoint-1492 --output_dir /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks2023/ap2_eval/000042/000001_submit/work/output_model --iteration 1 --ignore_tracking --test_size 0.4
+touch ready

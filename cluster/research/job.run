@@ -1,0 +1,18 @@
+#!/bin/bash -x
+#SBATCH --nodes=1
+#SBATCH --time=01:00:00
+#SBATCH -A deepacf
+#SBATCH --gres=gpu:4
+#SBATCH --partition=develgpus
+#SBATCH --output=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/ap2_run/000005/000001_submit/work/slurm-out.%j
+#SBATCH --error=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/ap2_run/000005/000001_submit/work/slurm-err.%j
+
+### start of jobscript
+
+source ~/.bashrc
+conda activate a2-benchmarking
+which python
+pip list
+module list
+CUDA_VISIBLE_DEVICES=0 python -u /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/../../scripts/finetune_deberta.py --run_folder ap2-all_5 --log_gpu_memory --run_name ap2-all_5 --data_filename 2017_2020_tweets_keywords_near_station.nc -lr 3e-05 -nepochs 1 --data_dir /p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/tweets/ -jid ${SLURM_JOBID} --batch_size 32 --key_rain station_tp_mm --model_path /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/ --output_dir /p/project/deepacf/maelstrom/ehlert1/a2/cluster/research/ap2_run/000005/000001_submit/work/output_model --weight_decay 0.01 --iteration 1 
+touch ready
