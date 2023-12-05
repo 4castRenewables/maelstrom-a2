@@ -71,7 +71,7 @@ entry_points:
         default: raining
       key_raining:
         type: str
-        default: tp_h_mm
+        default: raining
       key_text:
         type: str
         default: text_normalized
