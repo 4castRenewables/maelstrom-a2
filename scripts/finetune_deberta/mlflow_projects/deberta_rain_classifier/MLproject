@@ -146,9 +146,8 @@ entry_points:
         --filename_dataset_test {filename_dataset_test}
         --key_input {key_input}
         --key_output {key_output}
-        --key_precipitation {key_precipitation}
+        --key_raining {key_precipitation}
         --key_text {key_text}
-        --precipitation_threshold_rain {precipitation_threshold_rain}
         --model_path {model_path}
         --model_name {model_name}
         --num_labels {num_labels}
@@ -172,4 +171,58 @@ entry_points:
         --output_dir {output_dir}
         --folder_run {folder_run}
         --folder_saved_models {folder_saved_models}
+        --folder_figures {folder_figures}
+  evaluate:
+    parameters:
+      filename_dataset_evaluate:
+        type: str
+        default:
+          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/Weather_stations_2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc
+      key_input:
+        type: str
+        default: text
+      key_output:
+        type: str
+        default: raining
+      key_raining:
+        type: str
+        default: raining_station
+      key_text:
+        type: str
+        default: text_normalized
+
+      model_trained_path:
+        type: float
+        default: /p/project/deepacf/maelstrom/ehlert1/models/trained_models/rain_classification/dataset_split_thresh6M3/checkpoint-22209/
+      model_name:
+        default: deberta_small
+      num_labels:
+        default: 2
+      trainer_name:
+        default: default
+      loss:
+        type: str
+        default: default_loss
+      
+      output_dir:
+        default: /p/project/deepacf/maelstrom/ehlert1/models/trained_models/rain_classification/evaluations/
+      folder_run:
+        default: rain_classification-dataset_split_thresh6M3-checkpoint-22209/
+      folder_figures:
+        default: figures/
+
+    command: >
+      python3 finetune_deberta_classifier.py
+        --filename_dataset_evaluate {filename_dataset_evaluate}
+        --key_input {key_input}
+        --key_output {key_output}
+        --key_raining {key_precipitation}
+        --key_text {key_text}
+        --model_trained_path {model_trained_path}
+        --model_name {model_name}
+        --num_labels {num_labels}
+        --trainer_name {trainer_name}
+        --loss {loss}
+        --output_dir {output_dir}
+        --folder_run {folder_run}
         --folder_figures {folder_figures}

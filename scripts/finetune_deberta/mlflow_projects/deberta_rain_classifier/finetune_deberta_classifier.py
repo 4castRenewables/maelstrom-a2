@@ -62,6 +62,7 @@ def main(args):
         path_figures=path_figures,
         tracker=tracker,
         prefix_histogram="test",
+        setting_rain=False,  # already done in build_dataset_rain_classifier.py
     )
     dataset_test = utils_scripts.to_hugging_face_dataset(args=args, ds=ds_test, dataset_object=dataset_object)
 
@@ -174,9 +175,9 @@ if __name__ == "__main__":
         help="Key that is used for output values.",
     )
     parser.add_argument(
-        "--key_precipitation",
+        "--key_raining",
         type=str,
-        default="tp_h_mm",
+        default="raining",
         help="Key that specifies precipitation level in dataset.",
     )
     parser.add_argument(
@@ -184,12 +185,6 @@ if __name__ == "__main__":
         type=str,
         default="text_normalized",
         help="Key that specifies texts used in dataset.",
-    )
-    parser.add_argument(
-        "--precipitation_threshold_rain",
-        type=float,
-        default=6e-3,
-        help="Values equal or higher are considered rain.",
     )
 
     # MODEL
