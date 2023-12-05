@@ -108,6 +108,7 @@ def save_subsection_dataset(ds, filename, indices):
 
 if __name__ == "__main__":
     parser = a2.utils.argparse.get_parser()
+    # DATASET SETUP
     parser.add_argument(
         "--filename_tweets",
         type=str,
@@ -174,6 +175,7 @@ if __name__ == "__main__":
         default=1,
         help="Maximum distance to nearest weather station to be considered for weather station dataset.",
     )
+    # SPLITS
     parser.add_argument(
         "--validation_size",
         type=float,
@@ -186,6 +188,7 @@ if __name__ == "__main__":
         default=0.2,
         help="Percentage of dataset used for testing of model performance.",
     )
+    # DEBUG / LOGGING
     parser.add_argument(
         "--random_seed",
         type=int,
@@ -202,6 +205,7 @@ if __name__ == "__main__":
         action="store_true",
         help="Whether to toggle debug mode.",
     )
+    # OUTPUTS
     parser.add_argument(
         "--output_dir",
         type=str,

@@ -4,9 +4,6 @@ entry_points:
       filename_tweets:
         type: str
         default: /p/project/deepacf/maelstrom/ehlert1/data/tweets/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc
-      output_dir:
-        type: str
-        default: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/
       key_precipitation:
         type: str
         default: tp_h_mm
@@ -25,16 +22,23 @@ entry_points:
       maximum_distance_to_station:
         type: float
         default: 1
+
       validation_size:
         type: float
         default: 0.2
       test_size:
         type: float
         default: 0.2
+
+      output_dir:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/
+      folder_run:
+        type: str
+        default: dataset_split_thresh6M3/
     command: >
       python3 build_dataset_rain_classifier.py
         --filename_tweets {filename_tweets}
-        --output_dir {output_dir}
         --key_precipitation {key_precipitation}
         --precipitation_threshold_rain {precipitation_threshold_rain}
         --key_precipitation_station {key_precipitation_station}
@@ -43,6 +47,8 @@ entry_points:
         --maximum_distance_to_station {maximum_distance_to_station}
         --validation_size {validation_size}
         --test_size {test_size}
+        --output_dir {output_dir}
+        --folder_run {folder_run}
   train:
     parameters:
       filename_dataset_train:
