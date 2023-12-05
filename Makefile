@@ -91,6 +91,7 @@ build-docker: build-python
 build-apptainer: build-python
 	sudo apptainer build --force mlflow/$(IMAGE_NAME).sif mlflow/recipe.def
 
+
 build: build-docker build-apptainer
 
 publish-package:
