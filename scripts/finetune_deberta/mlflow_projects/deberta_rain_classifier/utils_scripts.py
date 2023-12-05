@@ -10,6 +10,8 @@ from a2.training import benchmarks as timer
 
 FONTSIZE = 16
 
+logger = logging.getLogger(__name__)
+
 
 def _determine_path_output(args):
     path_output = f"{args.output_dir}/{args.folder_run}/"
@@ -25,20 +27,32 @@ def get_dataset(
     path_figures=None,
     tracker=None,
     prefix_histogram="",
+    setting_rain=True,
 ):
     ds = a2.dataset.load_dataset.load_tweets_dataset(filename, raw=True, reset_index_raw=True)
     if args.debug:
+        logger.info(f"{args.debug=}: Only using 100 first values in dataset!")
         ds = ds.sel(index=slice(0, 100))
+    logger.info(f"Input field definition: Setting field {args.key_input=} to {args.key_text=}")
     ds[args.key_input] = (["index"], ds[args.key_text].values.copy())
 
     N_tweets = ds.index.shape[0]
-    logging.info(f"loaded {N_tweets} tweets: from {filename}")
+    logger.info(f"loaded {N_tweets} tweets: from {filename}")
 
-    ds[args.key_output] = (
-        ["index"],
-        np.array(ds[args.key_precipitation].values > args.precipitation_threshold_rain, dtype=int),
-    )
-
+    if setting_rain:
+        logger.info(
+            f"Output field definition: Setting field {args.key_output=} to "
+            f"{args.key_precipitation=} > {args.precipitation_threshold_rain}"
+        )
+        ds[args.key_output] = (
+            ["index"],
+            np.array(ds[args.key_precipitation].values > args.precipitation_threshold_rain, dtype=int),
+        )
+    else:
+        ds[args.key_output] = (
+            ["index"],
+            np.array(ds[args.key_raining].values, dtype=int),
+        )
     if plot_key_distribution and path_figures is not None:
         plot_and_log_histogram(
             ds,
@@ -107,7 +121,7 @@ def evaluate_model(
         font_size=FONTSIZE,
     )
     tracker.log_artifact(filename_roc_plot)
-    logging.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
+    logger.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
     if args.log_gpu_memory:
         memory_tracker.get_cuda_memory_usage("Finished run")
 
@@ -204,7 +218,7 @@ def exclude_and_save_weather_stations_dataset(
     weather_station_indices = ds_weather_stations.index.values
     remaining_indices = all_indices[np.isin(all_indices, weather_station_indices, invert=True)]
     ds_tweets_keywords_near_stations_excluded = ds_tweets.sel(index=remaining_indices)
-    logging.info(
+    logger.info(
         f"Weather station dataset contains {len(weather_station_indices)} Tweets. "
         f"Remaining indices are {len(remaining_indices)} Tweets."
     )

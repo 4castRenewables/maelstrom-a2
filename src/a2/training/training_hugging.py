@@ -132,7 +132,7 @@ class HuggingFaceTrainerClass:
 
     def get_trainer(
         self,
-        dataset: t.Union[datasets.Dataset, datasets.DatasetDict],
+        dataset: t.Union[datasets.Dataset, datasets.DatasetDict] | None,
         hyper_parameters: HyperParametersDebertaClassifier | None = None,
         tokenizer: t.Optional[transformers.DebertaTokenizer] | None = None,
         folder_output: str = "output/",
@@ -182,6 +182,10 @@ class HuggingFaceTrainerClass:
         -------
         Hugging Face Trainer
         """
+        if dataset is None and not evaluate:
+            raise ValueError(
+                f"Need to specify dataset {dataset=} for training.\nFor evaluation set `evaluat=True` ({evaluate=})!"
+            )
         if not a2.training.utils_training.gpu_available():
             fp16 = False
         if hyper_parameters is None:
