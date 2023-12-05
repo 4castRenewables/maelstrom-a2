@@ -46,6 +46,7 @@ def main(args):
         path_figures=path_figures,
         tracker=tracker,
         prefix_histogram="train",
+        setting_rain=False,
     )
     dataset_train = utils_scripts.to_hugging_face_dataset(args=args, ds=ds_train, dataset_object=dataset_object)
     ds_validate = utils_scripts.get_dataset(
@@ -54,6 +55,7 @@ def main(args):
         path_figures=path_figures,
         tracker=tracker,
         prefix_histogram="validate",
+        setting_rain=False,
     )
     dataset_validate = utils_scripts.to_hugging_face_dataset(args=args, ds=ds_validate, dataset_object=dataset_object)
     ds_test = utils_scripts.get_dataset(
