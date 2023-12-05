@@ -212,7 +212,7 @@ entry_points:
         default: figures/
 
     command: >
-      python3 finetune_deberta_classifier.py
+      python3 evaluate_deberta_classifier.py
         --filename_dataset_evaluate {filename_dataset_evaluate}
         --key_input {key_input}
         --key_output {key_output}
