@@ -69,15 +69,12 @@ entry_points:
       key_output:
         type: str
         default: raining
-      key_precipitation:
+      key_raining:
         type: str
         default: tp_h_mm
       key_text:
         type: str
         default: text_normalized
-      precipitation_threshold_rain:
-        type: float
-        default: 6e-3
 
       model_path:
         type: float
