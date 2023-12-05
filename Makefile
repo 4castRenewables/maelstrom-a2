@@ -100,6 +100,10 @@ publish-patch:
 	poetry version patch
 	$(MAKE) publish-package
 
+publish-minor:
+	poetry version minor
+	$(MAKE) publish-package
+
 clean-poetry:
 	rm -rf .venv
 	rm poetry.lock
