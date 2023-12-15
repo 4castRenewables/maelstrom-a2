@@ -15,7 +15,7 @@ JSC_PROJECT = ${MANTIK_UNICORE_PROJECT}
 JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 
-IMAGE_TYPE = ap2deberta
+IMAGE_TYPE = ap2falcon
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -36,6 +36,14 @@ else ifeq ($(IMAGE_TYPE), HFfinetuningBnB)
 	KERNEL_PATH := /p/project/training2330/ehlert1/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/training2330/ehlert1/jupyter/images/
 	KERNEL_DISPLAY_NAME := ap2_HF-LLM-BnB
+else ifeq ($(IMAGE_TYPE), ap2falcon)
+	APPTAINER_DIR := scripts/relevance_dataset_generation/mlflow_projects/
+	POETRY_EXTRAS := ""
+	IMAGE_NAME := $(IMAGE_TYPE)
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
+	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
+	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
 else ifeq ($(IMAGE_TYPE), bootcamp2023)
 	APPTAINER_DIR := bootcamp2023/solutions/
 	POETRY_GROUPS := train
