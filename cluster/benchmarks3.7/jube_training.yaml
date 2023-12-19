@@ -19,15 +19,19 @@ parameterset:
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/ap2deberta.sif
 
+      - name: base_path_training_set
+        tag: "!e4"
+        type: str
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/ap2_run/000005/000000_submit/work/output_model/dataset_split_thresh0M2/
       - name: filename_dataset_train
         type: str
-        _: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc
+        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_train.nc
       - name: filename_dataset_validate
         type: str
-        _: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc
+        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_validate.nc
       - name: filename_dataset_test
         type: str
-        _: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc
+        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_test.nc
       - name: key_input
         type: string
         _: "text"
@@ -44,93 +48,54 @@ parameterset:
         tag: split+!e4
         _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_01_era5_normed_filtered.nc
 
-      - name: batch_size
-        tag: "!hps"
-        type: int
-        _: 32
-      - name: nepochs
-        tag: "!hps"
-        type: int
-        _: 1
-      - name: lr
-        tag: "!hps"
-        type: float
-        _: 0.00003
-      - name: weight_decay
-        type: float
-        _: 0
       - name: model_path
         tag: "jwb|jwc"
         _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
       - name: model_path
         tag: e4
         _: /data/maelstrom/kehlert/models/deberta-v3-small
-      - name: indir
+      - name: model_name
+        _: deberta_small
+      - name: epochs
+        type: int
+        _: 1
+      - name: batch_size
+        type: int
+        _: 32
+      - name: learning_rate
+        type: float
+        _: 0.00003
+      - name: weight_decay
+        type: float
+        _: 0
+
+      - name: outdir
         type: string
-        tag: "jwb|jwc"
-        _: "/p/scratch/deepacf/maelstrom/maelstrom_data/ap2/data/tweets/"
-      - name: indir
-        type: string
-        tag: e4
-        _: "/data/maelstrom/kehlert/data/tweets/"
-      - name: data_filename
-        tag: medium
-        _: "2020_text_precipitation.nc"
-      - name: data_filename
-        tag: large
-        _: "2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc"
-      - name: data_filename
-        tag: "!medium+!large"
-        type: string
-        _: "tweets_2017_01_era5_normed_filtered_predicted_simpledeberta.nc"
-      - name: folder_split
-        type: string
-        _: /p/project/deepacf/maelstrom/ehlert1/data/dataset_split/2017-2020/
-      - name: filename_dataset_train
-        type: string
-        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc
-      - name: filename_dataset_validate
-        type: string
-        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc
-      - name: filename_dataset_test
-        type: string
-        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc
+        _: "$jube_wp_abspath/output_model"
+      - name: run_name
+        _: "${jube_benchmark_name}_${jube_benchmark_id}"
+
       - name: slurm_output
         type: string
         _: "$jube_wp_abspath/slurm-out.%j"
       - name: slurm_error
         type: string
         _: "$jube_wp_abspath/slurm-err.%j"
-      - name: outdir
-        type: string
-        _: "$jube_wp_abspath/output_model"
-      - name: run_name
-        _: "${jube_benchmark_name}_${jube_benchmark_id}"
       - name: run_folder
         type: string
         _: $run_name
   - name: globalParameter
     parameter:
       - name: modules
-        tag: "jwb|jwc"
+        tag: e4
         separator: |
         _:
-          module purge &&
-          module load Stages/2023 &&
-          module load cuDNN/8.6.0.163-CUDA-11.7 &&
-          module unload Python/3.10.4
+          module load slurm
       - name: modules
-        tag: "e4+!e4amd"
+        tag: "!e4"
         separator: |
         _:
-          module load slurm &&
-          module load nvidia/cuda-11.7
-      - name: modules
-        tag: e4amd
-        separator: |
-        _:
-          module load slurm &&
-          module load amd/rocm-5.2.1
+          ""
       - name: systemname
         tag: jwc
         _: jwc
@@ -195,6 +160,9 @@ parameterset:
       - name: account
         tag: e4
         _: maelstrom
+      - name: gres
+        _: gpu:$gpus
+
       - name: queue
         tag: jwb+!test
         _: booster
@@ -213,8 +181,7 @@ parameterset:
       - name: queue
         tag: jwc+test
         _: develgpus
-      - name: gres
-        _: gpu:$gpus
+
       - name: execution_command
         _: apptainer run --nv ${path_apptainer_image}
       - name: executable
@@ -235,21 +202,33 @@ parameterset:
       - name: args_exec
         mode: text
         _: >
-          --run_folder ${run_folder}
-          --log_gpu_memory
-          --run_name ${run_name}
-          --data_filename ${data_filename}
-          -lr ${lr}
-          -nepochs ${nepochs}
-          --data_dir ${indir}
-          -jid $${SLURM_JOBID}
-          --batch_size ${batch_size}
-          --key_rain ${key_rain}
+          --filename_dataset_train ${filename_dataset_train}
+          --filename_dataset_validate ${filename_dataset_validate}
+          --filename_dataset_test ${filename_dataset_test}
+          --key_input ${key_input}
+          --key_output ${key_output}
+          --key_raining ${key_raining}
+          --key_text ${key_text}
+
           --model_path ${model_path}
-          --output_dir ${outdir}
+          --model_name ${model_name}
+          --num_labels 2
+          --trainer_name default
+
+          --random_seed 42
+          --epochs ${epochs}
+          --batch_size ${batch_size}
+          --learning_rate ${learning_rate}
           --weight_decay ${weight_decay}
-          --iteration ${iteration}
-          ${weightsfixed}
+          --warmup_ratio 0
+          --warmup_steps 0
+          --hidden_dropout_prob 0.1
+          --cls_dropout 0.1
+          --lr_scheduler_type linear
+          --loss default_loss
+
+          --output_dir ${outdir}
+          --folder_run dataset_split_thresh0M2/
       - name: args_exec
         tag: split
         mode: text
@@ -339,7 +318,7 @@ result:
         #- {title: "Saving time", format: ".4f", _: saving_model_time_last}
         #- {title: "l. rate", _: lr}
         #- {title: "min loss", format: ".4f", _: loss_min}
-        #- {title: "# epochs", _: nepochs}
+        #- {title: "# epochs", _: epochs}
         #- {title: "Mem", format: ".4f",  _: max_memory}
         - {title: "MaxMemAlloc", format: ".4f", _: gpu_max_mem_allocated_max}
         - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
