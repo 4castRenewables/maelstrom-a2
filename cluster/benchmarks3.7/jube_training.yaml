@@ -109,13 +109,6 @@ parameterset:
       - name: run_folder
         type: string
         _: $run_name
-      - name: env_file
-        type: string
-        _: env.sh
-      - name: env_file
-        type: string
-        tag: dev
-        _: env_dev.sh
   - name: globalParameter
     parameter:
       - name: modules
@@ -157,9 +150,6 @@ parameterset:
           source ~/.bashrc
           ${modules}
           export ${visible_devices}
-          conda activate ${conda_env}
-          which python
-          pip list
       - name: power_measure_setup
         tag: e4
         mode: text
@@ -380,7 +370,4 @@ step:
       error_file: $error_file
       _:
         $modules;
-        source ~/.bashrc;
-        source $jube_benchmark_home/$env_file;
-        conda activate $conda_env;
         $submit $submit_script;
