@@ -71,7 +71,7 @@ def load_tweets_dataset(
     reset_index: bool = True,
     drop_variables: t.Optional[list[str]] = None,
     convert_bounding_box: bool = False,
-    open_dataset=False,
+    open_dataset: bool = False,
 ) -> xarray.Dataset:
     """
     loads dataset from disk and converts columns into convenient data formats

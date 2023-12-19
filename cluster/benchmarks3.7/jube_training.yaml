@@ -309,7 +309,7 @@ result:
         - {title: "devices", _: ndevices}
         - {title: "queue", _: queue}
         #- {title: "#nodes", _: nodes}
-        - {title: "#gpu", _: n_gpu}
+        - {title: "#gpu", _: gpus}
         #- {title: "BS", _: batch_size}
         - {title: "T. IO", format: ".4f", _: io_time_sum}
         - {title: "T. run", format: ".4f", _: run_time_last}
