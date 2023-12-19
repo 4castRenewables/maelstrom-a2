@@ -9,6 +9,7 @@ import a2.training.training_hugging
 import a2.utils.argparse
 import utils_scripts
 
+
 logging.basicConfig(
     format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
 )

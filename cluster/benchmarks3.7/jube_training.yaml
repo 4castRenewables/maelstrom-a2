@@ -13,47 +13,52 @@ parameterset:
         tag: "!benchs"
         type: int
         _: 1
-      - name: conda_env
-        tag: e4amd
+
+      - name: path_apptainer_image
+        tag: "jnvidia"
         type: string
-        _: a2-amd
-      - name: conda_env
-        tag: "!e4amd"
+        _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/ap2deberta.sif
+
+      - name: filename_dataset_train
+        type: str
+        _: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc
+      - name: filename_dataset_validate
+        type: str
+        _: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc
+      - name: filename_dataset_test
+        type: str
+        _: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier/dataset_split_thresh6M3/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc
+      - name: key_input
         type: string
-        _: a2-benchmarking
+        _: "text"
+      - name: key_output
+        type: string
+        _: "raining"
+      - name: key_raining
+        type: string
+        _: "raining"
+      - name: key_text
+        type: string
+        _: "text_normalized"
+      - name: filename_tweets
+        tag: split+!e4
+        _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_01_era5_normed_filtered.nc
+
       - name: batch_size
         tag: "!hps"
         type: int
         _: 32
-      - name: batch_size
-        tag: hps
-        type: int
-        _: 16, 32, 64
       - name: nepochs
         tag: "!hps"
         type: int
         _: 1
-      - name: nepochs
-        tag: hps
-        type: int
-        _: 1, 3, 10
       - name: lr
         tag: "!hps"
         type: float
-        _: 3e-05
-      - name: lr
-        tag: hps
-        type: float
-        _: 3e-05, 7e-6
+        _: 0.00003
       - name: weight_decay
         type: float
-        _: 0.01
-      - name: weightsfixed
-        type: string
-        _: ""
-      - name: key_rain
-        type: string
-        _: "tp_h"
+        _: 0
       - name: model_path
         tag: "jwb|jwc"
         _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
@@ -220,11 +225,13 @@ parameterset:
         _: develgpus
       - name: gres
         _: gpu:$gpus
+      - name: execution_command
+        _: apptainer run --nv ${path_apptainer_image}
       - name: executable
-        _: python -u $jube_benchmark_home/../../scripts/finetune_deberta.py
+        _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py
       - name: executable
-        tag: relevance
-        _: python -u $jube_benchmark_home/../../scripts/finetune_deberta_relevance_classifier.py
+        tag: split
+        _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py
       - name: submit_cmd
         _: sbatch
       - name: visible_devices
@@ -236,28 +243,6 @@ parameterset:
         tag: e4
         _: ""
       - name: args_exec
-        tag: relevance
-        mode: text
-        _: >
-          --model_path ${model_path}
-          --filename_dataset_train ${filename_dataset_train}
-          --filename_dataset_validate ${filename_dataset_validate}
-          --filename_dataset_test ${filename_dataset_test}
-          --output_dir ${outdir}
-          --log_gpu_memory
-          --run_name ${run_name}
-          -jid $${SLURM_JOBID}
-          --mlflow_experiment_name maelstrom-a2-relevance
-          -lr ${lr}
-          -nepochs ${nepochs}
-          --task_name relevance_classification
-          --classifier_domain relevance
-          --batch_size ${batch_size}
-          --weight_decay ${weight_decay}
-          --iteration ${iteration}
-          ${weightsfixed}
-      - name: args_exec
-        tag: relevance
         mode: text
         _: >
           --run_folder ${run_folder}
@@ -275,6 +260,21 @@ parameterset:
           --weight_decay ${weight_decay}
           --iteration ${iteration}
           ${weightsfixed}
+      - name: args_exec
+        tag: split
+        mode: text
+        _: >
+          --filename_tweets ${filename_tweets}
+          --key_precipitation tp_h_mm
+          --precipitation_threshold_rain 0.01
+          --key_precipitation_station station_tp_mm
+          --precipitation_threshold_rain_station 0.1
+          --key_distance_weather_station station_distance_km
+          --maximum_distance_to_station 1
+          --validation_size 0.2
+          --test_size 0.2
+          --output_dir {outdir}/
+          --folder_run dataset_split_thresh0M2/
 
 patternset:
    - name: perf_patterns

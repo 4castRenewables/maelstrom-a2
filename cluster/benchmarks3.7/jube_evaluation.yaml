@@ -1,6 +1,6 @@
 name:    ap2-all
-outpath: ap2_run
-comment: MAELSTROM AP2 benchmark jube script for training
+outpath: ap2_eval
+comment: MAELSTROM AP2 benchmark jube script for evaluation
 
 parameterset:
   - name: appParameter
@@ -21,45 +21,18 @@ parameterset:
         tag: "!e4amd"
         type: string
         _: a2-benchmarking
-      - name: batch_size
-        tag: "!hps"
-        type: int
-        _: 32
-      - name: batch_size
-        tag: hps
-        type: int
-        _: 16, 32, 64
-      - name: nepochs
-        tag: "!hps"
-        type: int
-        _: 1
-      - name: nepochs
-        tag: hps
-        type: int
-        _: 1, 3, 10
-      - name: lr
-        tag: "!hps"
-        type: float
-        _: 3e-05
-      - name: lr
-        tag: hps
-        type: float
-        _: 3e-05, 7e-6
-      - name: weight_decay
-        type: float
-        _: 0.01
-      - name: weightsfixed
-        type: string
-        _: ""
       - name: key_rain
         type: string
         _: "tp_h"
+      - name: test_size
+        type: float
+        _: 0.1
       - name: model_path
         tag: "jwb|jwc"
-        _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/jobs/ap2_run/000101/000001_submit/work/output_model/ap2-all_101/checkpoint-1492
       - name: model_path
         tag: e4
-        _: /data/maelstrom/kehlert/models/deberta-v3-small
+        _: /data/maelstrom/kehlert/a2/jobs/ap2_run/000051/000001_submit/work/output_model/ap2-all_51/checkpoint-5965
       - name: indir
         type: string
         tag: "jwb|jwc"
@@ -78,18 +51,6 @@ parameterset:
         tag: "!medium+!large"
         type: string
         _: "tweets_2017_01_era5_normed_filtered_predicted_simpledeberta.nc"
-      - name: folder_split
-        type: string
-        _: /p/project/deepacf/maelstrom/ehlert1/data/dataset_split/2017-2020/
-      - name: filename_dataset_train
-        type: string
-        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc
-      - name: filename_dataset_validate
-        type: string
-        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc
-      - name: filename_dataset_test
-        type: string
-        _: ${folder_split}/RelevanceClassifierDataset2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc
       - name: slurm_output
         type: string
         _: "$jube_wp_abspath/slurm-out.%j"
@@ -221,65 +182,35 @@ parameterset:
       - name: gres
         _: gpu:$gpus
       - name: executable
-        _: python -u $jube_benchmark_home/../../scripts/finetune_deberta.py
-      - name: executable
-        tag: relevance
-        _: python -u $jube_benchmark_home/../../scripts/finetune_deberta_relevance_classifier.py
+        _: python -u $jube_benchmark_home/../../scripts/evaluate_deberta.py
       - name: submit_cmd
         _: sbatch
       - name: visible_devices
         type: string
         separator: ";"
         tag: jwc | jwb
-        _: "CUDA_VISIBLE_DEVICES=0"
+        _: "CUDA_VISIBLE_DEVICES=0,1,2,3"
       - name: visible_devices
         tag: e4
         _: ""
       - name: args_exec
-        tag: relevance
         mode: text
         _: >
-          --model_path ${model_path}
-          --filename_dataset_train ${filename_dataset_train}
-          --filename_dataset_validate ${filename_dataset_validate}
-          --filename_dataset_test ${filename_dataset_test}
-          --output_dir ${outdir}
-          --log_gpu_memory
-          --run_name ${run_name}
-          -jid $${SLURM_JOBID}
-          --mlflow_experiment_name maelstrom-a2-relevance
-          -lr ${lr}
-          -nepochs ${nepochs}
-          --task_name relevance_classification
-          --classifier_domain relevance
-          --batch_size ${batch_size}
-          --weight_decay ${weight_decay}
-          --iteration ${iteration}
-          ${weightsfixed}
-      - name: args_exec
-        tag: relevance
-        mode: text
-        _: >
-          --run_folder ${run_folder}
-          --log_gpu_memory
+          --log_gpu_memory verbose
           --run_name ${run_name}
           --data_filename ${data_filename}
-          -lr ${lr}
-          -nepochs ${nepochs}
           --data_dir ${indir}
           -jid $${SLURM_JOBID}
-          --batch_size ${batch_size}
           --key_rain ${key_rain}
           --model_path ${model_path}
           --output_dir ${outdir}
-          --weight_decay ${weight_decay}
           --iteration ${iteration}
-          ${weightsfixed}
+          --test_size ${test_size}
 
 patternset:
    - name: perf_patterns
      pattern:
-      - {name: jobid, type: int, _: "Running finetuning as args.job_id=$jube_pat_int" }
+      - {name: jobid, type: int, _: "Running evaluation as args.job_id=$jube_pat_int" }
       - {name: ntweets, type: int, _: "loaded $jube_pat_int tweets"}
       - {name: epoch, type: int, _: "Epoch\\s+$jube_pat_int"}
       - {name: run_time, type: float, _: "RUN\\s+: took ${jube_pat_fp}"}
@@ -302,6 +233,7 @@ patternset:
       - {name: time_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_int,$jube_pat_nint,$jube_pat_nint"}
       - {name: watt_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_int,$jube_pat_nint"}
       - {name: va_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_nint,$jube_pat_int"}
+
 analyser:
     name: analyse
     reduce: false
@@ -327,54 +259,36 @@ result:
       column:
         - {title: "JobID", _: jobid}
         - {title: "#tweets", _: ntweets}
-        #- {title: "#steps", _: nsteps_last}
         - {title: "devices", _: ndevices}
         - {title: "queue", _: queue}
-        #- {title: "#nodes", _: nodes}
-        - {title: "#gpu", _: n_gpu}
-        #- {title: "BS", _: batch_size}
-        - {title: "T. IO", format: ".4f", _: io_time_sum}
+        - {title: "#nodes", _: nodes}
+        - {title: "#gpu", _: gpus}
         - {title: "T. run", format: ".4f", _: run_time_last}
-        - {title: "T. training", format: ".4f", _: training_time_last}
-        - {title: "Avg. epoch", format: ".4f", _: epoch_time_avg}
-        - {title: "First epoch", format: ".4f", _: epoch_time_first}
-        #- {title: "Min epoch", format: ".4f", _: epoch_time_min}
-        #- {title: "Max epoch", format: ".4f", _: epoch_time_max}
-        - {title: "Avg. it.", format: ".4f", _: batch_time_avg}
-        - {title: "Max it.", format: ".4f", _: batch_time_max}
+        - {title: "T. IO", format: ".4f", _: io_time_sum}
         - {title: "Ev. time", format: ".4f", _: evaluation_time_max}
-        #- {title: "F. loss", format: ".4f", _: loss_last}
-        #- {title: "F. eval loss", format: ".4f", _: eval_loss_last}
-        #- {title: "M. eval loss", format: ".4f", _: eval_loss_min}
-        #- {title: "Saving time", format: ".4f", _: saving_model_time_last}
-        #- {title: "l. rate", _: lr}
-        #- {title: "min loss", format: ".4f", _: loss_min}
-        #- {title: "# epochs", _: nepochs}
-        #- {title: "Mem", format: ".4f",  _: max_memory}
+        - {title: "Mem", format: ".4f",  _: max_memory}
         - {title: "MaxMemAlloc", format: ".4f", _: gpu_max_mem_allocated_max}
         - {title: "MaxMemReserv", format: ".4f", _: gpu_max_mem_reserved_max}
-        #- {title: "Job_Time", _: timelimit}
-        #- {title: "Node(s)", _: label_pat}
-        #- {title: "Tstart", _: time_pat_first}
-        #- {title: "Tend", _: time_pat_last}
+        - {title: "Job_Time", _: timelimit}
+        - {title: "Node(s)", _: label_pat}
         - {title: "Ma.W", format: ".2f", _: watt_pat_max}
         - {title: "A.W", format: ".2f", _: watt_pat_avg}
-        #- {title: "Mi.W", format: ".4f", _: watt_pat_min}
+        - {title: "Mi.W", format: ".4f", _: watt_pat_min}
         - {title: "Ma.VA", format: ".2f", _: va_pat_max}
         - {title: "A.VA", format: ".2f", _: va_pat_avg}
-        #- {title: "Mi.VA", format: ".4f", _: va_pat_min}
+        - {title: "Mi.VA", format: ".4f", _: va_pat_min}
 
 step:
   - name: submit
     use:
-      - appParameter
-      - globalParameter
-      - systemParameter
-      - executeset
-      - from: platform.xml
-        _: jobfiles
-      - from: platform.xml
-        _: executesub
+    - appParameter
+    - globalParameter
+    - systemParameter
+    - executeset
+    - from: platform.xml
+      _: jobfiles
+    - from: platform.xml
+      _: executesub
     do:
       done_file: $ready_file
       error_file: $error_file
