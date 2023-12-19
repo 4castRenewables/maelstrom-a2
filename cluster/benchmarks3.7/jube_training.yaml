@@ -257,7 +257,7 @@ parameterset:
           --filename_tweets ${filename_tweets}
           --key_precipitation tp_h_mm
           --precipitation_threshold_rain 0.01
-          --key_precipitation_station station_tp_mm
+          --key_precipitation_station tp_mm_station
           --precipitation_threshold_rain_station 0.1
           --key_distance_weather_station station_distance_km
           --maximum_distance_to_station 1
