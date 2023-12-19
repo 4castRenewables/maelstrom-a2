@@ -68,7 +68,14 @@ parameterset:
       - name: weight_decay
         type: float
         _: 0
-
+      - name: eval_steps
+        tag: test
+        type: int
+        _: 100
+      - name: eval_steps
+        tag: "!test"
+        type: int
+        _: 500
       - name: outdir
         type: string
         _: "$jube_wp_abspath/output_model"
@@ -224,8 +231,13 @@ parameterset:
           --cls_dropout 0.1
           --lr_scheduler_type linear
           --loss default_loss
+          --save_steps 500
+          --logging_steps 1
+          --evaluation_strategy epoch
+          --eval_steps 500
           --output_dir ${outdir}
           --folder_run dataset_split_thresh0M2/
+          --log_gpu_memory
       - name: args_exec
         tag: split
         mode: text
