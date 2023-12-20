@@ -32,6 +32,18 @@ parameterset:
       - name: filename_dataset_test
         type: str
         _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_test.nc
+      - name: filename_dataset_train
+        tag: datamedium
+        type: str
+        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_train.nc
+      - name: filename_dataset_validate
+        tag: datamedium
+        type: str
+        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_validate.nc
+      - name: filename_dataset_test
+        tag: datamedium
+        type: str
+        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_test.nc
       - name: key_input
         type: string
         _: "text"
@@ -47,6 +59,9 @@ parameterset:
       - name: filename_tweets
         tag: split+!e4
         _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_01_era5_normed_filtered.nc
+      - name: filename_tweets
+        tag: split+!e4+!datamedium
+        _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_era5_normed_filtered.nc
 
       - name: model_path
         tag: "jwb|jwc"

@@ -10,6 +10,7 @@ import a2.training.tracking
 import a2.training.tracking_hugging
 import a2.training.training_deep500
 import a2.training.training_hugging
+import a2.training.model_infos
 import a2.utils.argparse
 import utils_scripts
 from a2.training import benchmarks as timer
@@ -73,7 +74,7 @@ def main(args):
     )
     print(f"{hyper_parameters=}")
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path, num_labels=args.num_labels)
-
+    print(f"{a2.training.model_infos.n_model_parameters(trainer_object.model)}")
     print(f"{dataset_train['label']=}")
     if args.log_gpu_memory:
         memory_tracker.reset_cuda_memory_monitoring()
