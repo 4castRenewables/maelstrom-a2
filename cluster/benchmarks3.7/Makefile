@@ -1,7 +1,7 @@
 jube-split-juelich-test:
 	jube run jube_training.yaml -t jwb jnvidia split test
 
-jube-split-juelich-test-datamedium:
+jube-split-juelich-datamedium-test:
 	jube run jube_training.yaml -t jwb jnvidia split test datamedium
 
 jube-train-juelich-booster-test:
@@ -9,3 +9,9 @@ jube-train-juelich-booster-test:
 
 jube-train-juelich-booster-benchs-test:
 	jube run jube_training.yaml -t jwb jnvidia test benchs
+
+jube-train-juelich-booster-datamedium-test:
+	jube run jube_training.yaml -t jwb jnvidia test datamedium
+
+jube-train-juelich-booster-datamedium-benchs-test:
+	jube run jube_training.yaml -t jwb jnvidia test datamedium benchs
