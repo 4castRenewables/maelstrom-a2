@@ -315,22 +315,22 @@ if __name__ == "__main__":
     parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
     args = parser.parse_args()
 
-    print(f"Whether to log power consumption: {args.log_gpu_power=}, ({bool(args.log_gpu_power)=})")
+    logger.info(f"Whether to log power consumption: {args.log_gpu_power=}, ({bool(args.log_gpu_power)=})")
     if args.log_gpu_power:
         with utils_energy.GetPower() as measured_scope:
-            print("Measuring Energy during main() call")
+            logger.info("Measuring Energy during main() call")
             # try:
             tracker = main(args)
         # except Exception as exc:
         #     import traceback
-        #     print(f"Errors occured during training: {exc}")
-        #     print(f"Traceback: {traceback.format_exc()}")
+        #     logger.info(f"Errors occured during training: {exc}")
+        #     logger.info(f"Traceback: {traceback.format_exc()}")
 
-        print("Energy data:")
-        print(measured_scope.df)
-        print("Energy-per-GPU-list:")
+        logger.info("Energy data:")
+        logger.info(measured_scope.df)
+        logger.info("Energy-per-GPU-list:")
         energy_int = measured_scope.energy()
-        print(f"integrated: {energy_int}")
+        logger.info(f"integrated: {energy_int}")
     else:
-        print("Not measuring energy")
+        logger.info("Not measuring energy")
         main(args)
