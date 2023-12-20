@@ -315,6 +315,7 @@ if __name__ == "__main__":
     parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
     args = parser.parse_args()
 
+    print(f"Whether to log power consumption: {args.log_gpu_power=}, ({bool(args.log_gpu_power)=})")
     if args.log_gpu_power:
         with utils_energy.GetPower() as measured_scope:
             print("Measuring Energy during main() call")
