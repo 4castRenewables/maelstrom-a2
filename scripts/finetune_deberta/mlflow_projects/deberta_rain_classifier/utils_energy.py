@@ -58,7 +58,7 @@ class GetPower(object):
 
 
 def save_energy_to_file(measured_scope, folder, file_id):
-    f = open(folder + f"EnergyFile-NVDA-{file_id}", "a")
+    f = open(folder + f"EnergyFile-NVDA-{file_id}", "w")
     logger.info("Energy data:")
     logger.info(measured_scope.df)
     measured_scope.df.to_csv(folder + "EnergyFile-NVDA-{args.id}.csv")
