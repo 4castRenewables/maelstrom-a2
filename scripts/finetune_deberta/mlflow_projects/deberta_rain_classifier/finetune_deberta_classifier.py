@@ -13,6 +13,7 @@ import a2.training.training_hugging
 import a2.training.model_infos
 import a2.utils.argparse
 import utils_scripts
+import utils_energy
 from a2.training import benchmarks as timer
 
 logging.basicConfig(
@@ -152,6 +153,7 @@ def main(args):
         memory_tracker,
         hyper_parameters=hyper_parameters,
     )
+    return tracker
 
 
 if __name__ == "__main__":
@@ -268,6 +270,11 @@ if __name__ == "__main__":
         help="Monitor Cuda memory usage.",
     )
     parser.add_argument(
+        "--log_gpu_power",
+        action="store_true",
+        help="Monitor Cuda power consumption on Juwels.",
+    )
+    parser.add_argument(
         "--ignore_tracking",
         action="store_true",
         help="Do not use mantik tracking.",
@@ -307,4 +314,21 @@ if __name__ == "__main__":
     parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
     parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
     args = parser.parse_args()
-    main(args)
+
+    if args.log_gpu_power:
+        with utils_energy.GetPower() as measured_scope:
+            print("Measuring Energy during main() call")
+        try:
+            tracker = main(args)
+        except Exception as exc:
+            import traceback
+
+            print(f"Errors occured during training: {exc}")
+            print(f"Traceback: {traceback.format_exc()}")
+        print("Energy data:")
+        print(measured_scope.df)
+        print("Energy-per-GPU-list:")
+        energy_int = measured_scope.energy()
+        print(f"integrated: {energy_int}")
+    else:
+        main(args)

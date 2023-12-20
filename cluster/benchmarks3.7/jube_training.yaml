@@ -228,6 +228,13 @@ parameterset:
       - name: visible_devices
         tag: e4
         _: ""
+      - name: args_exec_additional
+        _: >
+          ""
+      - name: args_exec_additional
+        tag: "!e4"
+        _: >
+          --log_gpu_power
       - name: args_exec
         mode: text
         _: >
@@ -260,6 +267,7 @@ parameterset:
           --output_dir ${outdir}
           --folder_run dataset_split_thresh0M2/
           --log_gpu_memory
+          ${args_exec_additional}
       - name: args_exec
         tag: split
         mode: text

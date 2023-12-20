@@ -5265,6 +5265,17 @@ scikit-learn = ">=0.18"
 scipy = ">=1.0"
 
 [[package]]
+name = "pynvml"
+version = "11.5.0"
+description = "Python Bindings for the NVIDIA Management Library"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pynvml-11.5.0-py3-none-any.whl", hash = "sha256:5cce014ac01b098d08f06178f86c37be409b80b2e903a5a03ce15eed60f55e25"},
+    {file = "pynvml-11.5.0.tar.gz", hash = "sha256:d027b21b95b1088b9fc278117f9f61b7c67f8e33a787e9f83f735f0f71ac32d0"},
+]
+
+[[package]]
 name = "pyodc"
 version = "1.3.0"
 description = "A Python interface to odc for encoding/decoding ODB-2 files."
@@ -8515,4 +8526,4 @@ llama-chatbot = ["sentencepiece", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "b1a1fd445dc599b461adaec03e9f1ee0767659f9492032f7a2619613732c8d35"
+content-hash = "236a4ed720a4119080945203a0b06df524f50d4dd8c2e4df342de2bfca67a390"

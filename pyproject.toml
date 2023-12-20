@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "a2"
-version = "0.5.0"
+version = "0.5.1"
 description = "Package for predicting information about the weather from social media data as application 2 for maelstrom project"
 authors = ["Kristian Ehlert <kristian.ehlert@4-cast.de>"]
 packages = [{ include = "a2", from = "src" }]
@@ -43,6 +43,7 @@ datasets = "^2.11.0"
 sentencepiece = { version = "^0.1.98", optional = true }
 ecmwflibs = "0.5.3"
 transformers = { version = "^4.29.2", optional = true }
+pynvml = "^11.5.0"
 
 [[tool.poetry.source]]
 name = "torch-source"
