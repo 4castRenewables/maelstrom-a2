@@ -20,9 +20,13 @@ parameterset:
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/ap2deberta.sif
 
       - name: base_path_training_set
-        tag: "!e4|!datamedium"
+        tag: "!e4+!datamedium"
         type: str
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/ap2_run/000005/000000_submit/work/output_model/dataset_split_thresh0M2/
+      - name: base_path_training_set
+        tag: "!e4+datamedium"
+        type: str
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/ap2_run/000011/000000_submit/work/output_model//dataset_split_thresh0M2/
       - name: filename_dataset_train
         tag: "!datamedium"
         type: str
@@ -38,15 +42,15 @@ parameterset:
       - name: filename_dataset_train
         tag: datamedium
         type: str
-        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_train.nc
+        _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_train.nc
       - name: filename_dataset_validate
         tag: datamedium
         type: str
-        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_validate.nc
+        _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_validate.nc
       - name: filename_dataset_test
         tag: datamedium
         type: str
-        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_test.nc
+        _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_test.nc
       - name: key_input
         type: string
         _: "text"
