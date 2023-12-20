@@ -15,7 +15,7 @@ JSC_PROJECT = ${MANTIK_UNICORE_PROJECT}
 JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 
-IMAGE_TYPE = ap2falcon
+IMAGE_TYPE = ap2deberta
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -78,6 +78,16 @@ endif
 
 install:
 	poetry install
+
+test-apptainer-image:
+	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/ap2deberta.sif \
+	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \
+    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc \
+    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc \
+    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc \
+    --model_path models/deberta-v3-small/ \
+    --output_dir /tmp/trained_model/ \
+    --debug
 
 build-python:
 	# Remove old build

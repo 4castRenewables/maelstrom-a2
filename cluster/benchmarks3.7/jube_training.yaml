@@ -124,7 +124,7 @@ parameterset:
         tag: "!e4"
         separator: |
         _:
-          ""
+          module --force purge 
       - name: systemname
         tag: jwc
         _: jwc
