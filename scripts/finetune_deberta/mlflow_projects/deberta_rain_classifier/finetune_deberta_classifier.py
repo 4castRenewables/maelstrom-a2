@@ -318,17 +318,18 @@ if __name__ == "__main__":
     if args.log_gpu_power:
         with utils_energy.GetPower() as measured_scope:
             print("Measuring Energy during main() call")
-        try:
+            # try:
             tracker = main(args)
-        except Exception as exc:
-            import traceback
+        # except Exception as exc:
+        #     import traceback
+        #     print(f"Errors occured during training: {exc}")
+        #     print(f"Traceback: {traceback.format_exc()}")
 
-            print(f"Errors occured during training: {exc}")
-            print(f"Traceback: {traceback.format_exc()}")
         print("Energy data:")
         print(measured_scope.df)
         print("Energy-per-GPU-list:")
         energy_int = measured_scope.energy()
         print(f"integrated: {energy_int}")
     else:
+        print("Not measuring energy")
         main(args)
