@@ -61,7 +61,7 @@ def save_energy_to_file(measured_scope, folder, file_id):
     f = open(folder + f"EnergyFile-NVDA-{file_id}", "w")
     logger.info("Energy data:")
     logger.info(measured_scope.df)
-    measured_scope.df.to_csv(folder + "EnergyFile-NVDA-{args.id}.csv")
+    measured_scope.df.to_csv(folder + f"EnergyFile-NVDA-{file_id}.csv")
     logger.info("Energy-per-GPU-list:")
     energy_int = measured_scope.energy()
     logger.info(f"integrated: {energy_int}")
