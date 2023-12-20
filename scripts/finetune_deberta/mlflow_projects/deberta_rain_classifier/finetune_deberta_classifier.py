@@ -74,7 +74,6 @@ def main(args):
     )
     print(f"{hyper_parameters=}")
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path, num_labels=args.num_labels)
-    print(f"{a2.training.model_infos.n_model_parameters(trainer_object.model)}")
     print(f"{dataset_train['label']=}")
     if args.log_gpu_memory:
         memory_tracker.reset_cuda_memory_monitoring()
@@ -117,6 +116,9 @@ def main(args):
         evaluation_strategy=args.evaluation_strategy,
         label=args.key_output,
     )
+    n_model_parameters = a2.training.model_infos.n_model_parameters(trainer.model)
+    print(f"{n_model_parameters=}")
+    tracker.log_params(n_model_parameters)
     tracker.log_params(trainer_object.hyper_parameters.__dict__)
     tracker.log_params(args.__dict__)
     tmr.start(timer.TimeType.TRAINING)
