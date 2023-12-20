@@ -1,8 +1,11 @@
 import time
 
+import logging
 import pandas as pd
 from pynvml import *  # noqa
 from multiprocessing import Process, Queue, Event
+
+logger = logging.getLogger(__name__)
 
 
 def power_loop(queue, event, interval):
@@ -54,19 +57,31 @@ class GetPower(object):
         return _energy
 
 
+def save_energy_to_file(measured_scope, folder, file_id):
+    f = open(folder + f"EnergyFile-NVDA-{file_id}", "a")
+    logger.info("Energy data:")
+    logger.info(measured_scope.df)
+    measured_scope.df.to_csv(folder + "EnergyFile-NVDA-{args.id}.csv")
+    logger.info("Energy-per-GPU-list:")
+    energy_int = measured_scope.energy()
+    logger.info(f"integrated: {energy_int}")
+    f.write(f"integrated: {energy_int}")
+    f.close()
+
+
 # if __name__ == "__main__":
 #     with GetPower() as measured_scope:
-#         print("Measuring Energy during main() call")
+#         logger.info("Measuring Energy during main() call")
 #         try:
 #             main(args)
 #         except Exception as exc:
 #             import traceback
 
-#             print(f"Errors occured during training: {exc}")
-#             print(f"Traceback: {traceback.format_exc()}")
-#     print("Energy data:")
+#             logger.info(f"Errors occured during training: {exc}")
+#             logger.info(f"Traceback: {traceback.format_exc()}")
+#     logger.info("Energy data:")
 
-#     print(measured_scope.df)
-#     print("Energy-per-GPU-list:")
+#     logger.info(measured_scope.df)
+#     logger.info("Energy-per-GPU-list:")
 #     energy_int = measured_scope.energy()
-#     print(f"integrated: {energy_int}")
+#     logger.info(f"integrated: {energy_int}")

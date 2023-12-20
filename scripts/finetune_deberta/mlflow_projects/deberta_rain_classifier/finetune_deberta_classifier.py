@@ -41,6 +41,7 @@ def main(args):
     path_output = utils_scripts._determine_path_output(args)
     path_figures = os.path.join(path_output, args.folder_figures)
     path_save_models = os.path.join(path_output, args.folder_saved_models)
+    path_power_logs = os.path.join(path_output, args.folder_power_logs)
 
     ds_train = utils_scripts.get_dataset(
         args,
@@ -153,7 +154,7 @@ def main(args):
         memory_tracker,
         hyper_parameters=hyper_parameters,
     )
-    return tracker
+    return tracker, path_power_logs
 
 
 if __name__ == "__main__":
@@ -305,6 +306,12 @@ if __name__ == "__main__":
         help="Relative path to trained model.",
     )
     parser.add_argument(
+        "--folder_power_logs",
+        type=str,
+        default="power/",
+        help="Relative path to power logs.",
+    )
+    parser.add_argument(
         "--folder_figures",
         type=str,
         default="figures/",
@@ -320,7 +327,7 @@ if __name__ == "__main__":
         with utils_energy.GetPower() as measured_scope:
             logger.info("Measuring Energy during main() call")
             # try:
-            tracker = main(args)
+            tracker, path_power_logs = main(args)
         # except Exception as exc:
         #     import traceback
         #     logger.info(f"Errors occured during training: {exc}")
@@ -331,6 +338,7 @@ if __name__ == "__main__":
         logger.info("Energy-per-GPU-list:")
         energy_int = measured_scope.energy()
         logger.info(f"integrated: {energy_int}")
+        utils_energy.save_energy_to_file(measured_scope, path_power_logs, args.job_id)
     else:
         logger.info("Not measuring energy")
         main(args)

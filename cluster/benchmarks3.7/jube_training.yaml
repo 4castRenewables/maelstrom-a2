@@ -267,6 +267,7 @@ parameterset:
           --output_dir ${outdir}
           --folder_run dataset_split_thresh0M2/
           --log_gpu_memory
+          --job_id $${SLURM_JOBID}
           ${args_exec_additional}
       - name: args_exec
         tag: split
