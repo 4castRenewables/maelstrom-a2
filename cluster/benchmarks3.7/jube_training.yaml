@@ -224,7 +224,7 @@ parameterset:
         type: string
         separator: ";"
         tag: jwc | jwb
-        _: "CUDA_VISIBLE_DEVICES=0"
+        _: "CUDA_VISIBLE_DEVICES=0,1,2,3"
       - name: visible_devices
         tag: e4
         _: ""
