@@ -212,10 +212,10 @@ parameterset:
         _: gpu:$gpus
 
       - name: queue
-        tag: jwb+!test
+        tag: jwb+!test+!h100
         _: booster
       - name: queue
-        tag: jwb+test
+        tag: jwb+test+!h100
         _: develbooster
       - name: queue
         tag: "e4+!e4amd"
