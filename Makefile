@@ -15,7 +15,7 @@ JSC_PROJECT = ${MANTIK_UNICORE_PROJECT}
 JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 
-IMAGE_TYPE = ap2debertaH100
+IMAGE_TYPE = ap2deberta
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -59,13 +59,6 @@ else ifeq ($(IMAGE_TYPE), ap2deberta)
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
 	KERNEL_DISPLAY_NAME := ap2deberta
-else ifeq ($(IMAGE_TYPE), ap2debertaH100)
-	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/
-	IMAGE_NAME := $(IMAGE_TYPE)
-	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_NAME)
-	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
-	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
-	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
 else
 	POETRY_EXTRAS := TRAIN
 	IMAGE_NAME := ap2python3p10
