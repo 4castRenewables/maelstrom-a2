@@ -90,7 +90,7 @@ parameterset:
         _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017-2020_era5_normed_filtered.nc
 
       - name: model_path
-        tag: "jwb|jwc"
+        tag: "jwb|jwc|h100"
         _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
       - name: model_path
         tag: e4
@@ -148,6 +148,9 @@ parameterset:
         tag: jwc
         _: jwc
       - name: systemname
+        tag: h100
+        _: jureca
+      - name: systemname
         tag: jwb
         _: jwb
   - name: executeset
@@ -172,10 +175,10 @@ parameterset:
           echo "POWERMEASUREMENT: Label = $$label";
           /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &;
       - name: power_measure_setup
-        tag: "jwb|jwc"
+        tag: "jwb|jwc|h100"
         _: ""
       - name: postprocess
-        tag: "jwb|jwc"
+        tag: "jwb|jwc|h100"
         _: ""
       - name: postprocess
         tag: e4
@@ -194,7 +197,7 @@ parameterset:
         tag: e4
         _: 1
       - name: gpus
-        tag: "jwc|jwb"
+        tag: "jwc|jwb|h100"
         _: 4
       - name: timelimit
         tag: test
@@ -205,6 +208,9 @@ parameterset:
       - name: account
         tag: jwb|jwc
         _: deepacf
+      - name: acount
+        tag: h100
+        _: exalab
       - name: account
         tag: e4
         _: maelstrom
@@ -212,10 +218,10 @@ parameterset:
         _: gpu:$gpus
 
       - name: queue
-        tag: jwb+!test+!h100
+        tag: jwb+!test
         _: booster
       - name: queue
-        tag: jwb+test+!h100
+        tag: jwb+test
         _: develbooster
       - name: queue
         tag: "e4+!e4amd"
@@ -245,7 +251,7 @@ parameterset:
       - name: visible_devices
         type: string
         separator: ";"
-        tag: jwc | jwb
+        tag: jwc|jwb|h100
         _: "CUDA_VISIBLE_DEVICES=0,1,2,3"
       - name: visible_devices
         type: string
