@@ -229,6 +229,9 @@ parameterset:
       - name: queue
         tag: jwc+test
         _: develgpus
+      - name: queue
+        tag: h100
+        _: dc-h100
 
       - name: execution_command
         _: apptainer run --nv ${path_apptainer_image}
