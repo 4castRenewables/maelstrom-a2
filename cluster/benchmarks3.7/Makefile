@@ -4,6 +4,9 @@ jube-split-juelich-test:
 jube-split-juelich-datamedium-test:
 	jube run jube_training.yaml -t jwb jnvidia split test datamedium
 
+jube-split-juelich-datalarge-test:
+	jube run jube_training.yaml -t jwb jnvidia split test datalarge
+
 jube-train-juelich-booster-test:
 	jube run jube_training.yaml -t jwb jnvidia test
 
