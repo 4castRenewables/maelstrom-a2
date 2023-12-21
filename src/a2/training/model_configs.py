@@ -7,7 +7,7 @@ import transformers
 
 
 SUPPORTED_MODELS: Literal = ["deberta_base", "deberta_small", "electra_base"]
-SUPPORTED_TRAINERS: Literal = ["default", None]
+SUPPORTED_TRAINERS: Literal = ["default", "deep500", None]
 SUPPORTED_LOSSES: Literal = ["default_loss", "focal_loss"]
 
 
@@ -46,6 +46,10 @@ def get_customized_trainer_class(trainer_name: SUPPORTED_TRAINERS, method_overwr
         method_overwrites = []
     if trainer_name == "default" or trainer_name is None:
         trainer = transformers.Trainer
+    if trainer_name == "deep500" or trainer_name is None:
+        import a2.training.training_deep500
+
+        trainer = a2.training.training_deep500.TrainerWithTimer
     else:
         raise ValueError(f"{trainer_name=} not supported ({SUPPORTED_MODELS=})!")
 

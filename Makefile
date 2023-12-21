@@ -79,7 +79,7 @@ endif
 install:
 	poetry install
 
-test-apptainer-image:
+test-apptainer-image-training:
 	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/ap2deberta.sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \
     --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc \
@@ -87,7 +87,14 @@ test-apptainer-image:
     --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc \
     --model_path models/deberta-v3-small/ \
     --output_dir /tmp/trained_model/ \
+    --trainer_name deep500 \
     --debug
+
+test-apptainer-image-split:
+	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/ap2deberta.sif \
+	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
+    --filename_tweets /home/kristian/Projects/a2/data/tweets/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc \
+    --output_dir /tmp/dataset_rain_classifier/
 
 build-python:
 	# Remove old build

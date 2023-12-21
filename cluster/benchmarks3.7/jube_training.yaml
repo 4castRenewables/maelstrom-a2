@@ -20,23 +20,27 @@ parameterset:
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/ap2deberta.sif
 
       - name: base_path_training_set
-        tag: "!e4+!datamedium"
+        tag: "!e4+!datamedium+!datalarge"
         type: str
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/ap2_run/000005/000000_submit/work/output_model/dataset_split_thresh0M2/
       - name: base_path_training_set
         tag: "!e4+datamedium"
         type: str
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/ap2_run/000011/000000_submit/work/output_model//dataset_split_thresh0M2/
+      - name: base_path_training_set
+        tag: "!e4+datalarge"
+        type: str
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/ap2_run/000011/000000_submit/work/output_model//dataset_split_thresh0M2/
       - name: filename_dataset_train
-        tag: "!datamedium"
+        tag: "!datamedium+!datalarge"
         type: str
         _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_train.nc
       - name: filename_dataset_validate
-        tag: "!datamedium"
+        tag: "!datamedium+!datalarge"
         type: str
         _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_validate.nc
       - name: filename_dataset_test
-        tag: "!datamedium"
+        tag: "!datamedium+!datalarge"
         type: str
         _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_test.nc
       - name: filename_dataset_train
@@ -51,6 +55,18 @@ parameterset:
         tag: datamedium
         type: str
         _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_test.nc
+      - name: filename_dataset_train
+        tag: datalarge
+        type: str
+        _: ${base_path_training_set}/tweets_2017-2020_era5_normed_filtered_train.nc
+      - name: filename_dataset_validate
+        tag: datalarge
+        type: str
+        _: ${base_path_training_set}/tweets_2017-2020_era5_normed_filtered_validate.nc
+      - name: filename_dataset_test
+        tag: datalarge
+        type: str
+        _: ${base_path_training_set}/tweets_2017-2020_era5_normed_filtered_test.nc
       - name: key_input
         type: string
         _: "text"
@@ -69,6 +85,9 @@ parameterset:
       - name: filename_tweets
         tag: split+!e4+datamedium
         _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_era5_normed_filtered.nc
+      - name: filename_tweets
+        tag: split+!e4+datalarge
+        _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017-2020_era5_normed_filtered.nc
 
       - name: model_path
         tag: "jwb|jwc"
@@ -253,7 +272,7 @@ parameterset:
           --model_path ${model_path}
           --model_name ${model_name}
           --num_labels 2
-          --trainer_name default
+          --trainer_name deep500
           --random_seed 42
           --epochs ${epochs}
           --batch_size ${batch_size}
