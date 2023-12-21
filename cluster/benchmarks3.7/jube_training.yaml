@@ -249,7 +249,7 @@ parameterset:
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py
       - name: executable
         tag: h100
-        _: ${execution_command} export PYTHONPATH=$(pwd)/h100_packages/local/lib/python3.10/ cdist-packages/:$PYTHONPATH && python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py
+        _: ${execution_command} export PYTHONPATH=$(pwd)/h100_packages/local/lib/python3.10/dist-packages/:$PYTHONPATH && python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py
       - name: executable
         tag: split
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py
