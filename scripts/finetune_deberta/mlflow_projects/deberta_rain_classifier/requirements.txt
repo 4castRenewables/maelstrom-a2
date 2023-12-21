@@ -1,6 +1,5 @@
 a2[benchmarks]
 bottleneck
-torch
 datasets
 transformers
 sentencepiece

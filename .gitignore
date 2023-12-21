@@ -20,7 +20,7 @@ notebooks/*.nc
 *.coverage.*
 *#*#
 **/*.sif
-*.txt
+
 *.nc
 models/
 mlprojects/
