@@ -15,7 +15,7 @@ JSC_PROJECT = ${MANTIK_UNICORE_PROJECT}
 JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 
-IMAGE_TYPE = ap2deberta
+IMAGE_TYPE = ap2debertaH100
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -59,6 +59,13 @@ else ifeq ($(IMAGE_TYPE), ap2deberta)
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
 	KERNEL_DISPLAY_NAME := ap2deberta
+else ifeq ($(IMAGE_TYPE), ap2debertaH100)
+	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/
+	IMAGE_NAME := $(IMAGE_TYPE)
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_NAME)
+	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
+	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
 else
 	POETRY_EXTRAS := TRAIN
 	IMAGE_NAME := ap2python3p10
@@ -95,6 +102,9 @@ test-apptainer-image-split:
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
     --filename_tweets /home/kristian/Projects/a2/data/tweets/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc \
     --output_dir /tmp/dataset_rain_classifier/
+
+test-apptainer-run:
+	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/ap2deberta.sif 
 
 build-python:
 	# Remove old build
