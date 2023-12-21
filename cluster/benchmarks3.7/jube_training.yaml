@@ -30,7 +30,7 @@ parameterset:
       - name: base_path_training_set
         tag: "!e4+datalarge"
         type: str
-        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/ap2_run/000011/000000_submit/work/output_model//dataset_split_thresh0M2/
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/ap2_run/000033/000000_submit/work/output_model//dataset_split_thresh0M2/
       - name: filename_dataset_train
         tag: "!datamedium+!datalarge"
         type: str

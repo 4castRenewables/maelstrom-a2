@@ -18,3 +18,6 @@ jube-train-juelich-booster-datamedium-test:
 
 jube-train-juelich-booster-datamedium-benchs-test:
 	jube run jube_training.yaml -t jwb jnvidia test datamedium benchs
+
+jube-train-juelich-booster-datalarge-test:
+	jube run jube_training.yaml -t jwb jnvidia test datalarge
