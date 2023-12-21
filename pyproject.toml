@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "a2"
-version = "0.6.0"
+version = "0.6.1"
 description = "Package for predicting information about the weather from social media data as application 2 for maelstrom project"
 authors = ["Kristian Ehlert <kristian.ehlert@4-cast.de>"]
 packages = [{ include = "a2", from = "src" }]
@@ -8,7 +8,6 @@ packages = [{ include = "a2", from = "src" }]
 [tool.poetry.dependencies]
 # torch = {url = "https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp310-cp310-linux_x86_64.whl", optional = true} # cannot upload this to package
 python = ">=3.10,<3.12"
-jupyterlab = "^3.4.3"
 requests = "^2.28.1"
 pandas = "^1.4.2"
 DateTime = "^4.4"
@@ -18,7 +17,6 @@ emoji = "<1.0.0"
 dask = "^2022.6.1"
 ipywidgets = "^7.7.1"
 spacymoji = "^3.0.1"
-wget = "^3.2"
 jsonlines = "^3.1.0"
 tweepy = "^4.10.0"
 Shapely = "^1.8.2"
@@ -32,11 +30,9 @@ scikit-learn = "^1.1.2"
 kaleido = "0.2.1"
 rioxarray = "^0.12.2"
 rasterio = "^1.3.3"
-convertbng = "^0.6.39"
 plotly = "^5.11.0"
 seaborn = "^0.12.1"
 geopy = "^2.3.0"
-click = "^8.1.3"
 ipython = "^8.7.0"
 llvmlite = "^0.39.1"
 datasets = "^2.11.0"
@@ -44,6 +40,7 @@ sentencepiece = { version = "^0.1.98", optional = true }
 ecmwflibs = "0.5.3"
 transformers = { version = "^4.29.2", optional = true }
 pynvml = "^11.5.0"
+ipykernel = "^6.27.1"
 
 [[tool.poetry.source]]
 name = "torch-source"
