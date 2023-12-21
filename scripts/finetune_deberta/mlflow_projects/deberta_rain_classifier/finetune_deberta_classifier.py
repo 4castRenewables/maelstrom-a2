@@ -41,6 +41,7 @@ def main(args):
     path_output = utils_scripts._determine_path_output(args)
     path_figures = os.path.join(path_output, args.folder_figures)
     path_save_models = os.path.join(path_output, args.folder_saved_models)
+    path_power_logs = None
     if args.log_gpu_power:
         path_power_logs = os.path.join(path_output, args.folder_power_logs)
         a2.utils.file_handling.make_directories(path_power_logs)

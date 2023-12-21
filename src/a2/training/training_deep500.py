@@ -113,21 +113,19 @@ class TrainerWithTimer(Trainer):
         if is_sagemaker_mp_enabled():
             loss_mb = smp_forward_backward(model, inputs, self.args.gradient_accumulation_steps)
             return loss_mb.reduce_mean().detach().to(self.args.device)
-
         if self.tmr:
             self.tmr.start(timer.TimeType.FORWARD, gpu=self.tmr_gpu)
+
         with self.compute_loss_context_manager():
             loss = self.compute_loss(model, inputs)
+
+        if self.args.n_gpu > 1:
+            loss = loss.mean()  # mean() to average on multi-gpu parallel training
         if self.tmr:
             self.tmr.end(timer.TimeType.FORWARD, gpu=self.tmr_gpu)
             self.tmr.start(timer.TimeType.BACKWARD, gpu=self.tmr_gpu)
 
-        if self.args.n_gpu > 1:
-            loss = loss.mean()  # mean() to average on multi-gpu parallel training
-
-        if self.do_grad_scaling:
-            self.scaler.scale(loss).backward()
-        elif self.use_apex:
+        if self.use_apex:
             with amp.scale_loss(loss, self.optimizer) as scaled_loss:
                 scaled_loss.backward()
         else:
@@ -137,48 +135,8 @@ class TrainerWithTimer(Trainer):
 
         return loss.detach() / self.args.gradient_accumulation_steps
 
-    def get_train_dataloader(self):
-        if self.train_dataset is None:
-            raise ValueError("Trainer: training requires a train_dataset.")
-
-        train_dataset = self.train_dataset
-        data_collator = self.data_collator
-        if is_datasets_available() and isinstance(train_dataset, datasets.Dataset):
-            train_dataset = self._remove_unused_columns(train_dataset, description="training")
-        else:
-            data_collator = self._get_collator_with_removed_columns(data_collator, description="training")
-
-        if isinstance(train_dataset, torch.utils.data.IterableDataset):
-            if self.args.world_size > 1:
-                train_dataset = IterableDatasetShard(
-                    train_dataset,
-                    batch_size=self._train_batch_size,
-                    drop_last=self.args.dataloader_drop_last,
-                    num_processes=self.args.world_size,
-                    process_index=self.args.process_index,
-                )
-
-            dl = DataLoader(
-                train_dataset,
-                batch_size=self.args.per_device_train_batch_size,
-                collate_fn=data_collator,
-                num_workers=self.args.dataloader_num_workers,
-                pin_memory=self.args.dataloader_pin_memory,
-            )
-        else:
-            train_sampler = self._get_train_sampler()
-
-            dl = DataLoader(
-                train_dataset,
-                batch_size=self._train_batch_size,
-                sampler=train_sampler,
-                collate_fn=data_collator,
-                drop_last=self.args.dataloader_drop_last,
-                num_workers=self.args.dataloader_num_workers,
-                pin_memory=self.args.dataloader_pin_memory,
-                worker_init_fn=seed_worker,
-            )
-
+    def get_train_dataloader(self) -> DataLoader:
+        dl = super().get_train_dataloader()
         if self.tmr:
             return TimeLoaderWrapper(dl, self.tmr)
         return dl
