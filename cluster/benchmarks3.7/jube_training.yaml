@@ -18,6 +18,10 @@ parameterset:
         tag: "jnvidia"
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/ap2deberta.sif
+      - name: path_apptainer_image
+        tag: "h100"
+        type: string
+        _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/ap2deberta.sif
 
       - name: base_path_training_set
         tag: "!e4+!datamedium+!datalarge"
@@ -243,6 +247,9 @@ parameterset:
         _: apptainer run --nv ${path_apptainer_image}
       - name: executable
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py
+      - name: executable
+        tag: h100
+        _: ${execution_command} export PYTHONPATH=$(pwd)/h100_packages/local/lib/python3.10/ cdist-packages/:$PYTHONPATH && python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py
       - name: executable
         tag: split
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py

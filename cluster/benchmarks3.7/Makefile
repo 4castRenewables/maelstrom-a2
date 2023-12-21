@@ -13,6 +13,9 @@ jube-train-juelich-booster-test:
 jube-train-juelich-booster-benchs-test:
 	jube run jube_training.yaml -t jwb jnvidia test benchs
 
+jube-train-juelich-h100-datamedium-test:
+	jube run jube_training.yaml -t jwb h100 test datamedium
+
 jube-train-juelich-booster-datamedium-test:
 	jube run jube_training.yaml -t jwb jnvidia test datamedium
 
