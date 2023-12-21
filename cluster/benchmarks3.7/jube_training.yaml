@@ -250,6 +250,11 @@ parameterset:
         tag: gpusingle
         _: "CUDA_VISIBLE_DEVICES=0"
       - name: visible_devices
+        type: string
+        separator: ";"
+        tag: gpudouble
+        _: "CUDA_VISIBLE_DEVICES=0,1"
+      - name: visible_devices
         tag: e4
         _: ""
       - name: args_exec_additional
