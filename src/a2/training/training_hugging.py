@@ -186,7 +186,7 @@ class HuggingFaceTrainerClass:
             raise ValueError(
                 f"Need to specify dataset {dataset=} for training.\nFor evaluation set `evaluat=True` ({evaluate=})!"
             )
-        if not a2.training.utils_training.gpu_available():
+        if not a2.training.utils_training.cuda_available():
             fp16 = False
         if hyper_parameters is None:
             hyper_parameters = HyperParametersHuggingFaceClassifier()

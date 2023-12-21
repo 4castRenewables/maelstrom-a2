@@ -25,6 +25,8 @@ logger = logging.getLogger(__name__)
 def main(args):
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     memory_tracker = a2.training.benchmarks.CudaMemoryMonitor()
+    if a2.training.utils_training.cuda_available():
+        logger.info(f"Running on device: {a2.training.utils_training.available_cuda_devices_names()}.")
     if args.log_gpu_memory:
         memory_tracker.reset_cuda_memory_monitoring()
     os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
@@ -108,7 +110,7 @@ def main(args):
         folder_output=path_save_models,
         hyper_tuning=False,
         disable_tqdm=True,
-        fp16=True if a2.training.utils_training.gpu_available() else False,
+        fp16=True if a2.training.utils_training.cuda_available() else False,
         callbacks=[
             a2.training.training_deep500.TimerCallback(tmr, gpu=True),
             a2.training.tracking_hugging.LogCallback(tracker),

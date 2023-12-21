@@ -107,7 +107,7 @@ def make_predictions_loaded_model(
     -------
     truth, predictions, prediction_probabilities
     """
-    if not a2.training.utils_training.gpu_available():
+    if not a2.training.utils_training.cuda_available():
         fp16 = False
         warnings.warn(f"16-bit evaluation only available on systems with GPU. Setting {fp16=}")
     if folder_tokenizer is None:
