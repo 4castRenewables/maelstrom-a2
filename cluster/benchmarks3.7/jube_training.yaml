@@ -251,7 +251,9 @@ parameterset:
         tag: h100
         _: >
           ${execution_command} bash -c '
-          export PYTHONPATH=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/h100_packages/local/lib/python3.10/dist-packages/:$PYTHONPATH; 
+          cd ${jube_benchmark_home}/dependencies; 
+          pip install * -f ./ --no-index; 
+          cd ${jube_benchmark_home};
           python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}'
       - name: executable
         tag: split
