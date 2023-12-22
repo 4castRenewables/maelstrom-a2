@@ -1,5 +1,33 @@
 # Train and evaluate on cluster with JUBE
 
+
+## Environment for H100 (analogous for MI250)
+### Locations images
+- Tensorflow containers
+    - MI250x: container - rocm/tensorflow:rocm5.7-tf2.13-dev
+    - H100: container - nvcr.io/nvidia/tensorflow:23.10-tf2-py3
+- PyTorch containers
+    - MI250x: container - rocm/pytorch:rocm5.7_ubuntu22.04_py3.10_pytorch_2.0.1
+    - H100: container - nvcr.io/nvidia/pytorch:23.10-py3
+### Pull and build containers (on cluster)
+```bash
+container=nvcr.io/nvidia/pytorch:23.10-py3
+export APPTAINER_CACHEDIR=$PROJECT/maelstrom/$USER/apptainercache/
+apptainer pull --tmpdir $PROJECT/maelstrom/$USER/apptainertmpdir/ docker://${container}
+```
+### Install packages locally and pull into container
+```bash
+apptainer run --nv pytorch_23.10-py3.sif
+pip install -I --prefix=$(pwd)/h100_packages/ -r ../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/requirements.txt
+```
+### Test setup locally 
+```bash
+apptainer run --nv pytorch_23.10-py3.sif
+export PYTHONPATH=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/h100_packages/local/lib/python3.10/dist-packages:$PYTHONPATH
+python3 -c "import transformers"
+```
+
+
 ## Setup environment
 1. Install Miniconda (see [docs](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)).
 2. Create environment `a2-benchmarking` and install required packages.
