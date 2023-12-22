@@ -152,10 +152,10 @@ parameterset:
         tag: "h100"
         separator: |
         _: |
-          module --force purge;
-          export PYTHONPATH=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/h100_packages/local/lib/python3.10/dist-packages:$PYTHONPATH; 
-          export PYTHONPATH=/usr/local/lib/python3.10/dist-packages/:$PYTHONPATH; 
-          echo $PYTHONPATH; 
+          module --force purge
+          export PYTHONPATH=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/h100_packages/local/lib/python3.10/dist-packages:$PYTHONPATH
+          export PYTHONPATH=/usr/local/lib/python3.10/dist-packages/:$PYTHONPATH
+          echo $PYTHONPATH
       - name: modules
         tag: "!e4+!h100"
         separator: |
