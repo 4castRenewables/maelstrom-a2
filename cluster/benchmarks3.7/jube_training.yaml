@@ -22,6 +22,10 @@ parameterset:
         tag: "h100"
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/pytorch_23.10-py3.sif
+      - name: path_apptainer_image
+        tag: "mi250"
+        type: string
+        _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/pytorch_rocm5.7_ubuntu22.04_py3.10_pytorch_2.0.1.sif
 
       - name: base_path_training_set
         tag: "!e4+!datamedium+!datalarge"
@@ -94,7 +98,7 @@ parameterset:
         _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017-2020_era5_normed_filtered.nc
 
       - name: model_path
-        tag: "jwb|jwc|h100"
+        tag: "jwb|jwc|h100|mi250"
         _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
       - name: model_path
         tag: e4
@@ -150,6 +154,14 @@ parameterset:
           module --force purge 
       - name: modules
         tag: "h100"
+        separator: |
+        _: |
+          module --force purge
+          export PYTHONPATH=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/h100_packages/local/lib/python3.10/dist-packages:$PYTHONPATH
+          export PYTHONPATH=/usr/local/lib/python3.10/dist-packages/:$PYTHONPATH
+          echo $PYTHONPATH
+      - name: modules
+        tag: "mi250"
         separator: |
         _: |
           module --force purge
