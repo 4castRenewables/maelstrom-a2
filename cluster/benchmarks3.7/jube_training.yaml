@@ -427,23 +427,23 @@ result:
         - {title: "gres", _: gres}
         #- {title: "BS", _: batch_size}
         - {title: "T. run", format: ".4f", _: run_time_last}
-        - {title: "T. training", format: ".4f", _: training_time_last}
-        - {title: "Ev. time", format: ".4f", _: evaluation_time_max}
-        - {title: "Avg. epoch", format: ".4f", _: epoch_time_avg}
+        - {title: "T. train", format: ".4f", _: training_time_last}
+        - {title: "T. eval", format: ".4f", _: evaluation_time_max}
+        - {title: "epoch", format: ".4f", _: epoch_time_avg}
         - {title: "T. IO", format: ".4f", _: io_time_sum}
         #- {title: "Min epoch", format: ".4f", _: epoch_time_min}
         #- {title: "Max epoch", format: ".4f", _: epoch_time_max}
         - {title: "Avg. it.", format: ".4f", _: batch_time_avg}
         - {title: "Max it.", format: ".4f", _: batch_time_max}
-        - {title: "F. loss", format: ".4f", _: loss_last}
-        - {title: "F. eval loss", format: ".4f", _: eval_loss_last}
+        - {title: "loss", format: ".4f", _: loss_last}
+        - {title: "evloss", format: ".4f", _: eval_loss_last}
         #- {title: "M. eval loss", format: ".4f", _: eval_loss_min}
         #- {title: "Saving time", format: ".4f", _: saving_model_time_last}
         #- {title: "l. rate", _: lr}
         #- {title: "min loss", format: ".4f", _: loss_min}
         #- {title: "# epochs", _: epochs}
-        - {title: "MaxMemCPU", format: ".4f",  _: max_memory}
-        - {title: "MaxMemAllocGPU", format: ".4f", _: gpu_max_mem_allocated_max}
+        - {title: "MaMemCPU", format: ".4f",  _: max_memory}
+        - {title: "MaMemGPU", format: ".4f", _: gpu_max_mem_allocated_max}
         # - {title: "MaxMemReservGPU", format: ".4f", _: gpu_max_mem_reserved_max}
         #- {title: "Job_Time", _: timelimit}
         #- {title: "Node(s)", _: label_pat}
