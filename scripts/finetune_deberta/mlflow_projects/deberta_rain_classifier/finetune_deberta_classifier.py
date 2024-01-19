@@ -13,7 +13,6 @@ import a2.training.training_hugging
 import a2.training.model_infos
 import a2.utils.argparse
 import utils_scripts
-import utils_energy
 from a2.training import benchmarks as timer
 
 logging.basicConfig(
@@ -329,6 +328,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     logger.info(f"Whether to log power consumption: {args.log_gpu_power=}, ({bool(args.log_gpu_power)=})")
+
+    hardware = "nvidia" if "CUDA_VERSION" in os.environ else "amd"
+    logger.info(f"Assuming ${hardware} GPU hardware")
+
+    if hardware == "amd":
+        import utils_energy_amd as utils_energy
+    else:
+        import utils_energy_nvidia as utils_energy
+
     if args.log_gpu_power:
         with utils_energy.GetPower() as measured_scope:
             logger.info("Measuring Energy during main() call")
