@@ -1,8 +1,11 @@
 import time
+import logging
 
 import pandas as pd
 from rsmiBindings import *
 from multiprocessing import Process, Queue, Event
+
+logger = logging.getLogger(__name__)
 
 
 def power_loop(queue, event, interval):
@@ -85,6 +88,18 @@ class GetPower(object):
         return _energy, self.energy_list_counter
 
 
+def save_energy_to_file(measured_scope, folder, file_id):
+    f = open(folder + f"EnergyFile-AMD-{file_id}", "w")
+    logger.info("Energy data:")
+    logger.info(measured_scope.df)
+    measured_scope.df.to_csv(folder + f"EnergyFile-AMD-{file_id}.csv")
+    logger.info("Energy-per-GPU-list:")
+    energy_int = measured_scope.energy()
+    logger.info(f"integrated: {energy_int}")
+    f.write(f"integrated: {energy_int}")
+    f.close()
+
+
 if __name__ == "__main__":
     with GetPower() as measured_scope:
         print("Measuring Energy during main() call")
@@ -101,4 +116,3 @@ if __name__ == "__main__":
     energy_int, energy_cnt = measured_scope.energy()
     print(f"integrated: {energy_int}")
     print(f"from counter: {energy_cnt}")
-    f.close()
