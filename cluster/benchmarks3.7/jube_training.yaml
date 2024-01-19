@@ -238,7 +238,7 @@ parameterset:
         tag: jwb|jwc
         _: deepacf
       - name: account
-        tag: h100
+        tag: h100|mi250
         _: exalab
       - name: account
         tag: e4
