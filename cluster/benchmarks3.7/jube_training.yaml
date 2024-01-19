@@ -228,6 +228,9 @@ parameterset:
       - name: gpus
         tag: "jwc|jwb|h100"
         _: 4
+      - name: gpus
+        tag: "mi250"
+        _: 1
       - name: timelimit
         tag: test
         _: "01:00:00"
