@@ -371,7 +371,7 @@ patternset:
    - name: perf_patterns
      pattern:
       - {name: jobid, type: int, _: "Running finetuning as args.job_id=$jube_pat_int" }
-      - {name: jobid, type: int, _: "Running on nodes ${jube_pat_wrd}"}
+      - {name: node_names, type: int, _: "Running on nodes ${jube_pat_wrd}"}
       - {name: ntweets, type: int, _: "loaded $jube_pat_int tweets"}
       - {name: epoch, type: int, _: "Epoch\\s+$jube_pat_int"}
       - {name: run_time, type: float, _: "RUN\\s+: took ${jube_pat_fp}"}
@@ -423,7 +423,7 @@ result:
         - {title: "devices", _: ndevices}
         - {title: "queue", _: queue}
         #- {title: "#nodes", _: nodes}
-        - {title: "nodes", _: $$SLURM_NODELIST}
+        - {title: "nodes", _: node_names}
         - {title: "gres", _: gres}
         #- {title: "BS", _: batch_size}
         - {title: "T. run", format: ".4f", _: run_time_last}
