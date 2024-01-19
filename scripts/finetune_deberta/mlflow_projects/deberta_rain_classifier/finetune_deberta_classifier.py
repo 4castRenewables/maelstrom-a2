@@ -47,6 +47,7 @@ def main(args):
     if args.log_gpu_power:
         path_power_logs = os.path.join(path_output, args.folder_power_logs)
         a2.utils.file_handling.make_directories(path_power_logs)
+        logger.info(f"Creating folder to save power logs at {path_power_logs}.")
 
     ds_train = utils_scripts.get_dataset(
         args,
