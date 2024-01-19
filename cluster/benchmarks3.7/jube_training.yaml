@@ -230,7 +230,7 @@ parameterset:
         _: 4
       - name: gpus
         tag: "mi250"
-        _: 1
+        _: "None"
       - name: timelimit
         tag: test
         _: "01:00:00"
@@ -273,9 +273,14 @@ parameterset:
       - name: queue
         tag: "mi250"
         _: "dc-mi200"
+      - name: apptainerbind
+        _: "--nv"
+      - name: apptainerbind
+        tag: "mi250"
+        _: "--rocm"
 
       - name: execution_command
-        _: apptainer run --nv ${path_apptainer_image}
+        _: apptainer run ${apptainerbind} ${path_apptainer_image}
       - name: executable
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
