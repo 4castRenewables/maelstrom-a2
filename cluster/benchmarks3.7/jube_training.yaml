@@ -267,6 +267,9 @@ parameterset:
       - name: queue
         tag: h100
         _: dc-h100
+      - name: queue
+        tag: "mi250"
+        _: "dc-mi200"
 
       - name: execution_command
         _: apptainer run --nv ${path_apptainer_image}
