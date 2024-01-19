@@ -44,7 +44,7 @@ class GetPower(object):
         power_value_dict = self.power_queue.get()
         self.smip.join()
 
-        print("Writing dataset context for energy measurement!")
+        print("Writing dataset in exit context for energy measurement!")
         self.df = pd.DataFrame(power_value_dict)
 
     def energy(self):
