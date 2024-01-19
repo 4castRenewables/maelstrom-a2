@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "a2"
-version = "0.7.0"
+version = "0.7.2"
 description = "Package for predicting information about the weather from social media data as application 2 for maelstrom project"
 authors = ["Kristian Ehlert <kristian.ehlert@4-cast.de>"]
 packages = [{ include = "a2", from = "src" }]
@@ -15,7 +15,7 @@ ipywidgets = "^7.7.1"
 pandas = "^1.4.2"
 xarray = {extras = ["io"], version = "^2023.12.0"}
 Shapely = "^1.8.2"
-pyproj = "^3.3.1"
+pyproj = { version = "^3.3.1", optional = true }
 rioxarray = "^0.12.2"
 geopy = "^2.3.0"
 rasterio = "^1.3.3"
@@ -89,6 +89,7 @@ llama-chatbot = ["transformers", "sentencepiece"]
 extend-exclude = ["helper_deep500.py"]
 tweets = ["tweepy", "emoji", "requests", "jsonlines", "spacymoji"]
 benchmarks = ["pynvml"]
+coordinates = ["pyproj"]
 
 [tool.poetry.group.parallel.dependencies]
 p-tqdm = "^1.4.0"

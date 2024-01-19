@@ -15,10 +15,11 @@ JSC_PROJECT = ${MANTIK_UNICORE_PROJECT}
 JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 
-IMAGE_TYPE = ap2deberta
+IMAGE_TYPE = ap2rocm
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
+APPTAINER_DIR := ""
 ifeq ($(IMAGE_TYPE), llama)
 	POETRY_EXTRAS := llama-chatbot torch
 	IMAGE_NAME := ap2python3p10llama
@@ -40,6 +41,15 @@ else ifeq ($(IMAGE_TYPE), ap2falcon)
 	APPTAINER_DIR := scripts/relevance_dataset_generation/mlflow_projects/
 	POETRY_EXTRAS := ""
 	IMAGE_NAME := $(IMAGE_TYPE)
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
+	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
+	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
+else ifeq ($(IMAGE_TYPE), ap2rocm)
+	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/
+	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
+	POETRY_EXTRAS := ""
+	IMAGE_NAME := a2-rocm
 	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
@@ -80,24 +90,24 @@ install:
 	poetry install
 
 test-apptainer-image-training:
-	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/ap2deberta.sif \
+	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \
-    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc \
-    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc \
-    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc \
+    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc \
+    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc \
+    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc \
     --model_path models/deberta-v3-small/ \
     --output_dir /tmp/trained_model/ \
     --trainer_name deep500 \
     --debug
 
 test-apptainer-image-split:
-	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/ap2deberta.sif \
+	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
-    --filename_tweets /home/kristian/Projects/a2/data/tweets/2017_2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc \
+    --filename_tweets /home/kristian/Projects/a2/data/tweets/2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc \
     --output_dir /tmp/dataset_rain_classifier/
 
 test-apptainer-image-run:
-	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/ap2deberta.sif 
+	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif 
 
 build-python:
 	# Remove old build
@@ -113,11 +123,11 @@ build-conda-env: build-python
 	pip install --user ipykernel
 	python -m ipykernel install --user --name=$(IMAGE_NAME)
 
-build-docker: build-python
-	sudo docker build -t $(IMAGE_NAME):latest -f mlflow/Dockerfile .
+build-docker:
+	sudo docker build --progress=plain -t $(IMAGE_NAME):latest -f $(DOCKER_DIR)/$(IMAGE_NAME).Dockerfile .
 
-build-apptainer: build-python
-	sudo apptainer build --force mlflow/$(IMAGE_NAME).sif mlflow/recipe.def
+build-apptainer:
+	sudo apptainer build --force $(APPTAINER_DIR)/$(IMAGE_NAME).sif $(APPTAINER_DIR)/$(IMAGE_NAME).def 
 
 
 build: build-docker build-apptainer

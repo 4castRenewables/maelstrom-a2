@@ -44,7 +44,7 @@ apptainer pull --tmpdir $PROJECT/maelstrom/$USER/apptainertmpdir/ docker://${con
 ### Install packages locally and pull into container
 ```bash
 apptainer run --nv pytorch_rocm5.7_ubuntu22.04_py3.10_pytorch_2.0.1.sif
-pip install -I --prefix=$(pwd)/mi250_packages/ -r../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/requirements.txt
+python3 -m pip install -I --prefix=$(pwd)/mi250_packages/ -r../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/requirements_rocm.txt
 ```
 ### Test setup locally 
 ```bash

@@ -1,0 +1,29 @@
+Bootstrap: docker-daemon
+From: a2-rocm:latest
+
+%post
+    # Install ipykernel for usage as Jupyter kernel
+    pip install ipykernel
+
+%test
+    which python
+    python --version
+    pip list
+    python -c 'import rsmiBindings'
+    python -c 'import a2, torch, torchvision, ipykernel'
+    python -c 'import torch.distributed.distributed_c10d as c10d; assert c10d._NCCL_AVAILABLE, "NCCL not available"'
+    python -c 'from torch._C._distributed_c10d import ProcessGroupNCCL'
+
+%startscript
+    exec "$@"
+
+%runscript
+    echo "[$(date)] Running a2"
+    echo "Arguments: $*"
+    echo "Running command"
+    exec "$@"
+
+%labels
+    Author Kristan Ehlert
+    Version rocm5.6-py3.10
+
