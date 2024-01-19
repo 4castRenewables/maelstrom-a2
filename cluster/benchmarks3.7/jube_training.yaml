@@ -371,7 +371,7 @@ patternset:
    - name: perf_patterns
      pattern:
       - {name: jobid, type: int, _: "Running finetuning as args.job_id=$jube_pat_int" }
-      - {name: node_names, type: int, _: "Running on nodes ${jube_pat_wrd}"}
+      - {name: node_names, type: string, _: "Running on nodes ${jube_pat_wrd}"}
       - {name: ntweets, type: int, _: "loaded $jube_pat_int tweets"}
       - {name: epoch, type: int, _: "Epoch\\s+$jube_pat_int"}
       - {name: run_time, type: float, _: "RUN\\s+: took ${jube_pat_fp}"}

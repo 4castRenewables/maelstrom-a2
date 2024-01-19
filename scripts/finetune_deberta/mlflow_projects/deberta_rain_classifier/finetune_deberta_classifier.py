@@ -26,18 +26,18 @@ def main(args):
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     memory_tracker = a2.training.benchmarks.CudaMemoryMonitor()
     if a2.training.utils_training.cuda_available():
-        print(f"Running on device: {a2.training.utils_training.available_cuda_devices_names()}.")
+        logger.info(f"Running on device: {a2.training.utils_training.available_cuda_devices_names()}.")
     # if args.log_gpu_memory:
     #     memory_tracker.reset_cuda_memory_monitoring()
     os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
     if args.debug:
-        print("RUNNING IN DEBUG MODE!")
-    print(f"Running finetuning as {args.job_id=}")
-    print(f"Running on nodes {os.environ['SLURM_NODELIST']}.")
-    print(f"Iteration: {args.iteration=}")
-    print(f"Args used: {args.__dict__}")
+        logger.info("RUNNING IN DEBUG MODE!")
+    logger.info(f"Running finetuning as {args.job_id=}")
+    logger.info(f"Running on nodes {os.environ['SLURM_NODELIST']}.")
+    logger.info(f"Iteration: {args.iteration=}")
+    logger.info(f"Args used: {args.__dict__}")
     model_name = os.path.split(args.model_path)[1]
-    print(f"Using ML model: {model_name}")
+    logger.info(f"Using ML model: {model_name}")
 
     dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
 
@@ -80,9 +80,9 @@ def main(args):
     hyper_parameters = a2.training.model_configs.get_model_config(
         model_name=args.model_name, parameters_overwrite=args.__dict__
     )
-    print(f"{hyper_parameters=}")
+    logger.info(f"{hyper_parameters=}")
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path, num_labels=args.num_labels)
-    print(f"{dataset_train['label']=}")
+    logger.info(f"{dataset_train['label']=}")
     # if args.log_gpu_memory:
     #     memory_tracker.reset_cuda_memory_monitoring()
 
@@ -125,7 +125,7 @@ def main(args):
         label=args.key_output,
     )
     n_model_parameters = a2.training.model_infos.n_model_parameters(trainer.model)
-    print(f"{n_model_parameters=}")
+    logger.info(f"{n_model_parameters=}")
     tracker.log_params(n_model_parameters)
     tracker.log_params(trainer_object.hyper_parameters.__dict__)
     tracker.log_params(args.__dict__)
@@ -142,7 +142,7 @@ def main(args):
     tmr.end(timer.TimeType.EVALUATION)
     tmr.end(timer.TimeType.RUN)
 
-    tmr.print_all_time_stats()
+    tmr.logger.info_all_time_stats()
     ds_test_predicted = a2.training.evaluate_hugging.build_ds_test(
         ds=ds_test,
         indices_test=None,
@@ -328,23 +328,23 @@ if __name__ == "__main__":
     parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
     args = parser.parse_args()
 
-    print(f"Whether to log power consumption: {args.log_gpu_power=}, ({bool(args.log_gpu_power)=})")
+    logger.info(f"Whether to log power consumption: {args.log_gpu_power=}, ({bool(args.log_gpu_power)=})")
     if args.log_gpu_power:
         with utils_energy.GetPower() as measured_scope:
-            print("Measuring Energy during main() call")
+            logger.info("Measuring Energy during main() call")
             # try:
             tracker, path_power_logs = main(args)
         # except Exception as exc:
         #     import traceback
-        #     print(f"Errors occured during training: {exc}")
-        #     print(f"Traceback: {traceback.format_exc()}")
+        #     logger.info(f"Errors occured during training: {exc}")
+        #     logger.info(f"Traceback: {traceback.format_exc()}")
 
-        print("Energy data:")
-        print(measured_scope.df)
-        print("Energy-per-GPU-list:")
+        logger.info("Energy data:")
+        logger.info(measured_scope.df)
+        logger.info("Energy-per-GPU-list:")
         energy_int = measured_scope.energy()
-        print(f"integrated: {energy_int}")
+        logger.info(f"integrated: {energy_int}")
         utils_energy.save_energy_to_file(measured_scope, path_power_logs, args.job_id)
     else:
-        print("Not measuring energy")
+        logger.info("Not measuring energy")
         main(args)

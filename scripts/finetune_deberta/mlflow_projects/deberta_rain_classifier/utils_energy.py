@@ -39,12 +39,12 @@ class GetPower(object):
         return self
 
     def __exit__(self, type, value, traceback):
-        print("Exiting context for energy measurement!")
+        logger.info("Exiting context for energy measurement!")
         self.end_event.set()
         power_value_dict = self.power_queue.get()
         self.smip.join()
 
-        print("Writing dataset in exit context for energy measurement!")
+        logger.info("Writing dataset in exit context for energy measurement!")
         self.df = pd.DataFrame(power_value_dict)
 
     def energy(self):
