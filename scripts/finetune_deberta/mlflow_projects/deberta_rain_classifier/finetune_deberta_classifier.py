@@ -27,8 +27,8 @@ def main(args):
     memory_tracker = a2.training.benchmarks.CudaMemoryMonitor()
     if a2.training.utils_training.cuda_available():
         logger.info(f"Running on device: {a2.training.utils_training.available_cuda_devices_names()}.")
-    if args.log_gpu_memory:
-        memory_tracker.reset_cuda_memory_monitoring()
+    # if args.log_gpu_memory:
+    #     memory_tracker.reset_cuda_memory_monitoring()
     os.environ["DISABLE_MLFLOW_INTEGRATION"] = "True"
     if args.debug:
         logger.info("RUNNING IN DEBUG MODE!")
@@ -82,8 +82,8 @@ def main(args):
     print(f"{hyper_parameters=}")
     trainer_object = a2.training.training_hugging.HuggingFaceTrainerClass(args.model_path, num_labels=args.num_labels)
     print(f"{dataset_train['label']=}")
-    if args.log_gpu_memory:
-        memory_tracker.reset_cuda_memory_monitoring()
+    # if args.log_gpu_memory:
+    #     memory_tracker.reset_cuda_memory_monitoring()
 
     tmr = timer.Timer()
     tracker.log_params(
