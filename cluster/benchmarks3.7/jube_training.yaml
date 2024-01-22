@@ -403,7 +403,7 @@ patternset:
       - {name: watt_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_int,$jube_pat_nint"}
       - {name: va_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_nint,$jube_pat_int"}
       - {name: total_power_wh_per_device, type: string, _: "total_power_consumption_Wh_per_device: $jube_pat_wrd"}
-      - {name: total_power_wh, type: string, _: "total_power_consumption_Wh: $jube_pat_wrd"}
+      - {name: total_power_wh, type: float, _: "total_power_consumption_Wh: $jube_pat_fp"}
       - {name: total_power_w, type: string, _: "average_consumption_W_per_device: $jube_pat_wrd"}
 analyser:
     name: analyse

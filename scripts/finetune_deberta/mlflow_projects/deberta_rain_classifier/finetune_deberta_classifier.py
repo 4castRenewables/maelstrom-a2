@@ -361,9 +361,9 @@ if __name__ == "__main__":
         power = utils_scripts.load_power(filename=filename_power_csv)
         logger.info(
             "---Power report:---\n"
-            f"total_power_consumption_Wh_per_device: {utils_scripts.total_power_consumption_Wh_per_device(power)}\n"
+            f"total_power_consumption_Wh_per_device: {'-'.join(utils_scripts.total_power_consumption_Wh_per_device(power))}\n"  # noqa: E501
             f"total_power_consumption_Wh: {utils_scripts.total_power_consumption_Wh(power)}\n"
-            f"average_consumption_W_per_device: {utils_scripts.average_consumption_W_per_device(power)}\n"
+            f"average_consumption_W_per_device: {'-'.join(utils_scripts.average_consumption_W_per_device(power))}\n"
         )
 
     else:
