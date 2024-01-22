@@ -402,6 +402,9 @@ patternset:
       - {name: time_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_int,$jube_pat_nint,$jube_pat_nint"}
       - {name: watt_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_int,$jube_pat_nint"}
       - {name: va_pat, type: int, _: "POWERMEASUREMENT: $jube_pat_nint,$jube_pat_nint,$jube_pat_int"}
+      - {name: total_power_wh_per_device, type: string, _: "total_power_consumption_Wh_per_device: $jube_pat_wrd"}
+      - {name: total_power_wh, type: string, _: "total_power_consumption_Wh: $jube_pat_wrd"}
+      - {name: total_power_w, type: string, _: "average_consumption_W_per_device: $jube_pat_wrd"}
 analyser:
     name: analyse
     reduce: false
@@ -463,6 +466,9 @@ result:
         - {title: "Ma.VA", format: ".2f", _: va_pat_max}
         - {title: "A.VA", format: ".2f", _: va_pat_avg}
         #- {title: "Mi.VA", format: ".4f", _: va_pat_min}
+        - {title: "PpDevWh", _: total_power_wh_per_device}
+        - {title: "PWh", _: total_power_consumption_Wh}
+        - {title: "PW", _: total_power_w}
 
 step:
   - name: submit
