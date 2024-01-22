@@ -14,6 +14,7 @@ import a2.training.model_infos
 import a2.utils.argparse
 import utils_scripts
 from a2.training import benchmarks as timer
+import numpy as np
 
 logging.basicConfig(
     format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
@@ -361,9 +362,9 @@ if __name__ == "__main__":
         power = utils_scripts.load_power(filename=filename_power_csv)
         logger.info(
             "---Power report:---\n"
-            f"total_power_consumption_Wh_per_device: {'-'.join(utils_scripts.total_power_consumption_Wh_per_device(power))}\n"  # noqa: E501
+            f"total_power_consumption_Wh_per_device: {'-'.join(np.array(utils_scripts.total_power_consumption_Wh_per_device(power), str))}\n"  # noqa: E501
             f"total_power_consumption_Wh: {utils_scripts.total_power_consumption_Wh(power)}\n"
-            f"average_consumption_W_per_device: {'-'.join(utils_scripts.average_consumption_W_per_device(power))}\n"
+            f"average_consumption_W_per_device: {'-'.join(np.array(utils_scripts.average_consumption_W_per_device(power), str))}\n"  # noqa: E501
         )
 
     else:
