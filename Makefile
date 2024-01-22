@@ -98,6 +98,7 @@ test-apptainer-image-training:
     --model_path models/deberta-v3-small/ \
     --output_dir /tmp/trained_model/ \
     --trainer_name deep500 \
+    --log_gpu_power \
     --debug
 
 test-apptainer-image-split:

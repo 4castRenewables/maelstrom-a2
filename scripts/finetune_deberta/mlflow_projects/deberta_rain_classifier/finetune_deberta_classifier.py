@@ -357,7 +357,16 @@ if __name__ == "__main__":
         logger.info("Energy-per-GPU-list:")
         energy_int = measured_scope.energy()
         logger.info(f"integrated: {energy_int}")
-        utils_energy.save_energy_to_file(measured_scope, path_power_logs, args.job_id)
+        filename_power_csv = utils_energy.save_energy_to_file(measured_scope, path_power_logs, args.job_id)
+        power = utils_scripts.load_power(filename=filename_power_csv)
+        print(
+            "---Power report:---\n"
+            f"total_power_consumption_Wh_per_device: {utils_scripts.total_power_consumption_Wh_per_device(power)}\n"
+            f"total_power_consumption_Wh: {utils_scripts.total_power_consumption_Wh(power)}\n"
+            f"average_consumption_W_per_device: {utils_scripts.average_consumption_W_per_device(power)}\n"
+        )
+        utils_scripts.total_power_consumption_Wh(power)
+
     else:
         logger.info("Not measuring energy")
         main(args)

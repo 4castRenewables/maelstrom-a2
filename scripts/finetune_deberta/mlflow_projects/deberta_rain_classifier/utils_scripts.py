@@ -1,5 +1,6 @@
 import logging
 import os.path
+import pandas as pd
 
 import a2.plotting.analysis
 import a2.plotting.histograms
@@ -223,3 +224,22 @@ def exclude_and_save_weather_stations_dataset(
         f"Remaining indices are {len(remaining_indices)} Tweets."
     )
     return ds_tweets_keywords_near_stations_excluded
+
+
+def load_power(filename):
+    power = pd.read_csv(filename).drop(columns=["Unnamed: 0"])
+    power = power.set_index("timestamps")
+    power.index = power.index - min(power.index)
+    return power
+
+
+def total_power_consumption_Wh_per_device(power):
+    return np.sum(power[power.columns].values[1:] * np.diff(power.index.values)[:, None] / 3600, axis=0)
+
+
+def average_consumption_W_per_device(power):
+    return np.mean(power[power.columns].values[1:], axis=0)
+
+
+def total_power_consumption_Wh(power):
+    return sum(total_power_consumption_Wh_per_device(power))
