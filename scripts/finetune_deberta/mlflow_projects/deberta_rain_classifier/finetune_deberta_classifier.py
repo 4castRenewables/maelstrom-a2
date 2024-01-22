@@ -32,7 +32,9 @@ def main(args):
     if args.debug:
         logger.info("RUNNING IN DEBUG MODE!")
     logger.info(f"Running finetuning as {args.job_id=}")
-    logger.info(f"Running on nodes {os.environ['SLURM_NODELIST']}.")
+    if "SLURM_NODELIST" in os.environ:
+        slurm_nodelist = os.environ["SLURM_NODELIST"]
+        logger.info(f"Running on nodes {slurm_nodelist}.")
     logger.info(f"Iteration: {args.iteration=}")
     logger.info(f"Args used: {args.__dict__}")
     model_name = os.path.split(args.model_path)[1]
@@ -124,6 +126,8 @@ def main(args):
         evaluation_strategy=args.evaluation_strategy,
         label=args.key_output,
     )
+    logger.info(f"Device map:\n{dir(trainer.model)}")
+    logger.info(f"Device map:\n{trainer.model.device}")
     n_model_parameters = a2.training.model_infos.n_model_parameters(trainer.model)
     logger.info(f"{n_model_parameters=}")
     tracker.log_params(n_model_parameters)
