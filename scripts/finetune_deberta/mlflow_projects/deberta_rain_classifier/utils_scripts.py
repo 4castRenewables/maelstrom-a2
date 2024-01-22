@@ -227,6 +227,7 @@ def exclude_and_save_weather_stations_dataset(
 
 
 def load_power(filename):
+    logging.info(f"Loading power file from {filename}.")
     power = pd.read_csv(filename).drop(columns=["Unnamed: 0"])
     power = power.set_index("timestamps")
     power.index = power.index - min(power.index)
