@@ -365,7 +365,6 @@ if __name__ == "__main__":
             f"total_power_consumption_Wh: {utils_scripts.total_power_consumption_Wh(power)}\n"
             f"average_consumption_W_per_device: {utils_scripts.average_consumption_W_per_device(power)}\n"
         )
-        utils_scripts.total_power_consumption_Wh(power)
 
     else:
         logger.info("Not measuring energy")
