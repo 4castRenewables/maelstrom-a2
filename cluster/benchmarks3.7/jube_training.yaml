@@ -271,6 +271,9 @@ parameterset:
         tag: h100
         _: dc-h100
       - name: queue
+        tag: h100+test
+        _: dc-h100
+      - name: queue
         tag: "mi250"
         _: "dc-mi200"
       - name: apptainerbind
@@ -297,6 +300,11 @@ parameterset:
         separator: ";"
         tag: jwc|jwb|h100
         _: "CUDA_VISIBLE_DEVICES=0,1,2,3"
+      - name: visible_devices
+        type: string
+        separator: ";"
+        tag: mi250
+        _: "CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7"
       - name: visible_devices
         type: string
         separator: ";"
