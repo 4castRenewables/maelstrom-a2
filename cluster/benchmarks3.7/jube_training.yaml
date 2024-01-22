@@ -467,7 +467,7 @@ result:
         - {title: "A.VA", format: ".2f", _: va_pat_avg}
         #- {title: "Mi.VA", format: ".4f", _: va_pat_min}
         - {title: "PpDevWh", _: total_power_wh_per_device}
-        - {title: "PWh", _: total_power_consumption_Wh}
+        - {title: "PWh", format: ".2f", _: total_power_wh}
         - {title: "PW", _: total_power_w}
 
 step:
