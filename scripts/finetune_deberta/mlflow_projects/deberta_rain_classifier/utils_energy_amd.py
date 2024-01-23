@@ -1,8 +1,12 @@
 import time
 import logging
-
+import warnings
 import pandas as pd
-from rsmiBindings import *
+
+try:
+    from rsmiBindings import *
+except ImportError:
+    warnings.warn("rsmiBindings cannot be imported!")
 from multiprocessing import Process, Queue, Event
 
 logger = logging.getLogger(__name__)

@@ -234,13 +234,46 @@ def load_power(filename):
     return power
 
 
-def total_power_consumption_Wh_per_device(power):
-    return np.sum(power[power.columns].values[1:] * np.diff(power.index.values)[:, None] / 3600, axis=0)
+def total_power_consumption_Wh_per_device(power, n_gpus):
+    power_gpus = get_power_gpus(power, n_gpus)
+    return np.sum(power_gpus * np.diff(power.index.values)[:, None] / 3600, axis=0)
 
 
 def average_consumption_W_per_device(power):
     return np.mean(power[power.columns].values[1:], axis=0)
 
 
-def total_power_consumption_Wh(power):
-    return sum(total_power_consumption_Wh_per_device(power))
+def max_consumption_W_per_device(power):
+    return np.max(power[power.columns].values[1:], axis=0)
+
+
+def aggregate_power_W(power, n_gpus):
+    power_gpus = get_power_gpus(power, n_gpus)
+    return np.sum(power_gpus, axis=1)
+
+
+def get_power_gpus(power, n_gpus):
+    if len(power.columns) == 4:
+        power_gpus = power[power.columns[:n_gpus]].values[1:]
+    elif len(power).columns == 8:
+        power_gpus = power[power.columns[: n_gpus * 2]].values[1:]
+    else:
+        raise NotImplementedError(f"{len(power.columns)=} not implemented!")
+    return power_gpus
+
+
+def max_aggegrate_power_W(power, n_gpus):
+    return np.max(aggregate_power_W(power, n_gpus=n_gpus))
+
+
+def max_power_W(power, n_gpus):
+    power_gpus = get_power_gpus(power, n_gpus=n_gpus)
+    return np.max(power_gpus)
+
+
+def mean_aggegrate_power_W(power, n_gpus):
+    return np.mean(aggregate_power_W(power, n_gpus=n_gpus))
+
+
+def total_power_consumption_Wh(power, n_gpus):
+    return sum(total_power_consumption_Wh_per_device(power, n_gpus=n_gpus))
