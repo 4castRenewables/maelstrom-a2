@@ -434,12 +434,10 @@ result:
         - {title: "devices", _: ndevices}
         - {title: "queue", _: queue}
         #- {title: "#nodes", _: nodes}
-        - {title: "nodes", _: node_names}
         - {title: "gres", _: gres}
         #- {title: "BS", _: batch_size}
         - {title: "T. run", format: ".4f", _: run_time_last}
         - {title: "T. train", format: ".4f", _: training_time_last}
-        - {title: "T. eval", format: ".4f", _: evaluation_time_max}
         - {title: "epoch", format: ".4f", _: epoch_time_avg}
         - {title: "T. IO", format: ".4f", _: io_time_sum}
         #- {title: "Min epoch", format: ".4f", _: epoch_time_min}
@@ -455,6 +453,8 @@ result:
         #- {title: "# epochs", _: epochs}
         - {title: "MaMemCPU", format: ".4f",  _: max_memory}
         - {title: "MaMemGPU", format: ".4f", _: gpu_max_mem_allocated_max}
+        - {title: "nodes", _: node_names}
+        - {title: "T. eval", format: ".4f", _: evaluation_time_max}
         # - {title: "MaxMemReservGPU", format: ".4f", _: gpu_max_mem_reserved_max}
         #- {title: "Job_Time", _: timelimit}
         #- {title: "Node(s)", _: label_pat}
