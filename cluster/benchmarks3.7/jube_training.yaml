@@ -19,6 +19,10 @@ parameterset:
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/ap2deberta.sif
       - name: path_apptainer_image
+        tag: "e4+gracehopper"
+        type: string
+        _: /home/kehlert/code/a2/apptainer_images/a2-rocm.sif
+      - name: path_apptainer_image
         tag: "h100"
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/pytorch_23.10-py3.sif
@@ -93,6 +97,9 @@ parameterset:
       - name: filename_tweets
         tag: split+!e4+datamedium
         _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_era5_normed_filtered.nc
+      - name: filename_tweets
+        tag: split+e4+datamedium
+        _: /home/kehlert/data/tweets/tweets_2017_era5_normed_filtered.nc
       - name: filename_tweets
         tag: split+!e4+datalarge
         _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017-2020_era5_normed_filtered.nc
@@ -262,6 +269,9 @@ parameterset:
         tag: e4amd
         _: a-gpu-mi100
       - name: queue
+        tag: gracehopper
+        _: t-grace-hopper
+      - name: queue
         tag: jwc+!test
         _: gpus
       - name: queue
@@ -279,7 +289,7 @@ parameterset:
       - name: apptainerbind
         _: "--nv"
       - name: apptainerbind
-        tag: "mi250"
+        tag: "mi250|gracehopper"
         _: "--rocm"
 
       - name: execution_command

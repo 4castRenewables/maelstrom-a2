@@ -255,7 +255,7 @@ def aggregate_power_W(power, n_gpus):
 def get_power_gpus(power, n_gpus):
     if len(power.columns) == 4:
         power_gpus = power[power.columns[:n_gpus]].values[1:]
-    elif len(power).columns == 8:
+    elif len(power.columns) == 8:
         power_gpus = power[power.columns[: n_gpus * 2]].values[1:]
     else:
         raise NotImplementedError(f"{len(power.columns)=} not implemented!")
