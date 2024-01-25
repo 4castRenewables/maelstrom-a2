@@ -154,6 +154,7 @@ parameterset:
         separator: |
         _:
           module load slurm
+          module load go-1.19/singularity-3.10.2
       - name: modules
         tag: "!e4"
         separator: |
@@ -272,6 +273,9 @@ parameterset:
         tag: gracehopper
         _: t-grace-hopper
       - name: queue
+        tag: gpua2
+        _: i-gpu-a2
+      - name: queue
         tag: jwc+!test
         _: gpus
       - name: queue
@@ -291,9 +295,15 @@ parameterset:
       - name: apptainerbind
         tag: "mi250|gracehopper"
         _: "--rocm"
+      - name: apptainer_exec
+        tag: "!e4"
+        _: "apptainer"
+      - name: apptainer_exec
+        tag: "e4"
+        _: "singularity"
 
       - name: execution_command
-        _: apptainer run ${apptainerbind} ${path_apptainer_image}
+        _: ${apptainer_exec} run ${apptainerbind} ${path_apptainer_image}
       - name: executable
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
