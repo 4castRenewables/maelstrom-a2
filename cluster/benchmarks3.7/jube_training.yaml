@@ -154,6 +154,7 @@ parameterset:
         separator: |
         _: |
           module load slurm
+          echo $(module av)
           module load go-1.19/singularity-3.10.2
       - name: modules
         tag: "!e4"
