@@ -254,7 +254,7 @@ parameterset:
       - name: gres
         _: gpu:$gpus
       - name: gres
-        tag: "mi250"
+        tag: "mi250|gracehopper"
         _: "None"
 
       - name: queue
