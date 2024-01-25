@@ -154,7 +154,7 @@ parameterset:
         separator: |
         _: |
           module load slurm
-          module load go-1.21.5/singularity-3.10.2
+          module load go-1.19/singularity-3.10.2
       - name: modules
         tag: "!e4"
         separator: |
