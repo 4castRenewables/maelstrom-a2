@@ -204,21 +204,21 @@ parameterset:
           ${modules}
           export ${visible_devices}
       - name: power_measure_setup
-        tag: e4
+        tag: e4power
         mode: text
         separator: |
         _: |
-          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh);
-          echo "POWERMEASUREMENT: Label = $$label";
-          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &;
+          label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
+          echo "POWERMEASUREMENT: Label = $$label"
+          /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
       - name: power_measure_setup
-        tag: "jwb|jwc|h100"
+        tag: "jwb|jwc|h100|!e4power"
         _: ""
       - name: postprocess
-        tag: "jwb|jwc|h100"
+        tag: "jwb|jwc|h100|!e4power"
         _: ""
       - name: postprocess
-        tag: e4
+        tag: e4power
         mode: text
         separator: |
         _: |
