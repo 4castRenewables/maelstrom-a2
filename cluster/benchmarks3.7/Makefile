@@ -27,3 +27,7 @@ jube-train-juelich-booster-datamedium-benchs-test:
 
 jube-train-juelich-booster-datalarge-test:
 	jube run jube_training.yaml -t jwb jnvidia test datalarge
+
+
+jube-split-e4-datamedium-test:
+	jube run jube_training.yaml -t test e4 datamedium gracehopper
