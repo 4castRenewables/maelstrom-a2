@@ -156,6 +156,9 @@ parameterset:
           module load slurm
           echo $(module av)
           module load go-1.21.5/singularity-3.10.2
+          mkdir -p /etc/singularity-3.10.2/{bash_completion.d,singularity}
+          ln -s /opt/share/sw/go-1.21.5/singularity-3.10.2/etc/bash_completion.d/* /etc/singularity-3.10.2/bash_completion.d/
+          ln -s /opt/share/sw/go-1.21.5/singularity-3.10.2/etc/singularity/* /etc/singularity-3.10.2/singularity/
       - name: modules
         tag: "!e4"
         separator: |
