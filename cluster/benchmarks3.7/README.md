@@ -55,6 +55,14 @@ python3 -c "import transformers"
 
 
 ## Setup environment
+3. 
+```bash
+sacctmgr show user femmerich withassoc
+nvcc --version
+eval "$(/home/kehlert/grace-hopper/bin/conda shell.bash hook)"
+source activate /home/kehlert/.conda/envs/a2-gracehopper
+```
+
 1. Install Miniconda (see [docs](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)).
 2. Create environment `a2-benchmarking` and install required packages.
     * For Nvidia GPUs:

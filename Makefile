@@ -11,11 +11,13 @@ MANTIK_UNICORE_USERNAME = ehlert1
 MANTIK_UNICORE_PROJECT = deepacf
 
 JSC_USER = ${MANTIK_UNICORE_USERNAME}
+E4_USER = kehlert
 JSC_PROJECT = ${MANTIK_UNICORE_PROJECT}
 JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
+E4_SSH = $(E4_USER)@172.18.19.216
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
-
-IMAGE_TYPE = ap2rocm
+E4_IMAGE_FOLDER := /home/kehlert/images/
+IMAGE_TYPE = ap2cuda
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -50,6 +52,15 @@ else ifeq ($(IMAGE_TYPE), ap2rocm)
 	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
 	POETRY_EXTRAS := ""
 	IMAGE_NAME := a2-rocm
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
+	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
+	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
+else ifeq ($(IMAGE_TYPE), ap2cuda)
+	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/
+	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
+	POETRY_EXTRAS := ""
+	IMAGE_NAME := a2-cuda
 	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
@@ -124,7 +135,7 @@ build-conda-env: build-python
 	python -m ipykernel install --user --name=$(IMAGE_NAME)
 
 build-docker:
-	sudo docker build --progress=plain -t $(IMAGE_NAME):latest -f $(DOCKER_DIR)/$(IMAGE_NAME).Dockerfile .
+	sudo docker build --no-cache --progress=plain -t $(IMAGE_NAME):latest -f $(DOCKER_DIR)/$(IMAGE_NAME).Dockerfile .
 
 build-apptainer:
 	sudo apptainer build --force $(APPTAINER_DIR)/$(IMAGE_NAME).sif $(APPTAINER_DIR)/$(IMAGE_NAME).def 
@@ -161,6 +172,12 @@ upload-image:
 	rsync -Pvra \
 		$(APPTAINER_DIR)/$(IMAGE_NAME).sif \
 		$(JSC_SSH):$(JSC_IMAGE_FOLDER)/$(IMAGE_NAME).sif
+
+upload-image-e4:
+	# Copy kernel image file
+	rsync -Pvra \
+		$(APPTAINER_DIR)/$(IMAGE_NAME).def \
+		$(E4_SSH):$(E4_IMAGE_FOLDER)/$(IMAGE_NAME).def
 
 build-image:
 	sudo apptainer build --force \
@@ -219,3 +236,5 @@ upload-jsc-kernel: upload-image
 deploy-jsc-kernel: build-image upload-jsc-kernel
 
 deploy-image: build-image upload-image
+
+deploy-image-e4: build-image upload-image-e4

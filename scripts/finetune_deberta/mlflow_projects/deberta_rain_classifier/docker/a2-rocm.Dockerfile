@@ -6,7 +6,6 @@ FROM rocm/dev-ubuntu-22.04:5.6-complete as builder
 
 ARG ROCM_VERSION
 ARG PYTHON_VERSION
-
 RUN apt-get update \
  && apt-get install -y software-properties-common \
  && add-apt-repository ppa:deadsnakes/ppa -y \
