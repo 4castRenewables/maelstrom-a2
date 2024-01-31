@@ -10,16 +10,18 @@ RUN apt-get update \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive \
  apt-get install -y --no-install-recommends \
-     libgdal-dev
+     libgdal-dev \
+     build-essential \
+     python3.10-dev
 RUN /opt/nvidia/nvidia_entrypoint.sh && python --version
 RUN pip --version
 # ENV GDAL_VERSION="3.4.1"
 COPY scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/requirements_cuda.txt /opt/deberta_rain_classifier/
 WORKDIR /opt/deberta_rain_classifier
-
 RUN pip install --upgrade pip
-RUN pip install gdal==3.4.0
-RUN pip install -r requirements_cuda.txt
+RUN pip list
+RUN pip install --ignore-installed -r requirements_cuda.txt
+# RUN pip install --ignore-installed -r requirements_cuda.txt
 
 RUN python${PYTHON_VERSION} -c 'import a2, torch, torchvision, ipykernel'
 RUN python${PYTHON_VERSION} -c 'from torch._C._distributed_c10d import ProcessGroupNCCL'

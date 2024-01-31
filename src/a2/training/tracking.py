@@ -5,8 +5,15 @@ import typing as t
 import warnings
 
 import a2.plotting.analysis
-import mantik
-import mlflow
+
+try:
+    import mantik
+except ImportError as e:
+    logging.warn("Mantik couldn't be imported\n%s", e)
+try:
+    import mlflow
+except ImportError as e:
+    logging.warn("mlflow couldn't be imported\n%s", e)
 
 
 def initialize_mantik():

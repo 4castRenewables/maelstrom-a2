@@ -1,6 +1,12 @@
 import abc
+import logging
 
-import pyproj
+logger = logging.getLogger(__name__)
+
+try:
+    import pyproj
+except ImportError as e:
+    logger.warn(f"pyproj couldn't be imported. {e}")
 
 
 class UnitConverter(abc.ABC):

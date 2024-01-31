@@ -82,6 +82,12 @@ e.g.,
 ```
 ## Testing
 
+### Test requirements to run deberta
+Install minimal requirements to run deberta. Torch cpu is installed as group such that the `a2` package ignores it.
+```bash
+poetry install --extras "deberta benchmarks" --sync --without dev --with torch-cpu
+```
+
 ### Skip tests that require large datasets
 
 Use `--skip_optional` when using pytest to skip these tests.

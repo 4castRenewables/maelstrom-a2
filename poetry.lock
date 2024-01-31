@@ -1207,7 +1207,7 @@ test = ["pandas[test]", "pre-commit", "pytest", "pytest-cov", "pytest-rerunfailu
 name = "databricks-cli"
 version = "0.18.0"
 description = "A command line interface for Databricks"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "databricks-cli-0.18.0.tar.gz", hash = "sha256:87569709eda9af3e9db8047b691e420b5e980c62ef01675575c0d2b9b4211eb7"},
@@ -1421,7 +1421,7 @@ numpy = "*"
 name = "ecdsa"
 version = "0.18.0"
 description = "ECDSA cryptographic signature library (pure python)"
-optional = false
+optional = true
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 files = [
     {file = "ecdsa-0.18.0-py2.py3-none-any.whl", hash = "sha256:80600258e7ed2f16b9aa1d7c295bd70194109ad5a30fdee0eaeefef1d4c559dd"},
@@ -1844,7 +1844,7 @@ tqdm = ["tqdm"]
 name = "gitdb"
 version = "4.0.11"
 description = "Git Object Database"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "gitdb-4.0.11-py3-none-any.whl", hash = "sha256:81a3407ddd2ee8df444cbacea00e2d038e40150acfa3001696fe0dcf1d3adfa4"},
@@ -1858,7 +1858,7 @@ smmap = ">=3.0.1,<6"
 name = "gitpython"
 version = "3.1.41"
 description = "GitPython is a Python library used to interact with Git repositories"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "GitPython-3.1.41-py3-none-any.whl", hash = "sha256:c36b6634d069b3f719610175020a9aed919421c87552185b085e04fbbdb10b7c"},
@@ -1916,7 +1916,7 @@ tool = ["click (>=6.0.0)"]
 name = "gputil"
 version = "1.4.0"
 description = "GPUtil is a Python module for getting the GPU status from NVIDA GPUs using nvidia-smi."
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "GPUtil-1.4.0.tar.gz", hash = "sha256:099e52c65e512cdfa8c8763fca67f5a5c2afb63469602d5dcb4d296b3661efb9"},
@@ -3129,7 +3129,7 @@ files = [
 name = "mantik"
 version = "0.4.7"
 description = "mantik for mlflow"
-optional = false
+optional = true
 python-versions = ">=3.8,<4.0"
 files = [
     {file = "mantik-0.4.7-py3-none-any.whl", hash = "sha256:10071a016934b8e49e4f7430aa1ee7fec9766768630fe7ac05428c15b5b80b8f"},
@@ -3362,7 +3362,7 @@ files = [
 name = "mlflow-skinny"
 version = "2.2.2"
 description = "MLflow: A Platform for ML Development and Productionization"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "mlflow-skinny-2.2.2.tar.gz", hash = "sha256:59585ae6b05d4287317fe1a6fe90e5ae9efcd3133c7081151507d96a57b8c542"},
@@ -4811,7 +4811,7 @@ tests = ["pytest"]
 name = "py-cpuinfo"
 version = "9.0.0"
 description = "Get CPU info with pure Python"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "py-cpuinfo-9.0.0.tar.gz", hash = "sha256:3cdbbf3fac90dc6f118bfd64384f309edeadd902d7c8fb17f02ffa1fc3f49690"},
@@ -5053,7 +5053,7 @@ windows-terminal = ["colorama (>=0.4.6)"]
 name = "pyjwt"
 version = "2.8.0"
 description = "JSON Web Token implementation in Python"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "PyJWT-2.8.0-py3-none-any.whl", hash = "sha256:59127c392cc44c2da5bb3192169a91f429924e17aff6534d70fdc02ab3e04320"},
@@ -5321,7 +5321,7 @@ six = ">=1.5"
 name = "python-jose"
 version = "3.3.0"
 description = "JOSE implementation in Python"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "python-jose-3.3.0.tar.gz", hash = "sha256:55779b5e6ad599c6336191246e95eb2293a9ddebd555f796a65f838f07e5d78a"},
@@ -6422,7 +6422,7 @@ webhdfs = ["requests"]
 name = "smmap"
 version = "5.0.1"
 description = "A pure Python implementation of a sliding window memory map manager"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "smmap-5.0.1-py3-none-any.whl", hash = "sha256:e6d8668fa5f93e706934a62d7b4db19c8d9eb8cf2adbb75ef1b675aa332b69da"},
@@ -6580,7 +6580,7 @@ spacy = ">=3.0.0,<4.0.0"
 name = "sqlparse"
 version = "0.4.4"
 description = "A non-validating SQL parser."
-optional = false
+optional = true
 python-versions = ">=3.5"
 files = [
     {file = "sqlparse-0.4.4-py3-none-any.whl", hash = "sha256:5430a4fe2ac7d0f93e66f1efc6e1338a41884b7ddf2a350cedd20ccc4d9d28f3"},
@@ -6675,7 +6675,7 @@ mpmath = ">=0.19"
 name = "tabulate"
 version = "0.9.0"
 description = "Pretty-print tabular data"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
@@ -8072,13 +8072,15 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [extras]
 benchmarks = ["pynvml"]
 coordinates = ["pyproj"]
+deberta = ["transformers"]
 extend-exclude = []
 fancy-plotting = ["plotly", "seaborn"]
 llama-chatbot = ["sentencepiece", "transformers"]
 notebooks = ["ipykernel", "ipywidgets"]
+tracking = ["mantik"]
 tweets = ["emoji", "jsonlines", "requests", "spacymoji", "tweepy"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "7f075ef57009412369658fbd14e218177a2f391549d39f3993906b09cfa34985"
+content-hash = "90661fb008e7c6c2972565d41ec47b017e83b025cc3fd05df51b7c7420c0d069"
