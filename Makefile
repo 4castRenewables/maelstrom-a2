@@ -22,6 +22,7 @@ KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
 APPTAINER_DIR := ""
+DOCKER_BUILD_ARGS := ""
 ifeq ($(IMAGE_TYPE), llama)
 	POETRY_EXTRAS := llama-chatbot torch
 	IMAGE_NAME := ap2python3p10llama
@@ -62,6 +63,7 @@ else ifeq ($(IMAGE_TYPE), ap2cuda)
 	POETRY_EXTRAS := ""
 	IMAGE_NAME := a2-cuda
 	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
+	DOCKER_BUILD_ARGS = --platform "linux/arm64/v8"
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
 	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
@@ -135,7 +137,7 @@ build-conda-env: build-python
 	python -m ipykernel install --user --name=$(IMAGE_NAME)
 
 build-docker:
-	sudo docker build --no-cache --progress=plain -t $(IMAGE_NAME):latest -f $(DOCKER_DIR)/$(IMAGE_NAME).Dockerfile .
+	sudo docker buildx build $(DOCKER_BUILD_ARGS) --progress=plain -t $(IMAGE_NAME):latest -f $(DOCKER_DIR)/$(IMAGE_NAME).Dockerfile .
 
 build-apptainer:
 	sudo apptainer build --force $(APPTAINER_DIR)/$(IMAGE_NAME).sif $(APPTAINER_DIR)/$(IMAGE_NAME).def 

@@ -6,7 +6,6 @@ from typing import Optional
 
 import a2.dataset.tweets
 import a2.utils
-import geopy.distance
 import numpy as np
 import pandas as pd
 import xarray
@@ -27,6 +26,8 @@ def distance_between_coordinates_in_km(
     latitude_1: float, longitude_1: float, latitude_2: float, longitude_2: float
 ) -> float:
     """Computes the the distance between two pairs of long/lat"""
+    import geopy.distance
+
     return geopy.distance.geodesic((latitude_1, longitude_1), (latitude_2, longitude_2)).km
 
 
