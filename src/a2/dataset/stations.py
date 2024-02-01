@@ -8,7 +8,8 @@ import a2.dataset.tweets
 import a2.utils
 import numpy as np
 import pandas as pd
-import xarray
+
+xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -116,7 +117,7 @@ def unique_coordinates(df: pd.DataFrame, coordinates: Optional[list] = None):
 
 
 def add_station_precipitation(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     df_stations: pd.DataFrame,
     key_tweets=None,
     key_stations=None,

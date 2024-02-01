@@ -5,10 +5,12 @@ import typing as t
 
 import a2.dataset
 import a2.utils.file_handling
+import a2.utils.utils
 import numpy as np
 import pandas as pd
 import urllib3
-import xarray
+
+xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
 class IOCapture:
@@ -81,7 +83,7 @@ def json_equal(json1: object, json2: object) -> bool:
     return True
 
 
-def assert_presence_variables(ds: xarray.Dataset, variables: t.Sequence[str]):
+def assert_presence_variables(ds: xarray_dataset_type, variables: t.Sequence[str]):
     for var in variables:
         if var not in ds.variables.keys():
             raise ValueError(f"{var} not available in ds: {ds}")

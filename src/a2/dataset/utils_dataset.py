@@ -5,17 +5,21 @@ from typing import Optional
 
 import a2.dataset
 import a2.utils.testing
+import a2.utils.utils
 import numpy as np
 import pandas as pd
-import xarray
+
+xarray_dataset_type, xarray_dataarray_type = a2.utils.utils._import_xarray_and_define_xarray_type(
+    __file__, also_return_dataarray=True
+)
 
 
-def is_same_type_data_array(ds: xarray.Dataset, field: t.Hashable, which_type: type = str):
+def is_same_type_data_array(ds: xarray_dataset_type, field: t.Hashable, which_type: type = str):
     return all(isinstance(x, which_type) for x in ds[field].values)
 
 
 def is_nan(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     field: t.Union[str, t.Hashable],
     dims: Optional[t.Tuple] = None,
 ):
@@ -59,7 +63,7 @@ def drop_nan(
 
 
 def is_na(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     field: str,
     check: t.Optional[t.List[str]] = None,
     dims: Optional[t.Tuple] = None,
@@ -95,7 +99,7 @@ def is_na(
 
 
 def print_tweet_sample(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     n_sample: int = 5,
     n: int | None = None,
     fancy: bool = True,
@@ -141,15 +145,15 @@ def get_sample_indices(n: t.Optional[int], n_sample: int, size_data: int) -> lis
 
 
 def print_tweet_groupby(
-    ds: xarray.Dataset,
-    group_by: t.Union[str, xarray.DataArray],
+    ds: xarray_dataset_type,
+    group_by: t.Union[str, xarray_dataarray_type],
     n_sample: int = 5,
     n: Optional[int] = None,
     n_groups: int = 20,
-    ds_grouped: Optional[xarray.Dataset] = None,
+    ds_grouped: Optional[xarray_dataset_type] = None,
     fancy: bool = True,
     fields_to_print: list = ["text"],
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     Print example tweets created per authors sorted by most active
     authors and source of post.
@@ -230,10 +234,10 @@ def get_keywords_default():
 
 
 def dataset_groupby(
-    ds: xarray.Dataset,
-    group_by: t.Union[str, xarray.DataArray],
-    ds_grouped: t.Union[xarray.Dataset, None] = None,
-) -> t.Tuple[xarray.Dataset, t.Hashable]:
+    ds: xarray_dataset_type,
+    group_by: t.Union[str, xarray_dataarray_type],
+    ds_grouped: t.Union[xarray_dataset_type, None] = None,
+) -> t.Tuple[xarray_dataset_type, t.Hashable]:
     if ds_grouped is None:
         ds_grouped_unsorted = ds.groupby(group_by).count()
         sort_by = get_variable_name_first(ds_grouped_unsorted)
@@ -243,7 +247,7 @@ def dataset_groupby(
     return ds_grouped, sort_by
 
 
-def filter_tweets(ds: xarray.Dataset, terms: list[str], min_tweets_per_author: int = 0):
+def filter_tweets(ds: xarray_dataset_type, terms: list[str], min_tweets_per_author: int = 0):
     """
     Filter out tweets if include terms
 
@@ -289,12 +293,12 @@ def filter_tweets(ds: xarray.Dataset, terms: list[str], min_tweets_per_author: i
     return ds
 
 
-def print_variables(ds: xarray.Dataset):
+def print_variables(ds: xarray_dataset_type):
     for k, v in ds.variables.items():
         print(f"{k} --> {v}")
 
 
-def info_tweets_to_text(ds: xarray.Dataset, fields: t.Optional[t.Sequence[str]] = None, fancy=False):
+def info_tweets_to_text(ds: xarray_dataset_type, fields: t.Optional[t.Sequence[str]] = None, fancy=False):
     if fields is None:
         fields = [
             "text",
@@ -405,7 +409,7 @@ def add_precipitation_to_tweets(
 
 
 def add_field(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     variable: t.Hashable,
     coordinates: Optional[list] = None,
     overwrite: bool = False,
@@ -441,17 +445,17 @@ def add_field(
     return ds
 
 
-def add_coordinates(ds: xarray.Dataset, key: t.Hashable, values: np.ndarray) -> xarray.Dataset:
+def add_coordinates(ds: xarray_dataset_type, key: t.Hashable, values: np.ndarray) -> xarray_dataset_type:
     ds[key] = values
     return ds
 
 
 def add_variable(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     key: t.Hashable,
     values: np.ndarray,
     coordinate: list | None = None,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     if coordinate is None:
         coordinate = ["index"]
     ds[key] = (coordinate, values)
@@ -459,12 +463,12 @@ def add_variable(
 
 
 def initialize_variable(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     field: str,
     coordinates=["index"],
     values=np.nan,
     dtype: type = float,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     variable_name_first = get_variable_name_first(ds)
     ds[field] = (
         coordinates,
@@ -473,7 +477,7 @@ def initialize_variable(
     return ds
 
 
-def get_variable_name_first(ds: xarray.Dataset) -> t.Hashable:
+def get_variable_name_first(ds: xarray_dataset_type) -> t.Hashable:
     return list(ds.variables.keys())[0]
 
 
@@ -510,10 +514,10 @@ def construct_dataset(ds, data_vars, time=None):
     coords = ds.coords
     if time is not None:
         coords["time"] = time
-    return xarray.Dataset(data_vars=data_vars, coords=coords)
+    return xarray_dataset_type(data_vars=data_vars, coords=coords)
 
 
-def merge_datasets_along_index(ds_top: xarray.Dataset, ds_bottom: xarray.Dataset) -> xarray.Dataset:
+def merge_datasets_along_index(ds_top: xarray_dataset_type, ds_bottom: xarray_dataset_type) -> xarray_dataset_type:
     ds_bottom_reindexed = ds_bottom.copy()
     ds_top = ds_top.copy()
 

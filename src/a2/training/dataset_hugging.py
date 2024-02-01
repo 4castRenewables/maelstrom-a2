@@ -1,10 +1,12 @@
 import typing as t
 
 import a2.dataset.load_dataset
+import a2.utils.utils
 import datasets
 import numpy as np
 import transformers
-import xarray
+
+xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
 class DatasetHuggingFace:
@@ -34,7 +36,7 @@ class DatasetHuggingFace:
 
     def build(
         self,
-        ds: xarray.Dataset,
+        ds: xarray_dataset_type,
         indices_train: np.ndarray | None,
         indices_validate: np.ndarray | None,
         train: bool = True,

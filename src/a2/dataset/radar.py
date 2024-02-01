@@ -67,7 +67,8 @@ import a2.dataset
 import a2.utils
 import numpy as np
 import pandas as pd
-import xarray
+
+xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 TYPE_KEY_TWEETS = object
 
@@ -464,7 +465,7 @@ class Nimrod:
 
 def _convert_file_to_xarray_dataset(
     filename_nimrod: Optional[str | pathlib.Path] = None, file_content_nimrod: Optional[t.TextIO] = None
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """Create xarray dataset from nimrod file"""
     nim = Nimrod(filename=filename_nimrod, file_content=file_content_nimrod)
     return nim.extract_xarray_dataset()
@@ -658,7 +659,7 @@ def _merge_nc_files_on_daily_basis(files, remove_files=False):
 
 
 def from_ngt_to_ds_index(
-    ds_radar: xarray.Dataset,
+    ds_radar: xarray_dataset_type,
     x: np.ndarray,
     y: np.ndarray,
     x_key: str = "x_ngt",
@@ -713,7 +714,7 @@ def from_ngt_to_ds_index(
 
 
 def get_time_ds_index(
-    ds_radar: xarray.Dataset, times: list, key_time: str = "time", check_for_outliers: bool = True
+    ds_radar: xarray_dataset_type, times: list, key_time: str = "time", check_for_outliers: bool = True
 ) -> np.ndarray:
     """
     Convert date time values to indices in `ds_radar` of respective time field.
@@ -749,9 +750,9 @@ def get_time_ds_index(
 
 
 def assign_ngt_to_tweets(
-    ds_tweets: xarray.Dataset,
+    ds_tweets: xarray_dataset_type,
     key_tweets=None,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """Compute coordinates in units of the national grid from latitude and longitude
     and save them to the dataset"""
     ds_tweets = ds_tweets.copy()
@@ -773,7 +774,7 @@ def assign_ngt_to_tweets(
 
 
 def assign_radar_to_tweets_from_netcdf(
-    ds_tweets: xarray.Dataset,
+    ds_tweets: xarray_dataset_type,
     list_radar_filenames: t.Optional[list[str | pathlib.Path]] = None,
     base_folder: t.Optional[str | pathlib.Path] = None,
     key_tweets: TYPE_KEY_TWEETS | None = None,
@@ -781,7 +782,7 @@ def assign_radar_to_tweets_from_netcdf(
     round_ngt_offset: int = 500,
     round_ngt_decimal: int = -3,
     round_time_to_base: int = 5,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     Assign radar precipitation data that is stored in netcdf files to Tweets dataset.
     Tweets coordinates (latitude, longitude, time) are converted
@@ -845,7 +846,7 @@ def assign_radar_to_tweets_from_netcdf(
 
 def _get_tp_from_ds_radar(
     key_radar: KeyRadar,
-    ds_radar: xarray.Dataset,
+    ds_radar: xarray_dataset_type,
     tweets_x_ngt_rounded: np.ndarray,
     tweets_y_ngt_rounded: np.ndarray,
     time: np.datetime64,
@@ -882,12 +883,12 @@ def _get_tp_from_ds_radar(
 
 
 def _prepare_tweet_ds_for_radar(
-    ds_tweets: xarray.Dataset,
+    ds_tweets: xarray_dataset_type,
     key_tweets: Optional[TYPE_KEY_TWEETS] = None,
     round_ngt_offset: int = 500,
     round_ngt_decimal: int = -3,
     round_time_to_base: int = 5,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     Prepare Tweets dataset by converting latitude, longitude to
     national grid units at consistent intervals with radio data.
@@ -936,14 +937,14 @@ def _prepare_tweet_ds_for_radar(
 
 
 def assign_radar_to_tweets(
-    ds_tweets: xarray.Dataset,
+    ds_tweets: xarray_dataset_type,
     key_tweets: Optional[TYPE_KEY_TWEETS] = None,
     round_ngt_offset: int = 500,
     round_ngt_decimal: int = -3,
     round_time_to_base: int = 5,
     path_to_dapceda: str | pathlib.Path | None = None,
     processes: int = -1,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     Assign radar data from raw radar data files to Tweets dataset.
     Radar files are unzipped and preprocessed for this.
@@ -1075,7 +1076,9 @@ def _get_filename_from_time(
     return radar_filename_zipped, filename_tarball, folder_to_decompress
 
 
-def nimrod_ds_from_time(path_to_dapceda: pathlib.Path, time: np.datetime64, version: str = "default") -> xarray.Dataset:
+def nimrod_ds_from_time(
+    path_to_dapceda: pathlib.Path, time: np.datetime64, version: str = "default"
+) -> xarray_dataset_type:
     """Retrieve nimrod file based on time and return it as xarray.Dataset.
     `version` determines format of returned Dataset"""
     path_to_dapceda = pathlib.Path(path_to_dapceda)
@@ -1103,7 +1106,7 @@ def nimrod_ds_cumulative_from_time(
     time_delta: float = 1,
     time_delta_units: str = "h",
     version: str = "default",
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     Compute total precipitation by summing cumulative over time period `time_delta` [`time_delta_units`] up to `time`.
 

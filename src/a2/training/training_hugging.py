@@ -12,7 +12,8 @@ import datasets
 import numpy as np
 import sklearn.model_selection
 import transformers
-import xarray
+
+xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 torch = a2.utils.utils._import_torch(__file__)
 
@@ -271,7 +272,7 @@ def _get_training_evaluation_datasets(dataset):
 
 
 def split_training_set(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     key_stratify: str = "raining",
     test_size: float = 0.2,
     random_state: int = 42,
@@ -309,7 +310,7 @@ def split_training_set(
 
 
 def split_training_set_tripple(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     key_stratify: str = "raining",
     validation_size: float | None = None,
     test_size: float = 0.2,

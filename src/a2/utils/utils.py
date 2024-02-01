@@ -12,6 +12,7 @@ import warnings
 from collections.abc import Iterable
 from functools import wraps
 from time import time
+from typing import Any
 from typing import Optional
 
 import numpy as np
@@ -245,3 +246,18 @@ def _import_torch(file):
         warnings.warn(f"Need to install `torch` to use all functionality in {pathlib.Path(file).parent}.")
     else:
         return torch
+
+
+def _import_xarray_and_define_xarray_type(file, also_return_dataarray=True):
+    try:
+        import xarray
+
+        xarray_dataset_type = xarray.Dataset
+        xarray_dataarray_type = xarray.DataArray
+    except ImportError as e:
+        xarray_dataset_type = Any
+        xarray_dataarray_type = Any
+        logging.warn(f"xarray couldn't be imported to use all functionality in {pathlib.Path(file).parent}.\n{e}")
+    if also_return_dataarray:
+        return xarray_dataset_type, xarray_dataarray_type
+    return xarray_dataset_type

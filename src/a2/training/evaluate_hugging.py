@@ -9,18 +9,19 @@ import a2.utils.utils
 import datasets
 import numpy as np
 import transformers
-import xarray
+
+xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 torch = a2.utils.utils._import_torch(__file__)
 
 
 def build_ds_test(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     indices_test: np.ndarray | None,
     predictions: np.ndarray,
     prediction_probabilities: np.ndarray,
     label: str = "raining",
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     Construct test dataset where test data is defined by their indices
     and corresponding predictions and prediction_probabilities
@@ -78,7 +79,7 @@ def predict_dataset(
 
 
 def make_predictions_loaded_model(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     indices_validate: np.ndarray,
     folder_model: str,
     key_inputs: str = "text",

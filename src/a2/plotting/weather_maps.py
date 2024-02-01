@@ -16,14 +16,15 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import xarray
+
+xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 TypeKeyTweets = object
 TypeKeyRadar = object
 
 
 def get_info_string_tweets(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     fields: Optional[t.List[str]] = None,
     add: t.Optional[t.List[str]] = None,
 ) -> str:
@@ -71,8 +72,8 @@ def get_info_string_tweets(
 
 
 def plot_precipiation_map(
-    ds_precipitation: xarray.Dataset,
-    ds_tweets: xarray.Dataset,
+    ds_precipitation: xarray_dataset_type,
+    ds_tweets: xarray_dataset_type,
     key_time: str = "time_half",
     key_longitude: str = "longitude_rounded",
     key_latitude: str = "latitude_rounded",
@@ -218,7 +219,7 @@ def circle_scatter(
 
 def _plot_radar_map_with_tweets(
     index: np.datetime64,
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     path_to_dapceda: t.Optional[pathlib.Path] = None,
     key_tweets: Optional[TypeKeyTweets] = None,
     key_radar: Optional[TypeKeyRadar] = None,
@@ -318,7 +319,7 @@ def _plot_radar_map_with_tweets(
 
 
 def _retrieve_size_marker(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     circle_size_constant: bool,
     key_twitter_distance_station: str,
     marker_sizer_rescale: float,
@@ -334,7 +335,7 @@ def _retrieve_size_marker(
 
 def _plot_tp_station_tweets(
     index,
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     df_stations: pd.DataFrame,
     key_tweets: Optional[TypeKeyTweets] = None,
     key_station_tp: str = "prcp_amt",
@@ -462,7 +463,7 @@ class MapsPlotter:
 
     def __init__(
         self,
-        ds: xarray.Dataset,
+        ds: xarray_dataset_type,
         grid_shape: t.Tuple[int, ...],
         selector: t.Callable,
         figsize_default: float = 15,
@@ -575,7 +576,7 @@ class MapsPlotter:
 
 
 def plot_radar_map_with_tweets(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     grid_shape: t.Optional[t.Tuple[int, int]] = None,
     figsize: t.Optional[t.List] = None,
     figsize_default: float = 30,
@@ -690,7 +691,7 @@ def plot_radar_map_with_tweets(
 
 
 def plot_tp_station_tweets(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     df_stations: pd.DataFrame,
     grid_shape: t.Optional[t.Tuple] = None,
     figsize: t.Optional[t.List] = None,
@@ -815,12 +816,12 @@ def plot_tp_station_tweets(
 
 def time_selector(
     time,
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     delta_time: float = 0.5,
     delta_time_units: str = "h",
     key_time: str = "created_at",
     use_limits: t.Optional[list] = None,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     Select part of dataset `ds` where `key_time` is within upper and/or lower delta time around `time`
 
@@ -864,7 +865,7 @@ def plot_radar_from_time(
     ax: Optional[plt.axes] = None,
     xlim: t.Optional[list] = None,
     ylim: t.Optional[list] = None,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     Plot radar map at certain time.
     Returns radar dataset.

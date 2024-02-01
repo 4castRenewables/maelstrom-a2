@@ -5,11 +5,11 @@ import pathlib
 import typing as t
 
 import a2.dataset
-import a2.utils
+import a2.utils.utils
 import numpy as np
-import pandas
 import pandas as pd
-import xarray
+
+xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
 def _convert_str_to_dict(x: str) -> object:
@@ -48,7 +48,7 @@ def convert_str_to_dict(data_array: np.ndarray, processes=-1) -> np.ndarray:
     )
 
 
-def reset_index_coordinate(ds: xarray.Dataset) -> xarray.Dataset:
+def reset_index_coordinate(ds: xarray_dataset_type) -> xarray_dataset_type:
     """
     Resets index variable to increasing integer values starting from 0
 
@@ -72,7 +72,7 @@ def load_tweets_dataset(
     drop_variables: t.Optional[list[str]] = None,
     convert_bounding_box: bool = False,
     open_dataset: bool = False,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     loads dataset from disk and converts columns into convenient data formats
 
@@ -114,7 +114,7 @@ def load_tweets_dataset(
 
 def load_tweets_dataframe_from_jsons(
     list_of_filenames: t.Sequence,
-) -> pandas.DataFrame:
+) -> pd.DataFrame:
     """
     loads json files and converts them to single dataframe
 
@@ -136,7 +136,7 @@ def load_tweets_dataframe_from_jsons(
 
 def load_tweets_dataset_from_jsons(
     list_of_filenames: t.Sequence,
-) -> xarray.Dataset:
+) -> xarray_dataset_type:
     """
     loads json files and converts them to single xarray dataset
 
@@ -151,7 +151,7 @@ def load_tweets_dataset_from_jsons(
     return load_tweets_dataframe_from_jsons(list_of_filenames).to_xarray()
 
 
-def _is_coordinate(ds: xarray.Dataset, key: t.Hashable) -> bool:
+def _is_coordinate(ds: xarray_dataset_type, key: t.Hashable) -> bool:
     return key in ds.coords.keys()
 
 
@@ -167,7 +167,7 @@ def any_type_present(array, types_to_check):
 
 
 def save_dataset(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     filename: t.Union[str, pathlib.Path] = "test.nc",
     add_attributes: str = "",
     no_conversion: bool = True,
@@ -223,7 +223,7 @@ def get_time_variables(ds):
 
 
 def save_dataset_split(
-    ds: xarray.Dataset,
+    ds: xarray_dataset_type,
     split_by: str = "day",
     key_time: str = "time",
     prefix: t.Union[str, pathlib.Path] = "ds_",

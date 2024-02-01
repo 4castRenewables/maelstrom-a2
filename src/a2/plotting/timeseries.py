@@ -5,7 +5,8 @@ import a2.plotting.axes_utils
 import a2.plotting.utils_plotting
 import matplotlib.pyplot as plt
 import numpy as np
-import xarray
+
+xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
 def set_axes_timeseries(
@@ -43,7 +44,7 @@ def set_axes_timeseries(
 def plot_timeseries(
     time: t.Union[np.ndarray, str],
     y: t.Union[np.ndarray, str],
-    ds: Optional[xarray.Dataset] = None,
+    ds: xarray_dataset_type = None,
     ax: t.Optional[plt.axes] = None,
     fig: t.Optional[plt.figure] = None,
     xlim: t.Optional[list] = None,
