@@ -30,7 +30,9 @@ parameterset:
         tag: "mi250"
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/a2-rocm.sif
-
+      - name: mount_path_dataset
+        type: str
+        _: /data
       - name: base_path_training_set
         tag: "!e4+!datamedium+!datalarge"
         type: str
@@ -91,18 +93,24 @@ parameterset:
       - name: key_text
         type: string
         _: "text_normalized"
+      - name: base_path_dataset
+        tag: "!e4"
+        _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/
+      - name: base_path_dataset
+        tag: "e4"
+        _: /home/kehlert/data/tweets/
       - name: filename_tweets
         tag: split+!e4+!datamedium
-        _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_01_era5_normed_filtered.nc
+        _: ${base_path_dataset}/tweets_2017_01_era5_normed_filtered.nc
       - name: filename_tweets
         tag: split+!e4+datamedium
-        _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_era5_normed_filtered.nc
+        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered.nc
       - name: filename_tweets
         tag: split+e4+datamedium
-        _: /home/kehlert/data/tweets/tweets_2017_era5_normed_filtered.nc
+        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered.nc
       - name: filename_tweets
         tag: split+!e4+datalarge
-        _: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017-2020_era5_normed_filtered.nc
+        _: ${base_path_dataset}/tweets_2017-2020_era5_normed_filtered.nc
 
       - name: model_path
         tag: "jwb|jwc|h100|mi250"
@@ -258,8 +266,11 @@ parameterset:
       - name: gres
         _: gpu:$gpus
       - name: gres
-        tag: "mi250|gracehopper"
+        tag: "mi250"
         _: "None"
+      - name: gres
+        tag: "gracehopper"
+        _: "gpu"
 
       - name: queue
         tag: jwb+!test
@@ -275,7 +286,7 @@ parameterset:
         _: a-gpu-mi100
       - name: queue
         tag: gracehopper
-        _: t-grace-hopper
+        _: t-gpu-gh200
       - name: queue
         tag: gpua2
         _: i-gpu-a2
@@ -302,12 +313,15 @@ parameterset:
       - name: apptainer_exec
         tag: "!e4"
         _: "apptainer"
-      - name: apptainer_exec
-        tag: "e4"
-        _: "singularity"
-
       - name: execution_command
         _: ${apptainer_exec} run ${apptainerbind} ${path_apptainer_image}
+      - name: execution_command
+        tag: "e4" 
+        _: |
+          docker_image_id=$(docker run -t -d --gpus all --ipc=host -e HOME=$HOME -e USER=$USER \
+            --mount type=bind,source=${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/,target=/scripts \
+            --mount type=bind,source=${base_path_dataset},target=${base_path_dataset} nvcr.io/nvidia/pytorch:24.01-py3)
+          docker exec $${docker_image_id} finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
@@ -382,6 +396,7 @@ parameterset:
           --folder_run dataset_split_thresh0M2/
           --log_gpu_memory
           --job_id $${SLURM_JOBID}
+          --ignore_tracking
           ${args_exec_additional}
       - name: args_exec_command
         tag: split
@@ -398,6 +413,7 @@ parameterset:
           --test_size 0.2
           --output_dir ${outdir}/
           --folder_run dataset_split_thresh0M2/
+          --ignore_tracking
 
 patternset:
    - name: perf_patterns

@@ -51,7 +51,11 @@ python3 -m pip install -I --prefix=$(pwd)/mi250_packages/ -r../../scripts/finetu
 docker run --rm -t arm64v8/ubuntu:latest uuname -m
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes # This step will execute the registering scripts
 docker run --rm -t arm64v8/ubuntu uname -m # Testing the emulation environment
+# run docker in detached mode
+docker run -t -d --ipc=host -e HOME=$HOME -e USER=$USER nvcr.io/nvidia/pytorch:24.01-py3
 
+```
+```
 apptainer run --nv pytorch_rocm5.7_ubuntu22.04_py3.10_pytorch_2.0.1.sif
 export PYTHONPATH=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/mi250_packages/local/lib/python3.10/dist-packages:$PYTHONPATH
 python3 -c "import transformers"

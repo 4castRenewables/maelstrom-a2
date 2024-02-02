@@ -27,6 +27,7 @@ RUN apt-get upgrade gcc-aarch64-linux-gnu
 ENV DISABLE_NUMCODECS_AVX2=1
 ENV DISABLE_NUMCODECS_SSE2=1
 RUN echo ${DISABLE_NUMCODECS_SSE2}
+RUN pip index versions a2
 RUN pip install -r requirements_cuda.txt
 # RUN pip install --ignore-installed -r requirements_cuda.txt
 
