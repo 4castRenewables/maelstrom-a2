@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def main(args):
+    os.environ["A2_DATASET_BACKEND"] = args.dataset_backend
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     """Split labeled Tweets into train, test, validation set"""
     logger.info(f"Args used: {args.__dict__}")
@@ -56,11 +57,11 @@ def main(args):
         f"{len(indices_test)} for testing and "
         f"{len(indices_train)} for training."
     )
-
+    file_suffix = utils_scripts.determine_file_suffix(args)
     for suffix, indices in zip(["train", "validate", "test"], [indices_train, indices_validate, indices_test]):
         save_subsection_dataset(
             ds=ds,
-            filename=f"{path_output}/{tweets_dataset_stem}_{suffix}.nc",
+            filename=f"{path_output}/{tweets_dataset_stem}_{suffix}.{file_suffix}",
             indices=indices,
         )
     utils_scripts.plot_and_log_histogram(
@@ -74,22 +75,24 @@ def main(args):
         filename=f"{args.key_precipitation}_histogram.pdf",
     )
     for suffix, indices in zip(["train", "validate", "test"], [indices_train, indices_validate, indices_test]):
+        ds_sel = a2.dataset.utils_dataset.select_rows_by_index(ds, indices=indices)
+        print(f"{suffix=}")
         utils_scripts.plot_and_log_histogram(
-            ds.sel(index=indices),
+            ds_sel,
             key=args.key_output,
             path_figures=path_figures,
             tracker=tracker,
             filename=f"{args.key_output}_histogram_{suffix}.pdf",
         )
         utils_scripts.plot_and_log_histogram(
-            ds.sel(index=indices),
+            ds_sel,
             key=args.key_precipitation,
             path_figures=path_figures,
             tracker=tracker,
             filename=f"{args.key_precipitation}_histogram_{suffix}.pdf",
         )
         utils_scripts.plot_and_log_histogram_2d(
-            ds=ds.sel(index=indices),
+            ds=ds_sel,
             x=args.key_output,
             y=args.key_precipitation,
             path_figures=path_figures,
@@ -103,7 +106,7 @@ def main(args):
 
 
 def save_subsection_dataset(ds, filename, indices):
-    ds_subsection = ds.sel(index=indices)
+    ds_subsection = a2.dataset.utils_dataset.select_rows_by_index(ds=ds, indices=indices)
     a2.dataset.load_dataset.save_dataset(ds_subsection, filename=filename, reset_index=True, no_conversion=False)
 
 
@@ -176,6 +179,14 @@ if __name__ == "__main__":
         default=1,
         help="Maximum distance to nearest weather station to be considered for weather station dataset.",
     )
+    parser.add_argument(
+        "--dataset_backend",
+        type=str,
+        choices=a2.utils.constants.TYPE_DATASET_BACKEND,
+        default="xarray",
+        help="Name of backend used to process datasets, e.g. xarray, pandas.",
+    )
+
     # SPLITS
     parser.add_argument(
         "--validation_size",

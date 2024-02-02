@@ -2,6 +2,7 @@ import logging
 import typing as t
 import warnings
 
+import a2.dataset.utils_dataset
 import a2.training.dataset_hugging
 import a2.training.training_hugging
 import a2.training.utils_training
@@ -10,7 +11,7 @@ import datasets
 import numpy as np
 import transformers
 
-xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
+xarray, xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 torch = a2.utils.utils._import_torch(__file__)
 
@@ -42,14 +43,17 @@ def build_ds_test(
         ds_test = ds.sel(index=indices_test)
     else:
         ds_test = ds.copy()
-    ds_test[f"prediction_{label}"] = (["index"], predictions)
-    ds_test[f"prediction_probability_not_{label}"] = (
-        ["index"],
-        prediction_probabilities[:, 0],
+    ds_test = a2.dataset.utils_dataset.add_variable(
+        ds=ds_test, key=f"prediction_{label}", values=predictions, coordinate=["index"]
     )
-    ds_test[f"prediction_probability_{label}"] = (
-        ["index"],
-        prediction_probabilities[:, 1],
+    ds_test = a2.dataset.utils_dataset.add_variable(
+        ds=ds_test,
+        key=f"prediction_probability_not_{label}",
+        values=prediction_probabilities[:, 0],
+        coordinate=["index"],
+    )
+    ds_test = a2.dataset.utils_dataset.add_variable(
+        ds=ds_test, key=f"prediction_probability_{label}", values=prediction_probabilities[:, 1], coordinate=["index"]
     )
     return ds_test
 

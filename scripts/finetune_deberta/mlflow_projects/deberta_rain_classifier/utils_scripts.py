@@ -6,6 +6,7 @@ import a2.plotting.analysis
 import a2.plotting.histograms
 import a2.training.tracking
 import a2.utils.file_handling
+import a2.dataset.utils_dataset
 import numpy as np
 from a2.training import benchmarks as timer
 
@@ -30,12 +31,24 @@ def get_dataset(
     prefix_histogram="",
     setting_rain=True,
 ):
-    ds = a2.dataset.load_dataset.load_tweets_dataset(filename, raw=True, reset_index_raw=True)
+    ds = a2.dataset.load_dataset.load_tweets_dataset(
+        filename,
+        raw=True,
+        reset_index_raw=True,
+    )
     if args.debug:
         logger.info(f"{args.debug=}: Only using 100 first values in dataset!")
-        ds = ds.sel(index=slice(0, 100))
+        ds = a2.dataset.utils_dataset.select_rows_by_index(
+            ds,
+            indices=slice(100),
+        )
     logger.info(f"Input field definition: Setting field {args.key_input=} to {args.key_text=}")
-    ds[args.key_input] = (["index"], ds[args.key_text].values.copy())
+    ds = a2.dataset.utils_dataset.add_variable(
+        ds=ds,
+        key=args.key_input,
+        values=ds[args.key_text].values,
+        coordinate=["index"],
+    )
 
     N_tweets = ds.index.shape[0]
     logger.info(f"loaded {N_tweets} tweets: from {filename}")
@@ -45,14 +58,18 @@ def get_dataset(
             f"Output field definition: Setting field {args.key_output=} to "
             f"{args.key_precipitation=} > {args.precipitation_threshold_rain}"
         )
-        ds[args.key_output] = (
-            ["index"],
-            np.array(ds[args.key_precipitation].values > args.precipitation_threshold_rain, dtype=int),
+        ds = a2.dataset.utils_dataset.add_variable(
+            ds=ds,
+            key=args.key_output,
+            values=np.array(ds[args.key_precipitation].values > args.precipitation_threshold_rain, dtype=int),
+            coordinate=["index"],
         )
     else:
-        ds[args.key_output] = (
-            ["index"],
-            np.array(ds[args.key_raining].values, dtype=int),
+        ds = a2.dataset.utils_dataset.add_variable(
+            ds=ds,
+            key=args.key_output,
+            values=np.array(ds[args.key_raining].values, dtype=int),
+            coordinate=["index"],
         )
     if plot_key_distribution and path_figures is not None:
         plot_and_log_histogram(
@@ -172,16 +189,20 @@ def exclude_and_save_weather_stations_dataset(
     tracker=None,
     path_figures=None,
 ):
-    ds_weather_stations = ds_tweets.where(
-        ds_tweets[args.key_distance_weather_station] <= args.maximum_distance_to_station, drop=True
+    ds_weather_stations = a2.dataset.utils_dataset.drop_nan(ds=ds_tweets, columns=[args.key_distance_weather_station])
+    ds_weather_stations = a2.dataset.utils_dataset.drop_rows(
+        ds=ds_weather_stations,
+        condition=ds_weather_stations[args.key_distance_weather_station] <= args.maximum_distance_to_station,
     )
 
-    ds_weather_stations[args.key_raining_station] = (
-        ["index"],
-        np.array(
+    ds_weather_stations = a2.dataset.utils_dataset.add_variable(
+        ds=ds_weather_stations,
+        key=args.key_raining_station,
+        values=np.array(
             ds_weather_stations[args.key_precipitation_station].values > args.precipitation_threshold_rain_station,
             dtype=int,
         ),
+        coordinate=["index"],
     )
 
     try:
@@ -210,20 +231,34 @@ def exclude_and_save_weather_stations_dataset(
         )
     except Exception as e:
         raise ValueError("Cannot save plots for weather station dataset!") from e
+    file_suffix = determine_file_suffix(args)
     a2.dataset.load_dataset.save_dataset(
         ds_weather_stations,
-        filename=f"{path_output}{weather_dataset_prefix}{tweets_dataset_stem}.nc",
+        filename=f"{path_output}{weather_dataset_prefix}{tweets_dataset_stem}.{file_suffix}",
     )
     # https://stackoverflow.com/questions/52417929/remove-elements-from-one-array-if-present-in-another-array-keep-duplicates-nu
     all_indices = ds_tweets.index.values
     weather_station_indices = ds_weather_stations.index.values
     remaining_indices = all_indices[np.isin(all_indices, weather_station_indices, invert=True)]
-    ds_tweets_keywords_near_stations_excluded = ds_tweets.sel(index=remaining_indices)
+    print(f"{remaining_indices=}")
+    print(f"{ds_tweets=}")
+    ds_tweets_keywords_near_stations_excluded = a2.dataset.utils_dataset.select_rows_by_index(
+        ds_tweets,
+        indices=remaining_indices,
+    )
+
     logger.info(
         f"Weather station dataset contains {len(weather_station_indices)} Tweets. "
         f"Remaining indices are {len(remaining_indices)} Tweets."
     )
     return ds_tweets_keywords_near_stations_excluded
+
+
+def determine_file_suffix(args):
+    file_suffix = "nc"
+    if args.dataset_backend == "pandas":
+        file_suffix = "csv"
+    return file_suffix
 
 
 def load_power(filename):

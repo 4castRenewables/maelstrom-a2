@@ -100,10 +100,10 @@ KERNEL_DISPLAY_NAME := "$(IMAGE_NAME)"
 endif
 
 install-default:
-	poetry install --extras "deberta benchmarks xarray" --sync --with torch-cpu
+	poetry install --extras "deberta benchmarks xarray-extra" --sync --with torch-cpu
 
 install-cuda-arm:
-	poetry install --extras "benchmarks deberta" --sync --with torch-cpu 
+	poetry install --extras "benchmarks deberta notebooks" --sync --with torch-cpu 
 
 test-apptainer-image-training:
 	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif \

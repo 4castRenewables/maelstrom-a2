@@ -6,7 +6,7 @@ import a2.plotting.utils_plotting
 import matplotlib.pyplot as plt
 import numpy as np
 
-xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
+xarray, xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
 def set_axes_timeseries(

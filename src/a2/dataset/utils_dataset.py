@@ -1,17 +1,34 @@
 import logging
+import os
 import re
 import typing as t
 from typing import Optional
 
 import a2.dataset
+import a2.utils.constants
 import a2.utils.testing
 import a2.utils.utils
 import numpy as np
 import pandas as pd
 
-xarray_dataset_type, xarray_dataarray_type = a2.utils.utils._import_xarray_and_define_xarray_type(
+xarray, xarray_dataset_type, xarray_dataarray_type = a2.utils.utils._import_xarray_and_define_xarray_type(
     __file__, also_return_dataarray=True
 )
+
+
+def _get_dataset_backend():
+    backend = os.environ.get("A2_DATASET_BACKEND", "xarray")
+    if backend not in a2.utils.constants.TYPE_DATASET_BACKEND:
+        raise NotImplementedError(f"{backend=} not recognized!")
+    return backend
+
+
+def _using_xarray():
+    return "xarray" == _get_dataset_backend()
+
+
+def _using_pandas():
+    return "pandas" == _get_dataset_backend()
 
 
 def is_same_type_data_array(ds: xarray_dataset_type, field: t.Hashable, which_type: type = str):
@@ -45,21 +62,35 @@ def is_nan(
         return xarray.DataArray(pd.isna(ds[field].values), dims=dims)
 
 
+def ds_shape(ds, variable=None):
+    if _using_xarray():
+        if variable is None:
+            variable = "index"
+        shape = np.shape(ds[variable])
+    elif _using_pandas():
+        shape = ds.shape
+    return shape
+
+
 def drop_nan(
     ds,
     columns,
     dims: Optional[t.Tuple] = None,
 ):
-    def _compute_mask(ds, column, dims):
-        if dims is None:
-            dims = ds[column].coords.dims
-        return xarray.DataArray(~is_nan(ds, column).values, dims=dims)
+    if _using_xarray():
 
-    mask = _compute_mask(ds, columns.pop(0), dims)
-    for c in columns:
-        mask = np.logical_and(mask, _compute_mask(ds, c, dims))
-    logging.info(f"Dropping {np.sum(~mask.values)}/{len(ds.index)} nan-values.")
-    return ds.where(mask, drop=True)
+        def _compute_mask(ds, column, dims):
+            if dims is None:
+                dims = ds[column].coords.dims
+            return xarray.DataArray(~is_nan(ds, column).values, dims=dims)
+
+        mask = _compute_mask(ds, columns.pop(0), dims)
+        for c in columns:
+            mask = np.logical_and(mask, _compute_mask(ds, c, dims))
+        logging.info(f"Dropping {np.sum(~mask.values)}/{len(ds.index)} nan-values.")
+        return ds.where(mask, drop=True)
+    elif _using_pandas():
+        return ds.dropna(subset=columns)
 
 
 def is_na(
@@ -456,9 +487,34 @@ def add_variable(
     values: np.ndarray,
     coordinate: list | None = None,
 ) -> xarray_dataset_type:
-    if coordinate is None:
-        coordinate = ["index"]
-    ds[key] = (coordinate, values)
+    if _using_xarray():
+        if coordinate is None:
+            coordinate = ["index"]
+        ds[key] = (coordinate, values)
+    elif _using_pandas():
+        ds[key] = values
+    return ds
+
+
+def select_rows_by_index(
+    ds: xarray_dataset_type,
+    indices,
+):
+    if _using_xarray():
+        ds = ds.sel(index=indices)
+    elif _using_pandas():
+        ds = ds.iloc[indices]
+    return ds
+
+
+def drop_rows(
+    ds: xarray_dataset_type,
+    condition: np.ndarray,
+) -> xarray_dataset_type:
+    if _using_xarray():
+        ds = ds.where(condition, drop=True)
+    elif _using_pandas():
+        ds = ds.loc[condition]
     return ds
 
 
@@ -478,7 +534,11 @@ def initialize_variable(
 
 
 def get_variable_name_first(ds: xarray_dataset_type) -> t.Hashable:
-    return list(ds.variables.keys())[0]
+    if _using_xarray():
+        first_variable = list(ds.variables.keys())[0]
+    elif _using_pandas():
+        first_variable = ds.columns[0]
+    return first_variable
 
 
 def array_elements_to_str(array: np.ndarray) -> np.ndarray:
@@ -486,7 +546,10 @@ def array_elements_to_str(array: np.ndarray) -> np.ndarray:
 
 
 def assert_keys_in_dataset(ds, keys):
-    variables = ds.variables.keys()
+    if _using_xarray():
+        variables = ds.variables.keys()
+    elif _using_pandas():
+        variables = ds.columns
     not_found = [k for k in keys if k not in variables]
     if not not_found:
         return True

@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import urllib3
 
-xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
+xarray, xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
 class IOCapture:

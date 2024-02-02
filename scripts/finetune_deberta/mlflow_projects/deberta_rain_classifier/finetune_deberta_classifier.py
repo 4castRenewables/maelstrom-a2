@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def main(args):
+    os.environ["A2_DATASET_BACKEND"] = args.dataset_backend
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     memory_tracker = a2.training.benchmarks.CudaMemoryMonitor()
     if a2.training.utils_training.cuda_available():
@@ -40,7 +41,6 @@ def main(args):
     logger.info(f"Args used: {args.__dict__}")
     model_name = os.path.split(args.model_path)[1]
     logger.info(f"Using ML model: {model_name}")
-
     dataset_object = a2.training.dataset_hugging.DatasetHuggingFace(args.model_path)
 
     path_output = utils_scripts._determine_path_output(args)
@@ -92,9 +92,9 @@ def main(args):
     tmr = timer.Timer()
     tracker.log_params(
         {
-            "N_tweets_train": len(dataset_train["index"]),
-            "N_tweets_validate": len(dataset_validate["index"]),
-            "N_tweets_test": len(dataset_test["index"]),
+            "N_tweets_train": a2.dataset.utils_dataset.ds_shape(dataset_train),
+            "N_tweets_validate": a2.dataset.utils_dataset.ds_shape(dataset_validate),
+            "N_tweets_test": a2.dataset.utils_dataset.ds_shape(dataset_test),
             "model_name": model_name,
         }
     )
@@ -204,6 +204,13 @@ if __name__ == "__main__":
         type=str,
         default="text_normalized",
         help="Key that specifies texts used in dataset.",
+    )
+    parser.add_argument(
+        "--dataset_backend",
+        type=str,
+        choices=a2.utils.constants.TYPE_DATASET_BACKEND,
+        default="xarray",
+        help="Name of backend used to process datasets, e.g. xarray, pandas.",
     )
 
     # MODEL

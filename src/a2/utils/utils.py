@@ -248,9 +248,9 @@ def _import_torch(file):
         return torch
 
 
-def _import_xarray_and_define_xarray_type(file, also_return_dataarray=True):
+def _import_xarray_and_define_xarray_type(file, also_return_dataarray=False):
     try:
-        import xarray
+        import xarray as xarray
 
         xarray_dataset_type = xarray.Dataset
         xarray_dataarray_type = xarray.DataArray
@@ -258,6 +258,7 @@ def _import_xarray_and_define_xarray_type(file, also_return_dataarray=True):
         xarray_dataset_type = Any
         xarray_dataarray_type = Any
         logging.warn(f"xarray couldn't be imported to use all functionality in {pathlib.Path(file).parent}.\n{e}")
+        xarray = None
     if also_return_dataarray:
-        return xarray_dataset_type, xarray_dataarray_type
-    return xarray_dataset_type
+        return xarray, xarray_dataset_type, xarray_dataarray_type
+    return xarray, xarray_dataset_type

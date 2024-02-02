@@ -56,6 +56,7 @@ python3 -c "import transformers"
 
 ## Setup environment
 3. 
+# TODO: clarify difference ".nc" and ".csv" file.
 ```bash
 sacctmgr show user femmerich withassoc
 nvcc --version

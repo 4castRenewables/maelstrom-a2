@@ -13,7 +13,7 @@ import numpy as np
 import sklearn.model_selection
 import transformers
 
-xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
+xarray, xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 torch = a2.utils.utils._import_torch(__file__)
 
@@ -350,7 +350,7 @@ def split_training_set_tripple(
     indices_validate = np.array([], dtype=int)
     if validation_size is not None:
         indices_train, indices_validate = split_training_set(
-            ds=ds.sel(index=indices_train),
+            ds=a2.dataset.utils_dataset.select_rows_by_index(ds, indices=indices_train),
             key_stratify=key_stratify,
             test_size=validation_size / (1 - test_size),
             random_state=random_state,

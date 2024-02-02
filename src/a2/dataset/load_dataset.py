@@ -3,13 +3,15 @@ import json
 import logging
 import pathlib
 import typing as t
+import warnings
 
 import a2.dataset
+import a2.utils.constants
 import a2.utils.utils
 import numpy as np
 import pandas as pd
 
-xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
+xarray, xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
 def _convert_str_to_dict(x: str) -> object:
@@ -48,7 +50,9 @@ def convert_str_to_dict(data_array: np.ndarray, processes=-1) -> np.ndarray:
     )
 
 
-def reset_index_coordinate(ds: xarray_dataset_type) -> xarray_dataset_type:
+def reset_index_coordinate(
+    ds: xarray_dataset_type, backend: a2.utils.constants.TYPE_DATASET_BACKEND = "xarray"
+) -> xarray_dataset_type:
     """
     Resets index variable to increasing integer values starting from 0
 
@@ -60,7 +64,15 @@ def reset_index_coordinate(ds: xarray_dataset_type) -> xarray_dataset_type:
     -------
     dataset with reset index variable
     """
-    ds["index"] = np.arange(np.shape(ds["index"].values)[0])
+    if a2.dataset.utils_dataset._using_xarray():
+        if "index" not in ds.variables:
+            warnings.warn(f"Attempting to reset index but 'index' not found in {ds.variables}!")
+        else:
+            ds["index"] = np.arange(np.shape(ds["index"].values)[0])
+    elif a2.dataset.utils_dataset._using_pandas():
+        ds = ds.reset_index(drop=True)
+    else:
+        raise ValueError(f"{backend=} not implemented!")
     return ds
 
 
@@ -72,6 +84,8 @@ def load_tweets_dataset(
     drop_variables: t.Optional[list[str]] = None,
     convert_bounding_box: bool = False,
     open_dataset: bool = False,
+    backend: a2.utils.constants.TYPE_DATASET_BACKEND = "xarray",
+    **kwargs_loader,
 ) -> xarray_dataset_type:
     """
     loads dataset from disk and converts columns into convenient data formats
@@ -91,24 +105,51 @@ def load_tweets_dataset(
     dataset of tweets
     """
     if open_dataset:
+        if a2.dataset.utils_dataset._using_pandas():
+            raise NotImplementedError(f"{open_dataset=} not available for `pandas`.")
         ds = xarray.open_dataset(filename, drop_variables=drop_variables)
     else:
-        ds = xarray.load_dataset(filename, drop_variables=drop_variables)
-    if reset_index_raw and "index" in ds.variables:
+        ds = load_dataset(filename, drop_variables=drop_variables, **kwargs_loader)
+    if reset_index_raw:
         ds = reset_index_coordinate(ds)
     if raw:
         return ds
-    if "bounding_box" in ds.variables and convert_bounding_box:
-        ds["bounding_box"] = (
-            ["index"],
-            convert_str_to_dict(ds["bounding_box"].values),
-        )
-    if "created_at" in ds.variables:
-        ds["created_at"] = (["index"], pd.to_datetime(ds.created_at).values)
-    if "author_id" in ds.variables:
-        ds["author_id"] = (["index"], ds["author_id"].astype(int).values)
-    if reset_index and "index" in ds.variables:
-        ds = reset_index_coordinate(ds)
+    if convert_bounding_box:
+        if a2.dataset.utils_dataset._using_pandas():
+            raise NotImplementedError(f"{convert_bounding_box=} not available for {backend=}.")
+        if "bounding_box" in ds.variables:
+            ds["bounding_box"] = (
+                ["index"],
+                convert_str_to_dict(ds["bounding_box"].values),
+            )
+    if a2.dataset.utils_dataset._using_xarray():
+        if "created_at" in ds.variables:
+            ds["created_at"] = (["index"], pd.to_datetime(ds.created_at).values)
+        if "author_id" in ds.variables:
+            ds["author_id"] = (["index"], ds["author_id"].astype(int).values)
+        if reset_index and "index" in ds.variables:
+            ds = reset_index_coordinate(ds)
+    elif a2.dataset.utils_dataset._using_pandas():
+        # if "created_at" in ds.columns:
+        #     ds["created_at"] = pd.to_datetime(ds.created_at,  errors='coerce').values
+        if reset_index and "index" in ds.columns:
+            ds = reset_index_coordinate(ds)
+    return ds
+
+
+def load_dataset(
+    filename,
+    drop_variables: t.Optional[list[str]] = None,
+    **kwargs,
+):
+    if a2.dataset.utils_dataset._using_xarray():
+        ds = xarray.load_dataset(filename, drop_variables=drop_variables, **kwargs)
+    elif a2.dataset.utils_dataset._using_pandas():
+        use_columns = None
+        if drop_variables:
+            columns = list(pd.read_csv("sample_data.csv", nrows=1, **kwargs))
+            use_columns = [c for c in columns if c not in drop_variables]
+        ds = pd.read_csv(filename, usecols=use_columns, **kwargs)
     return ds
 
 
@@ -194,28 +235,32 @@ def save_dataset(
     """
     if reset_index:
         ds = reset_index_coordinate(ds.copy())
-    types_to_convert = [dict, list]
+    if a2.dataset.utils_dataset._using_xarray():
+        types_to_convert = [dict, list]
 
-    if not no_conversion:
-        for k, v in ds.variables.items():
-            if any_type_present(ds[k].values, types_to_check=types_to_convert):
-                logging.info(f"Converting field: {k} to strings!")
-                if _is_coordinate(ds, k):
-                    ds = a2.dataset.utils_dataset.add_coordinates(ds, k, np.array([str(x) for x in ds[k].values]))
-                else:
-                    ds = a2.dataset.utils_dataset.add_variable(ds, k, np.array([str(x) for x in ds[k].values]))
-    attributes = ds.attrs
-    if "description" in attributes:
-        attributes["description"] = attributes["description"] + add_attributes
-    else:
-        attributes["description"] = add_attributes
-    ds.attrs = attributes
-    encoding = None
-    if encode_time:
-        keys_time = get_time_variables(ds)
-        encoding = {k: {"units": "seconds since 1900-01-01"} for k in keys_time}
-    logging.info(f"... saving dataset as {filename}")
-    ds.to_netcdf(filename, encoding=encoding, engine=engine)
+        if not no_conversion:
+            for k, v in ds.variables.items():
+                if any_type_present(ds[k].values, types_to_check=types_to_convert):
+                    logging.info(f"Converting field: {k} to strings!")
+                    if _is_coordinate(ds, k):
+                        ds = a2.dataset.utils_dataset.add_coordinates(ds, k, np.array([str(x) for x in ds[k].values]))
+                    else:
+                        ds = a2.dataset.utils_dataset.add_variable(ds, k, np.array([str(x) for x in ds[k].values]))
+        attributes = ds.attrs
+        if "description" in attributes:
+            attributes["description"] = attributes["description"] + add_attributes
+        else:
+            attributes["description"] = add_attributes
+        ds.attrs = attributes
+        encoding = None
+        if encode_time:
+            keys_time = get_time_variables(ds)
+            encoding = {k: {"units": "seconds since 1900-01-01"} for k in keys_time}
+        logging.info(f"... saving dataset as {filename}")
+        ds.to_netcdf(filename, encoding=encoding, engine=engine)
+    elif a2.dataset.utils_dataset._using_pandas():
+        print(f"... saving {filename}")
+        ds.to_csv(filename, index=True)
 
 
 def get_time_variables(ds):

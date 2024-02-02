@@ -11,6 +11,7 @@ def save_figure(
     """Save figure to filename"""
     if filename is not None:
         logging.info(f"... saving {filename}")
+        print(f"... saving {filename}")
         folder = os.path.split(filename.__str__())[0]
         if folder:
             os.makedirs(folder, exist_ok=True)

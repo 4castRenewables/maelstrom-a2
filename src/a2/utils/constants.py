@@ -14,6 +14,7 @@ TIME_TYPE_PANDAS = pd.Timestamp
 TYPE_MATPLOTLIB_AXES: TypeAlias = matplotlib.axes.Axes
 TYPE_MATPLOTLIB_FIGURES: TypeAlias = matplotlib.figure.Figure
 TYPE_MATPLOTLIB_COLORBAR: TypeAlias = matplotlib.colorbar.Colorbar
+TYPE_DATASET_BACKEND: Literal = ["xarray", "pandas"]
 AXES_STYLE_TYPE: TypeAlias = Literal["axes_single", "axes_grid"]
 DEFAULT_COLORMAP: str = "viridis"
 DEFAULT_FONTSIZE_LARGE: float = 20

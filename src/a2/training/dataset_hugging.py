@@ -6,7 +6,7 @@ import datasets
 import numpy as np
 import transformers
 
-xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
+xarray, xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
 class DatasetHuggingFace:
@@ -76,7 +76,10 @@ class DatasetHuggingFace:
             ds = a2.dataset.load_dataset.reset_index_coordinate(ds)
         if not train and indices_validate is not None:
             ds = ds.sel(index=indices_validate)
-        df = ds[required_keys].to_pandas()
+        if a2.dataset.utils_dataset._using_xarray():
+            df = ds[required_keys].to_pandas()
+        elif a2.dataset.utils_dataset._using_pandas():
+            df = ds[required_keys]
         columns: t.Mapping = {key_inputs: "inputs", key_label: "label"}
         df = df.rename(columns=columns, errors="ignore")  # type: ignore
         datasets_ds = datasets.Dataset.from_pandas(df)

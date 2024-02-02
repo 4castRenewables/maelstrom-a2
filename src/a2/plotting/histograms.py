@@ -574,9 +574,9 @@ def _prepare_parameters(
 
 def _get_xy_values(x: np.ndarray, y: np.ndarray, mask: np.ndarray | None) -> tuple[np.ndarray, np.ndarray]:
     x = np.ndarray.flatten(x)  # type: ignore
-    a2.utils.utils.validate_array(x)
+    a2.utils.utils.validate_array(x, name="x")
     y = np.ndarray.flatten(y)  # type: ignore
-    a2.utils.utils.validate_array(y)
+    a2.utils.utils.validate_array(y, name="y")
     if x.shape != y.shape:
         raise ValueError(f"x and y need to be of same shape: {np.shape(x)} != {np.shape(y)}")
     if mask is not None:
