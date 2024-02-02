@@ -26,9 +26,6 @@ parameterset:
         tag: "mi250"
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/a2-rocm.sif
-      - name: mount_path_dataset
-        type: str
-        _: /data
       - name: base_path_training_set
         tag: "!e4+!datamedium+!datalarge"
         type: str
@@ -154,7 +151,7 @@ parameterset:
       - name: outdir
         type: string
         tag: e4
-        _: $mount_path_dataset
+        _: $base_path_dataset
       - name: run_name
         _: "${jube_benchmark_name}_${jube_benchmark_id}"
 
