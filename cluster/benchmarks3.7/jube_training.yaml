@@ -56,39 +56,39 @@ parameterset:
       - name: filename_dataset_train
         tag: "!datamedium+!datalarge"
         type: str
-        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_train{file_suffix}
+        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_train${file_suffix}
       - name: filename_dataset_validate
         tag: "!datamedium+!datalarge"
         type: str
-        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_validate{file_suffix}
+        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_validate${file_suffix}
       - name: filename_dataset_test
         tag: "!datamedium+!datalarge"
         type: str
-        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_test{file_suffix}
+        _: ${base_path_training_set}/tweets_2017_01_era5_normed_filtered_test${file_suffix}
       - name: filename_dataset_train
         tag: datamedium
         type: str
-        _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_train{file_suffix}
+        _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_train${file_suffix}
       - name: filename_dataset_validate
         tag: datamedium
         type: str
-        _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_validate{file_suffix}
+        _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_validate${file_suffix}
       - name: filename_dataset_test
         tag: datamedium
         type: str
-        _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_test{file_suffix}
+        _: ${base_path_training_set}/tweets_2017_era5_normed_filtered_test${file_suffix}
       - name: filename_dataset_train
         tag: datalarge
         type: str
-        _: ${base_path_training_set}/tweets_2017-2020_era5_normed_filtered_train{file_suffix}
+        _: ${base_path_training_set}/tweets_2017-2020_era5_normed_filtered_train${file_suffix}
       - name: filename_dataset_validate
         tag: datalarge
         type: str
-        _: ${base_path_training_set}/tweets_2017-2020_era5_normed_filtered_validate{file_suffix}
+        _: ${base_path_training_set}/tweets_2017-2020_era5_normed_filtered_validate${file_suffix}
       - name: filename_dataset_test
         tag: datalarge
         type: str
-        _: ${base_path_training_set}/tweets_2017-2020_era5_normed_filtered_test{file_suffix}
+        _: ${base_path_training_set}/tweets_2017-2020_era5_normed_filtered_test${file_suffix}
       - name: key_input
         type: string
         _: "text"
@@ -109,16 +109,16 @@ parameterset:
         _: /home/kehlert/data/tweets/
       - name: filename_tweets
         tag: split+!e4+!datamedium
-        _: ${base_path_dataset}/tweets_2017_01_era5_normed_filtered{file_suffix}
+        _: ${base_path_dataset}/tweets_2017_01_era5_normed_filtered${file_suffix}
       - name: filename_tweets
         tag: split+!e4+datamedium
-        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered{file_suffix}
+        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered${file_suffix}
       - name: filename_tweets
         tag: split+e4+datamedium
-        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered{file_suffix}
+        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered${file_suffix}
       - name: filename_tweets
         tag: split+!e4+datalarge
-        _: ${base_path_dataset}/tweets_2017-2020_era5_normed_filtered{file_suffix}
+        _: ${base_path_dataset}/tweets_2017-2020_era5_normed_filtered${file_suffix}
 
       - name: model_path
         tag: "jwb|jwc|h100|mi250"
