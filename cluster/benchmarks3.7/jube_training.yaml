@@ -216,7 +216,7 @@ parameterset:
         _: |
           export base_path_dataset=${base_path_dataset}
           echo ${jube_benchmark_home}
-          . ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/run_docker_e4.py
+          . ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/run_docker_e4.sh
       - name: preprocess
         mode: text
         separator: |
