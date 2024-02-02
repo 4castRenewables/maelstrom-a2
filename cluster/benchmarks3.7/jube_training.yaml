@@ -151,6 +151,10 @@ parameterset:
       - name: outdir
         type: string
         _: "$jube_wp_abspath/output_model"
+      - name: outdir
+        type: string
+        tag: e4
+        _: $mount_path_dataset
       - name: run_name
         _: "${jube_benchmark_name}_${jube_benchmark_id}"
 
