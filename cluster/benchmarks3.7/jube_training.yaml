@@ -47,6 +47,12 @@ parameterset:
       - name: file_suffix
         tag: "e4"
         _: .csv
+      - name: dataset_backend
+        tag: "!e4"
+        _: xarray
+      - name: dataset_backend
+        tag: "e4"
+        _: pandas
       - name: filename_dataset_train
         tag: "!datamedium+!datalarge"
         type: str
@@ -103,16 +109,16 @@ parameterset:
         _: /home/kehlert/data/tweets/
       - name: filename_tweets
         tag: split+!e4+!datamedium
-        _: ${base_path_dataset}/tweets_2017_01_era5_normed_filtered.nc
+        _: ${base_path_dataset}/tweets_2017_01_era5_normed_filtered{file_suffix}
       - name: filename_tweets
         tag: split+!e4+datamedium
-        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered.nc
+        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered{file_suffix}
       - name: filename_tweets
         tag: split+e4+datamedium
-        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered.nc
+        _: ${base_path_dataset}/tweets_2017_era5_normed_filtered{file_suffix}
       - name: filename_tweets
         tag: split+!e4+datalarge
-        _: ${base_path_dataset}/tweets_2017-2020_era5_normed_filtered.nc
+        _: ${base_path_dataset}/tweets_2017-2020_era5_normed_filtered{file_suffix}
 
       - name: model_path
         tag: "jwb|jwc|h100|mi250"
@@ -407,7 +413,7 @@ parameterset:
           --log_gpu_memory
           --job_id $${SLURM_JOBID}
           --ignore_tracking
-          --dataset_backend pandas
+          --dataset_backend ${dataset_backend}
           ${args_exec_additional}
       - name: args_exec_command
         tag: split
@@ -424,7 +430,7 @@ parameterset:
           --test_size 0.2
           --output_dir ${outdir}/
           --folder_run dataset_split_thresh0M2/
-          --dataset_backend pandas
+          --dataset_backend ${dataset_backend}
           --ignore_tracking
 
 patternset:
