@@ -203,6 +203,20 @@ parameterset:
   - name: systemParameter
     init_with: platform.xml
     parameter:
+      - name: additional_setup
+        mode: text
+        tag: "!e4"
+        separator: |
+        _: |
+          echo "no additional_setup"
+      - name: additional_setup
+        mode: text
+        tag: e4
+        separator: |
+        _: |
+          export jube_benchmark_home=${jube_benchmark_home}
+          export base_path_dataset=${base_path_dataset}
+          . ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/run_docker_e4.py
       - name: preprocess
         mode: text
         separator: |
@@ -211,6 +225,7 @@ parameterset:
           source ~/.bashrc
           ${modules}
           export ${visible_devices}
+          ${additional_setup}
       - name: power_measure_setup
         tag: e4power
         mode: text
@@ -314,9 +329,6 @@ parameterset:
       - name: execution_command
         tag: "e4" 
         _: |
-          export jube_benchmark_home=${jube_benchmark_home}
-          export base_path_dataset=${base_path_dataset}
-          . ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/run_docker_e4.py
           docker exec $${docker_image_id} /scripts/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}
