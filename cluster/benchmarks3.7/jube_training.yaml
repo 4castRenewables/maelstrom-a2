@@ -330,7 +330,7 @@ parameterset:
       - name: execution_command
         tag: "e4" 
         _: |
-          docker exec ap2_maelstrom /scripts/finetune_deberta_classifier.py ${args_exec_command}
+          docker exec ap2_maelstrom python3.10 /scripts/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
