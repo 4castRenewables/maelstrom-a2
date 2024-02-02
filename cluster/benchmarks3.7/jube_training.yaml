@@ -325,9 +325,6 @@ parameterset:
       - name: apptainer_exec
         tag: "!e4"
         _: "apptainer"
-      - name: starter
-        tag: "e4"
-        _: ""
       - name: execution_command
         _: ${apptainer_exec} run ${apptainerbind} ${path_apptainer_image}
       - name: execution_command
