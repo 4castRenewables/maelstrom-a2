@@ -214,6 +214,7 @@ parameterset:
         tag: e4
         separator: |
         _: |
+          export jube_benchmark_home=${jube_benchmark_home}
           export base_path_dataset=${base_path_dataset}
           echo ${jube_benchmark_home}
           . ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/run_docker_e4.sh
