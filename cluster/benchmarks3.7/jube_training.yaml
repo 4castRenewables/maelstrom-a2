@@ -314,10 +314,10 @@ parameterset:
       - name: execution_command
         tag: "e4" 
         _: |
-          docker_image_id=$(docker run -t -d --gpus all --ipc=host -e HOME=$HOME -e USER=$USER \
-            --mount "type=bind,source=${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/,target=/scripts" \
-            --mount "type=bind,source=${base_path_dataset},target=${base_path_dataset} nvcr.io/nvidia/pytorch:24.01-py3")
-          docker exec $${docker_image_id} finetune_deberta_classifier.py ${args_exec_command}
+          export jube_benchmark_home=${jube_benchmark_home}
+          export base_path_dataset=${base_path_dataset}
+          . ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/run_docker_e4.py
+          docker exec $${docker_image_id} /scripts/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
