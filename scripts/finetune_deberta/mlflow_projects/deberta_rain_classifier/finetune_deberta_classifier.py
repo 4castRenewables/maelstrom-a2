@@ -16,13 +16,13 @@ import utils_scripts
 from a2.training import benchmarks as timer
 import numpy as np
 
-print(f'{os.environ.get("jube_wp_abspath")=}')
-if os.environ.get("jube_wp_abspath"):
-    jube_wp_abspath = os.environ["jube_wp_abspath"]
+print(f'{os.environ.get("SLURM_SUBMIT_DIR")=}')
+if os.environ.get("SLURM_SUBMIT_DIR"):
+    SLURM_SUBMIT_DIR = os.environ["SLURM_SUBMIT_DIR"]
 
     logging.basicConfig(
         level=logging.INFO,
-        filename=f"{jube_wp_abspath}/info.log",
+        filename=f"{SLURM_SUBMIT_DIR}/info.log",
         filemode="w",
         format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
     )
