@@ -2,6 +2,7 @@ image_exists=$(docker ps | grep ap2_maelstrom)
 exited_image_exists=$(docker ps -a -f status=exited | grep ap2_maelstrom)
 if [ -n "$exited_image_exists" ]; then
     docker rm ap2_maelstrom
+fi
 echo $image_exists
 if [ -z "$image_exists" ]; then
     docker run --name ap2_maelstrom -t -d --gpus all --ipc=host -e HOME=$HOME -e USER=$USER \
