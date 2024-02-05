@@ -15,9 +15,13 @@ import a2.utils.argparse
 import utils_scripts
 from a2.training import benchmarks as timer
 import numpy as np
+import sys
 
 logging.basicConfig(
-    format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
+    format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
+    level=logging.INFO,
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=logging.StreamHandler(sys.stdout),
 )
 logger = logging.getLogger(__name__)
 
