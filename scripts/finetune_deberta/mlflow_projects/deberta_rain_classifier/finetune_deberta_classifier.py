@@ -23,6 +23,10 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=logging.StreamHandler(sys.stdout),
 )
+if os.environ.get("jube_benchmark_home"):
+    jube_benchmark_home = os.environ["jube_benchmark_home"]
+    logging.FileHandler(filename=f"{jube_benchmark_home}/log.info", mode="a")
+
 logger = logging.getLogger(__name__)
 
 
