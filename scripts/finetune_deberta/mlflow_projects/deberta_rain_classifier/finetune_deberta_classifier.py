@@ -26,6 +26,7 @@ if os.environ.get("SLURM_SUBMIT_DIR"):
         filemode="w",
         format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
     )
+    print(f'Writing logs to file: {f"{SLURM_SUBMIT_DIR}/info.log"}')
 else:
     logging.basicConfig(
         format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
