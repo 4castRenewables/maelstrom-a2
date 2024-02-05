@@ -10,6 +10,6 @@ docker run --name ap2_maelstrom-${SLURM_JOB_ID} -t -d --gpus all --ipc=host -e H
         --mount "type=bind,source=${base_path_dataset},target=${base_path_dataset}" \
         --mount "type=bind,source=${model_base_path},target=${model_base_path}" \
         --mount "type=bind,source=${SLURM_SUBMIT_DIR},target=${SLURM_SUBMIT_DIR}" \
-        --env SLURM_SUBMIT_DIR=${SLURM_SUBMIT_DIR}
+        --env SLURM_SUBMIT_DIR=${SLURM_SUBMIT_DIR} \
         kristian4cast/ml:a2-cuda
 # fi
