@@ -124,9 +124,12 @@ parameterset:
       - name: model_path
         tag: "jwb|jwc|h100|mi250"
         _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
+      - name: model_base_path
+        tag: e4
+        _: /data/maelstrom/kehlert/models/
       - name: model_path
         tag: e4
-        _: /data/maelstrom/kehlert/models/deberta-v3-small
+        _: ${model_base_path}/deberta-v3-small
       - name: model_name
         _: deberta_small
       - name: epochs
@@ -154,11 +157,14 @@ parameterset:
         _: "$jube_wp_abspath/output_model"
       - name: outdir
         type: string
-        tag: e4
+        tag: e4+split
         _: $base_path_dataset
+      - name: outdir
+        type: string
+        tag: e4+!split
+        _: ${model_base_path}/trained_models/
       - name: run_name
         _: "${jube_benchmark_name}_${jube_benchmark_id}"
-
       - name: slurm_output
         type: string
         _: "$jube_wp_abspath/slurm-out.%j"
@@ -229,6 +235,7 @@ parameterset:
         _: |
           export jube_benchmark_home=${jube_benchmark_home}
           export base_path_dataset=${base_path_dataset}
+          export model_base_path=${model_base_path}
           echo ${jube_benchmark_home}
           . ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/run_docker_e4.sh
       - name: preprocess
