@@ -16,6 +16,7 @@ import utils_scripts
 from a2.training import benchmarks as timer
 import numpy as np
 
+print(f'{os.environ.get("jube_wp_abspath")=}')
 if os.environ.get("jube_wp_abspath"):
     jube_wp_abspath = os.environ["jube_wp_abspath"]
 
