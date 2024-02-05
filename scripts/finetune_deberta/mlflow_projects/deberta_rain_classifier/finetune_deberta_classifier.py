@@ -35,7 +35,7 @@ else:
     )
 
 
-logger = logging.getLogger(__name__)
+logger = logging  # logging.getLogger(__name__)
 
 
 def main(args):
