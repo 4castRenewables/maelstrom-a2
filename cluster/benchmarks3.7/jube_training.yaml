@@ -422,7 +422,6 @@ parameterset:
           --job_id $${SLURM_JOBID}
           --ignore_tracking
           --dataset_backend ${dataset_backend}
-          ${args_exec_additional}
       - name: args_exec_command
         tag: split
         mode: text
