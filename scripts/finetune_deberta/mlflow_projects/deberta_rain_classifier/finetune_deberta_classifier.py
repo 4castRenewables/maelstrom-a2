@@ -16,23 +16,23 @@ import utils_scripts
 from a2.training import benchmarks as timer
 import numpy as np
 
-print(f'{os.environ.get("SLURM_SUBMIT_DIR")=}')
-if os.environ.get("SLURM_SUBMIT_DIR"):
-    SLURM_SUBMIT_DIR = os.environ["SLURM_SUBMIT_DIR"]
+# print(f'{os.environ.get("SLURM_SUBMIT_DIR")=}')
+# if os.environ.get("SLURM_SUBMIT_DIR"):
+#     SLURM_SUBMIT_DIR = os.environ["SLURM_SUBMIT_DIR"]
 
-    logging.basicConfig(
-        level=logging.INFO,
-        filename=f"{SLURM_SUBMIT_DIR}/info.log",
-        filemode="w",
-        format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
-    )
-    print(f'Writing logs to file: {f"{SLURM_SUBMIT_DIR}/info.log"}')
-else:
-    logging.basicConfig(
-        format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
-        level=logging.INFO,
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+#     logging.basicConfig(
+#         level=logging.INFO,
+#         filename=f"{SLURM_SUBMIT_DIR}/info.log",
+#         filemode="w",
+#         format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
+#     )
+#     print(f'Writing logs to file: {f"{SLURM_SUBMIT_DIR}/info.log"}')
+# else:
+logging.basicConfig(
+    format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
+    level=logging.INFO,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 
 logger = logging  # logging.getLogger(__name__)
