@@ -3,6 +3,7 @@ import os
 import re
 import typing as t
 from typing import Optional
+from typing import Type
 
 import a2.dataset
 import a2.utils.constants
@@ -486,13 +487,16 @@ def add_variable(
     key: t.Hashable,
     values: np.ndarray,
     coordinate: list | None = None,
+    type_values: Type | None = None,
 ) -> xarray_dataset_type:
+    if type_values is None:
+        type_values = values.dtype
     if _using_xarray():
         if coordinate is None:
             coordinate = ["index"]
-        ds[key] = (coordinate, values)
+        ds[key] = (coordinate, np.array(values, dtype=type_values))
     elif _using_pandas():
-        ds[key] = values
+        ds[key] = np.array(values, dtype=type_values)
     return ds
 
 

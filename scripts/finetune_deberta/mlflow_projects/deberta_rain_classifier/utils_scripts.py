@@ -46,7 +46,7 @@ def get_dataset(
     ds = a2.dataset.utils_dataset.add_variable(
         ds=ds,
         key=args.key_input,
-        values=ds[args.key_text].values,
+        values=np.array(ds[args.key_text].values, dtype=str),
         coordinate=["index"],
     )
 
