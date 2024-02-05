@@ -234,6 +234,7 @@ parameterset:
         separator: |
         _: |
           export jube_benchmark_home=${jube_benchmark_home}
+          export jube_wp_abspath=${jube_wp_abspath}
           export base_path_dataset=${base_path_dataset}
           export model_base_path=${model_base_path}
           echo ${jube_benchmark_home}

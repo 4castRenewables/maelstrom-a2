@@ -15,17 +15,23 @@ import a2.utils.argparse
 import utils_scripts
 from a2.training import benchmarks as timer
 import numpy as np
-import sys
 
-logging.basicConfig(
-    format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
-    level=logging.INFO,
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=logging.StreamHandler(sys.stdout),
-)
-if os.environ.get("jube_benchmark_home"):
-    jube_benchmark_home = os.environ["jube_benchmark_home"]
-    logging.FileHandler(filename=f"{jube_benchmark_home}/log.info", mode="a")
+if os.environ.get("jube_wp_abspath"):
+    jube_wp_abspath = os.environ["jube_wp_abspath"]
+
+    logging.basicConfig(
+        level=logging.INFO,
+        filename=f"{jube_wp_abspath}/info.log",
+        filemode="w",
+        format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
+    )
+else:
+    logging.basicConfig(
+        format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
 
 logger = logging.getLogger(__name__)
 

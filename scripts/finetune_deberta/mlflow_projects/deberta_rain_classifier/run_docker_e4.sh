@@ -9,6 +9,6 @@ if [ -z "$image_exists" ]; then
         --mount "type=bind,source=${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/,target=/scripts" \
         --mount "type=bind,source=${base_path_dataset},target=${base_path_dataset}" \
         --mount "type=bind,source=${model_base_path},target=${model_base_path}" \
-        --mount "type=bind,source=${jube_benchmark_home},target=${jube_benchmark_home}" \
+        --mount "type=bind,source=${jube_wp_abspath},target=${jube_wp_abspath}" \
         kristian4cast/ml:a2-cuda
 fi
