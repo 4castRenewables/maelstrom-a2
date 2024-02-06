@@ -157,16 +157,12 @@ parameterset:
         _: "$jube_wp_abspath/output_model"
       - name: outdir
         type: string
-        tag: e4+!split
-        _: $$jube_benchmark_home
-      - name: outdir
-        type: string
         tag: e4+split
         _: $base_path_dataset
       - name: outdir
         type: string
         tag: e4+!split
-        _: ${model_base_path}/trained_models/
+        _: $${jube_benchmark_home}/trained_models/
       - name: run_name
         _: "${jube_benchmark_name}_${jube_benchmark_id}"
       - name: slurm_output
