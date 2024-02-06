@@ -1,4 +1,5 @@
 import logging
+from logging_tree import printout
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,3 +15,4 @@ logger.info("An INFO")
 logger.warning("A WARNING")
 logger.error("An ERROR")
 logger.critical("A message of CRITICAL severity")
+printout()

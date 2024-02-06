@@ -17,7 +17,8 @@ JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 E4_SSH = $(E4_USER)@172.18.19.216
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 E4_IMAGE_FOLDER := /home/kehlert/images/
-IMAGE_TYPE = ap2cuda
+IMAGE_TYPE = ap2rocm
+# ap2cuda
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""

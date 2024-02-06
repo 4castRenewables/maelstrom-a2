@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "a2"
-version = "0.10.0"
+version = "0.10.1"
 description = "Package for predicting information about the weather from social media data as application 2 for maelstrom project"
 authors = ["Kristian Ehlert <kristian.ehlert@4-cast.de>"]
 packages = [{ include = "a2", from = "src" }]
@@ -209,6 +209,7 @@ per-file-ignores = [
     "src/a2/dataset/utils_dataset.py:F821",
     "scripts/relevance_dataset_generation/mlflow_projects/generate_relevance_labels.py:E501",
     "scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/utils_energy_amd.py:F405,F403",
+    "scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py:E402",
 ]
 
 [tool.pytest.ini_options]
