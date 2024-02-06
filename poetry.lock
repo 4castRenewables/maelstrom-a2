@@ -3158,6 +3158,17 @@ files = [
 ]
 
 [[package]]
+name = "logging-tree"
+version = "1.9"
+description = "Introspect and display the logger tree inside \"logging\""
+optional = false
+python-versions = "*"
+files = [
+    {file = "logging_tree-1.9-py2.py3-none-any.whl", hash = "sha256:1aa4c74f9ae0a86d14bb1d36b2e3066324e22132e6e55200d4ecf009dba4c536"},
+    {file = "logging_tree-1.9.tar.gz", hash = "sha256:fe78b28788c249b515d12a50417e4a96ba095582927b3601a0573886bffc1ff0"},
+]
+
+[[package]]
 name = "magics"
 version = "1.5.8"
 description = "Python interface to plot meteorological data in GRIB, NetCDF and BUFR."
@@ -8158,4 +8169,4 @@ xarray-extra = ["xarray"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "23b7cd6f00bcca85c4b3d038aa5f8c860cee4b9111fd1d06a9b8a2442c5c43ed"
+content-hash = "d3c04c43c667c661d4d8b2c93364157084cad9a82a32de019fe898f32d8768fa"

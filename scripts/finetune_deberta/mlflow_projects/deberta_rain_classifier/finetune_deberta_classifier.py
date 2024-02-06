@@ -15,6 +15,7 @@ import a2.utils.argparse
 import utils_scripts
 from a2.training import benchmarks as timer
 import numpy as np
+from logging_tree import printout
 
 print(f'{os.environ.get("SLURM_SUBMIT_DIR")=}')
 if os.environ.get("SLURM_SUBMIT_DIR"):
@@ -36,6 +37,8 @@ else:
 
 
 logger = logging.getLogger(__name__)
+
+printout()
 
 
 def main(args):
