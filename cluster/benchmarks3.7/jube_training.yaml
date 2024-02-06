@@ -492,6 +492,7 @@ analyser:
         - slurm.err
         - job.err
         - job.out
+        - info.log
         - stdout
 
 result:
