@@ -182,7 +182,6 @@ parameterset:
         _: |
           module load slurm
           echo $(module av)
-          export SBATCH_EXCLUSIVE=1
       - name: modules
         tag: "!e4"
         separator: |
@@ -342,7 +341,7 @@ parameterset:
       - name: apptainerbind
         _: "--nv"
       - name: apptainerbind
-        tag: "mi250|gracehopper"
+        tag: "mi250"
         _: "--rocm"
       - name: apptainer_exec
         tag: "!e4"
