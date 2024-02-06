@@ -35,3 +35,6 @@ jube-split-e4-datamedium-test:
 
 jube-train-e4-datamedium-test:
 	jube run jube_training.yaml -t test e4power e4 datamedium gracehopper
+
+jube-train-e4-gpua2-datamedium-test:
+	jube run jube_training.yaml -t test e4power e4 datamedium gpua2
