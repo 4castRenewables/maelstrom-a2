@@ -157,6 +157,10 @@ parameterset:
         _: "$jube_wp_abspath/output_model"
       - name: outdir
         type: string
+        tag: e4+!split
+        _: $$jube_benchmark_home
+      - name: outdir
+        type: string
         tag: e4+split
         _: $base_path_dataset
       - name: outdir

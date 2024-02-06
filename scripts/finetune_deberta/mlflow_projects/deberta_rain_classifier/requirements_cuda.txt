@@ -1,4 +1,4 @@
-gdal==3.4.0
+# gdal==3.4.0
 a2[benchmarks]
 bottleneck
 datasets

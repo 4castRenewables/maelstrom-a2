@@ -1,8 +1,10 @@
 Bootstrap: docker
 From: nvidia/cuda:12.2.2-cudnn8-devel-ubuntu22.04
+%files
+    scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/requirements_cuda.txt /scripts/requirements_cuda.txt
 %post
 apt update
 apt upgrade -y
 apt install -y python3-venv python3-pip
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r scripts/requirements_cuda.txt
