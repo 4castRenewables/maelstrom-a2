@@ -388,13 +388,6 @@ parameterset:
       - name: visible_devices
         tag: e4
         _: ""
-      - name: args_exec_additional
-        _: >
-          ""
-      - name: args_exec_additional
-        # tag: "!e4"
-        _: >
-          --log_gpu_power
       - name: args_exec_command
         mode: text
         _: >
@@ -430,6 +423,7 @@ parameterset:
           --job_id $${SLURM_JOBID}
           --ignore_tracking
           --dataset_backend ${dataset_backend}
+          --log_gpu_power
       - name: args_exec_command
         tag: split
         mode: text
