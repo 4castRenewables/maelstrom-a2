@@ -129,7 +129,7 @@ test-apptainer-image-training-rocm:
     --debug
 
 test-apptainer-image-training-cuda:
-	apptainer run /home/kristian/Desktop/ap2deberta.sif \
+	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/ap2deberta.sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \
     --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc \
     --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc \

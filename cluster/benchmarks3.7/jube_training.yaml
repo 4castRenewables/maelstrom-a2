@@ -162,7 +162,7 @@ parameterset:
       - name: outdir
         type: string
         tag: e4+!split
-        _: $${jube_benchmark_home}/trained_models/
+        _: $${SLURM_SUBMIT_DIR}/trained_models/
       - name: run_name
         _: "${jube_benchmark_name}_${jube_benchmark_id}"
       - name: slurm_output
