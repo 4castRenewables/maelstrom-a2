@@ -42,6 +42,9 @@ parameterset:
         tag: "e4+datamedium"
         type: str
         _: /home/kehlert/data/tweets///dataset_split_thresh0M2/
+      - name: additional_job_config
+        tag: e4
+        _: --exclusive
       - name: file_suffix
         tag: "!e4"
         _: .nc
