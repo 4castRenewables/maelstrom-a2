@@ -362,7 +362,7 @@ parameterset:
         tag: split
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py ${args_exec_command}
       - name: executable
-        tag: e4
+        tag: e4+"!gracehopper"
         _: docker exec ap2_maelstrom-$${SLURM_JOB_ID} python3.10 /scripts/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
         tag: e4+split 
