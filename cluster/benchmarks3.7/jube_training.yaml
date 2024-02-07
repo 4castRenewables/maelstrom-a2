@@ -212,6 +212,12 @@ parameterset:
         separator: |
         _:
           module --force purge 
+      - name: modules
+        tag: gpua2
+        separator: |
+        _:
+          module load slurm
+          module load go-1.19/singularity-3.10.2
       - name: systemname
         tag: jwc
         _: jwc
