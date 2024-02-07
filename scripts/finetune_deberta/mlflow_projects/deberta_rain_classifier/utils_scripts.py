@@ -288,7 +288,7 @@ def aggregate_power_W(power, n_gpus):
 
 
 def get_power_gpus(power, n_gpus):
-    if len(power.columns) == 4:
+    if len(power.columns) == 4 or len(power.columns) == 1:
         power_gpus = power[power.columns[:n_gpus]].values[1:]
     elif len(power.columns) == 8:
         power_gpus = power[power.columns[: n_gpus * 2]].values[1:]

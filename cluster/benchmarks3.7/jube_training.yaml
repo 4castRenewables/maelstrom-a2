@@ -26,6 +26,10 @@ parameterset:
         tag: "mi250"
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/a2-rocm.sif
+      - name: path_apptainer_image
+        tag: "gpua2"
+        type: string
+        _: /home/kehlert/code/a2/apptainer_images/ap2deberta.sif
       - name: base_path_training_set
         tag: "!e4+!datamedium+!datalarge"
         type: str
@@ -344,7 +348,7 @@ parameterset:
         tag: "mi250"
         _: "--rocm"
       - name: apptainer_exec
-        tag: "!e4"
+        tag: "!gracehopper"
         _: "apptainer"
       - name: execution_command
         _: ${apptainer_exec} run ${apptainerbind} ${path_apptainer_image}

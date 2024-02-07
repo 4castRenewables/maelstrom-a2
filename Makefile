@@ -24,6 +24,8 @@ POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
 APPTAINER_DIR := ""
 DOCKER_BUILD_ARGS := ""
+PATH_TWEETS = /home/kristian/Projects/a2/data/bootcamp2023/tweets/
+tweets_prefix = tweets_2017_era5_normed_filtered
 ifeq ($(IMAGE_TYPE), llama)
 	POETRY_EXTRAS := llama-chatbot torch
 	IMAGE_NAME := ap2python3p10llama
@@ -109,20 +111,22 @@ install-cuda-arm:
 test-apptainer-image-training:
 	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \
-    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc \
-    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc \
-    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc \
+    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_train.csv \
+    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_validate.csv \
+    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_test.csv \
     --model_path models/deberta-v3-small/ \
     --output_dir /tmp/trained_model/ \
     --trainer_name deep500 \
+	--dataset_backend pandas \
+	--ignore_tracking \
     --debug
 
 test-apptainer-image-training-rocm:
 	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/a2-rocm.sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \
-    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc \
-    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc \
-    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc \
+    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_train.nc \
+    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_validate.nc \
+    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_test.nc \
     --model_path models/deberta-v3-small/ \
     --output_dir /tmp/trained_model/ \
     --trainer_name deep500 \
@@ -131,9 +135,9 @@ test-apptainer-image-training-rocm:
 test-apptainer-image-training-cuda:
 	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/ap2deberta.sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \
-    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_train.nc \
-    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_validate.nc \
-    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar_test.nc \
+    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_train.nc \
+    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_validate.nc \
+    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_test.nc \
     --model_path models/deberta-v3-small/ \
     --output_dir /tmp/trained_model/ \
     --trainer_name deep500 \
@@ -143,13 +147,18 @@ test-apptainer-image-training-cuda:
 test-apptainer-image-split:
 	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
-    --filename_tweets /home/kristian/Projects/a2/data/tweets/2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc \
+    --filename_tweets $(PATH_TWEETS)/$(tweets_prefix).csv \
+	--dataset_backend pandas \
+    --key_precipitation_station tp_mm_station \
+	--ignore_tracking \
     --output_dir /tmp/dataset_rain_classifier/
 
 test-apptainer-image-split-rocm:
 	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/a2-rocm.sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
-    --filename_tweets /home/kristian/Projects/a2/data/tweets/2020_tweets_rain_sun_vocab_emojis_locations_bba_Tp_era5_no_bots_normalized_filtered_weather_stations_fix_predicted_simpledeberta_radar.nc \
+    --filename_tweets $(PATH_TWEETS)/$(tweets_prefix).nc \
+    --key_precipitation_station tp_mm_station \
+	--ignore_tracking \
     --output_dir /tmp/dataset_rain_classifier/
 
 test-apptainer-image-run:
