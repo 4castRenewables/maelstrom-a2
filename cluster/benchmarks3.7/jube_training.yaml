@@ -353,8 +353,10 @@ parameterset:
         tag: "mi250"
         _: "--rocm"
       - name: apptainer_exec
-        tag: "!gracehopper"
         _: "apptainer"
+      - name: apptainer_exec
+        tag: e4
+        _: "singularity"
       - name: execution_command
         _: ${apptainer_exec} run ${apptainerbind} ${path_apptainer_image}
       - name: executable
