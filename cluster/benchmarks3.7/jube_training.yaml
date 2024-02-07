@@ -228,13 +228,12 @@ parameterset:
     parameter:
       - name: additional_setup
         mode: text
-        tag: "!e4"
         separator: |
         _: |
           echo "no additional_setup"
       - name: additional_setup
         mode: text
-        tag: e4
+        tag: e4+gracehopper
         separator: |
         _: |
           export jube_benchmark_home=${jube_benchmark_home}
