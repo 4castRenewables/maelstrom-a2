@@ -134,6 +134,9 @@ parameterset:
       - name: model_path
         tag: e4
         _: ${model_base_path}/deberta-v3-small
+      - name: model_path
+        tag: e4+gpua2
+        _: /home/kehlert/code/a2/modelling/deberta-v3-small
       - name: model_name
         _: deberta_small
       - name: epochs
