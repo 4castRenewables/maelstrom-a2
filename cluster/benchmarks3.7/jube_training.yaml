@@ -211,17 +211,20 @@ parameterset:
           export PYTHONPATH=/usr/local/lib/python3.10/dist-packages/:$PYTHONPATH
           echo $PYTHONPATH
       - name: modules
-        tag: "!e4+!h100+!a100"
-        separator: |
-        _:
-          module --force purge 
-      - name: modules
-        tag: gpua2
+        tag: gpua2+apptainer
         separator: |
         _: |
           module load slurm
           module load nvidia/cuda-11.7
           module load go-1.19/singularity-3.10.2
+      - name: modules
+        tag: gpua2+conda
+        separator: |
+        _: |
+          module load slurm
+          module load nvidia/cuda-11.7
+          module load gcc-8.5.0/miniconda-23.10.0-1_x86_64
+          source activate /home/kehlert/.conda/envs/gh-a2-gh
       - name: systemname
         tag: jwc
         _: jwc
@@ -262,6 +265,9 @@ parameterset:
           export ${visible_devices}
           ${additional_setup}
       - name: power_measure_setup
+        tag: "!e4power"
+        _: ""
+      - name: power_measure_setup
         tag: e4power
         mode: text
         separator: |
@@ -269,11 +275,8 @@ parameterset:
           label=$$(/opt/share/scripts/powerdiscovery/getlabel.sh)
           echo "POWERMEASUREMENT: Label = $$label"
           /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
-      - name: power_measure_setup
-        tag: "jwb|jwc|h100|!e4power|a100"
-        _: ""
       - name: postprocess
-        tag: "jwb|jwc|h100|!e4power|a100"
+        tag: "!e4power"
         _: ""
       - name: postprocess
         tag: e4power
@@ -366,7 +369,11 @@ parameterset:
         _: "singularity"
       - name: execution_command
         _: ${apptainer_exec} run ${apptainerbind} ${path_apptainer_image}
+      - name: execution_command
+        tag: conda
+        _: ""
       - name: executable
+        tag: apptainer
         _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
         tag: h100
@@ -379,7 +386,7 @@ parameterset:
         tag: e4+gracehopper
         _: docker exec ap2_maelstrom-$${SLURM_JOB_ID} python3.10 /scripts/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
-        tag: e4+split 
+        tag: e4+gracehopper+split 
         _: docker exec ap2_maelstrom-$${SLURM_JOB_ID} python3.10 /scripts/build_dataset_rain_classifier.py ${args_exec_command}
       - name: submit_cmd
         _: sbatch
