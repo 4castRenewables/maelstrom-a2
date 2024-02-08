@@ -373,10 +373,7 @@ parameterset:
         tag: conda
         _: ""
       - name: executable
-        tag: apptainer
-        _: ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}
-      - name: executable
-        tag: h100
+        tag: h100|apptainer|conda
         _: >
           ${execution_command} python3 ${jube_benchmark_home}/../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py ${args_exec_command}
       - name: executable
