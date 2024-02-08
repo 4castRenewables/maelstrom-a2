@@ -19,7 +19,7 @@ parameterset:
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/ap2deberta.sif
       - name: path_apptainer_image
-        tag: "h100"
+        tag: "h100|a100"
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/pytorch_23.10-py3.sif
       - name: path_apptainer_image
@@ -126,7 +126,7 @@ parameterset:
         _: ${base_path_dataset}/tweets_2017-2020_era5_normed_filtered${file_suffix}
 
       - name: model_path
-        tag: "jwb|jwc|h100|mi250"
+        tag: "jwb|jwc|h100|mi250|a100"
         _: /p/project/deepacf/maelstrom/ehlert1/deberta-v3-small/
       - name: model_base_path
         tag: e4
@@ -195,7 +195,7 @@ parameterset:
         _:
           module --force purge 
       - name: modules
-        tag: "h100"
+        tag: "h100|a100"
         separator: |
         _: |
           module --force purge
@@ -211,7 +211,7 @@ parameterset:
           export PYTHONPATH=/usr/local/lib/python3.10/dist-packages/:$PYTHONPATH
           echo $PYTHONPATH
       - name: modules
-        tag: "!e4+!h100"
+        tag: "!e4+!h100+!a100"
         separator: |
         _:
           module --force purge 
@@ -220,12 +220,13 @@ parameterset:
         separator: |
         _: |
           module load slurm
+          module load nvidia/cuda-11.7
           module load go-1.19/singularity-3.10.2
       - name: systemname
         tag: jwc
         _: jwc
       - name: systemname
-        tag: h100
+        tag: h100|a100
         _: jureca
       - name: systemname
         tag: jwb
@@ -269,10 +270,10 @@ parameterset:
           echo "POWERMEASUREMENT: Label = $$label"
           /opt/share/scripts/powerdiscovery/getpower_bg.sh 1000 &
       - name: power_measure_setup
-        tag: "jwb|jwc|h100|!e4power"
+        tag: "jwb|jwc|h100|!e4power|a100"
         _: ""
       - name: postprocess
-        tag: "jwb|jwc|h100|!e4power"
+        tag: "jwb|jwc|h100|!e4power|a100"
         _: ""
       - name: postprocess
         tag: e4power
@@ -291,7 +292,7 @@ parameterset:
         tag: e4
         _: 1
       - name: gpus
-        tag: "jwc|jwb|h100"
+        tag: "jwc|jwb|h100|a100"
         _: 4
       - name: timelimit
         tag: test
@@ -303,7 +304,7 @@ parameterset:
         tag: jwb|jwc
         _: deepacf
       - name: account
-        tag: h100|mi250
+        tag: h100|mi250|a100
         _: exalab
       - name: account
         tag: e4
@@ -341,6 +342,9 @@ parameterset:
       - name: queue
         tag: jwc+test
         _: develgpus
+      - name: queue
+        tag: h100
+        _: dc-h100
       - name: queue
         tag: h100
         _: dc-h100
