@@ -1,4 +1,4 @@
-name:    ap2-all
+name:    ap2
 outpath: ap2_run
 comment: MAELSTROM AP2 benchmark jube script for training
 
