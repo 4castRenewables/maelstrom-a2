@@ -67,7 +67,7 @@ class GetPower(object):
         self.end_event = Event()
         self.power_queue = Queue()
 
-        interval = 10000  # ms
+        interval = 1000  # ms
         self.smip = Process(target=power_loop, args=(self.power_queue, self.end_event, interval))
         self.smip.start()
         return self
