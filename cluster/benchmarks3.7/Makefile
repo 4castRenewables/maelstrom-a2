@@ -49,7 +49,7 @@ jube-train-juelich-booster-datalarge-test:
 
 
 jube-train-juelich-a100-datamedium-quadro:
-	jube run jube_training.yaml -t jwb a100 datamedium gpuquadro
+	jube run jube_training.yaml -t a100 datamedium gpuquadro test
 
 
 jube-split-e4-datamedium-test:
