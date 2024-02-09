@@ -16,11 +16,29 @@ jube-train-juelich-booster-benchs-test:
 jube-train-juelich-h100-datamedium-test:
 	jube run jube_training.yaml -t jwb h100 test datamedium
 
+jube-train-juelich-h100-datamedium-test-double:
+	jube run jube_training.yaml -t jwb h100 test datamedium gpudouble
+
+jube-train-juelich-h100-datamedium-test-single:
+	jube run jube_training.yaml -t jwb h100 test datamedium gpusingle
+
 jube-train-juelich-mi250-datamedium:
 	jube run jube_training.yaml -t jwb mi250 datamedium
 
++jube-train-juelich-mi250-datamedium-quadro:
+	jube run jube_training.yaml -t jwb mi250 datamedium gpuquadro
+
++jube-train-juelich-mi250-datamedium-double:
+	jube run jube_training.yaml -t jwb mi250 datamedium gpudouble
+
 jube-train-juelich-booster-datamedium-test:
 	jube run jube_training.yaml -t jwb jnvidia test datamedium
+
+jube-train-juelich-booster-datamedium-test-double:
+	jube run jube_training.yaml -t jwb jnvidia test datamedium gpudouble
+
+jube-train-juelich-booster-datamedium-test-single:
+	jube run jube_training.yaml -t jwb jnvidia test datamedium gpusingle
 
 jube-train-juelich-booster-datamedium-benchs-test:
 	jube run jube_training.yaml -t jwb jnvidia test datamedium benchs
