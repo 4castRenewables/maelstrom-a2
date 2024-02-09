@@ -354,16 +354,18 @@ if __name__ == "__main__":
         help="Relative path to `output_dir` for saving figures.",
     )
 
+    # HPC
     parser.add_argument("--job_id", "-jid", type=int, default=None, help="Job id when running on hpc.")
     parser.add_argument("--iteration", "-i", type=int, default=0, help="Iteration number when running benchmarks.")
+
     args = parser.parse_args()
 
     logger.info(f"Whether to log power consumption: {args.log_gpu_power=}, ({bool(args.log_gpu_power)=})")
 
-    hardware = "nvidia" if "CUDA_VERSION" in os.environ else "amd"
-    logger.info(f"Assuming ${hardware} GPU hardware")
+    gpu_type = "cuda" if "CUDA_VERSION" in os.environ or a2.training.utils_training.cuda_available() else "rocm"
+    logger.info(f"Assuming ${gpu_type} GPU hardware")
 
-    if hardware == "amd":
+    if gpu_type == "rocm":
         import utils_energy_amd as utils_energy
     else:
         import utils_energy_nvidia as utils_energy
