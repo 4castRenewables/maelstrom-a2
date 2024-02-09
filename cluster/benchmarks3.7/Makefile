@@ -63,3 +63,6 @@ jube-train-e4-gpua2-datamedium-apptainer-test:
 
 jube-train-e4-gpua2-datamedium-conda-test:
 	jube run jube_training.yaml -t test e4power e4 datamedium conda gpua2
+
+jube-train-e4-gpua2-datamedium-conda-test-single:
+	jube run jube_training.yaml -t test e4power e4 datamedium conda gpua2 gpusingle
