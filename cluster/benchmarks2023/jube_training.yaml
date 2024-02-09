@@ -13,6 +13,14 @@ parameterset:
         tag: "!benchs"
         type: int
         _: 1
+      - name: conda_env
+        tag: e4amd
+        type: string
+        _: a2-amd
+      - name: conda_env
+        tag: "!e4amd"
+        type: string
+        _: a2-benchmarking
       - name: batch_size
         tag: "!hps"
         type: int
@@ -103,9 +111,6 @@ parameterset:
         type: string
         tag: dev
         _: env_dev.sh
-      - name: srun_options
-        tag: e4
-        _: --exclusive
   - name: globalParameter
     parameter:
       - name: modules
@@ -375,4 +380,7 @@ step:
       error_file: $error_file
       _:
         $modules;
-        $submit $srun_options $submit_script;
+        source ~/.bashrc;
+        source $jube_benchmark_home/$env_file;
+        conda activate $conda_env;
+        $submit $submit_script;

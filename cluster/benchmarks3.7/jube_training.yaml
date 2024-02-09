@@ -181,6 +181,9 @@ parameterset:
       - name: run_folder
         type: string
         _: $run_name
+      - name: srun_options
+        tag: e4
+        _: --exclusive
   - name: globalParameter
     parameter:
       - name: modules
@@ -260,7 +263,6 @@ parameterset:
         separator: |
         _: |
           ${power_measure_setup}
-          source ~/.bashrc
           ${modules}
           export ${visible_devices}
           ${additional_setup}
@@ -579,4 +581,4 @@ step:
       error_file: $error_file
       _:
         $modules;
-        $submit $submit_script;
+        $submit $srun_options $submit_script;
