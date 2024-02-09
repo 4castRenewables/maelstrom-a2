@@ -1,9 +1,6 @@
 import logging
 import os
 
-# importing the library
-from memory_profiler import profile
-
 
 print(f'{os.environ.get("SLURM_SUBMIT_DIR")=}')
 if os.environ.get("SLURM_SUBMIT_DIR"):
@@ -43,7 +40,6 @@ from a2.training import benchmarks as timer
 import numpy as np
 
 
-@profile
 def main(args):
     os.environ["A2_DATASET_BACKEND"] = args.dataset_backend
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
