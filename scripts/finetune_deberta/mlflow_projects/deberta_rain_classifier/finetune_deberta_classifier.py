@@ -3,7 +3,7 @@ import os
 
 
 print(f'{os.environ.get("SLURM_SUBMIT_DIR")=}')
-if os.environ.get("SLURM_SUBMIT_DIR"):
+if os.environ.get("SLURM_SUBMIT_DIR") and not os.environ.get("A2_NO_LOG_FILE"):
     SLURM_SUBMIT_DIR = os.environ["SLURM_SUBMIT_DIR"]
 
     logging.basicConfig(

@@ -253,6 +253,12 @@ parameterset:
           echo "no additional_setup"
       - name: additional_setup
         mode: text
+        tag: gpua2
+        separator: |
+        _: |
+          export A2_NO_LOG_FILE=1
+      - name: additional_setup
+        mode: text
         tag: e4+gracehopper
         separator: |
         _: |
