@@ -1,9 +1,2 @@
-# gdal==3.4.0
-a2[benchmarks]
-bottleneck
-datasets
-transformers
-sentencepiece
-nltk
-sentence_transformers
+a2[benchmarks,xarray-extra,deberta]
 accelerate

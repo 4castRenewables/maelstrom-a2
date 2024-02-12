@@ -17,13 +17,12 @@ JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 E4_SSH = $(E4_USER)@172.18.19.216
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 E4_IMAGE_FOLDER := /home/kehlert/images/
-IMAGE_TYPE = ap2deberta
-# ap2cuda 
+IMAGE_TYPE = ap2cuda
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
 APPTAINER_DIR := ""
-DOCKER_BUILD_ARGS := ""
+DOCKER_BUILD_ARGS := "--progress=plain"
 PATH_TWEETS = /home/kristian/Projects/a2/data/bootcamp2023/tweets/
 tweets_prefix = tweets_2017_era5_normed_filtered
 ifeq ($(IMAGE_TYPE), llama)
@@ -66,7 +65,16 @@ else ifeq ($(IMAGE_TYPE), ap2cuda)
 	POETRY_EXTRAS := ""
 	IMAGE_NAME := a2-cuda
 	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
-	DOCKER_BUILD_ARGS = --platform "linux/arm64/v8"
+	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
+	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
+else ifeq ($(IMAGE_TYPE), ap2armcuda)
+	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/
+	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
+	POETRY_EXTRAS := ""
+	IMAGE_NAME := a2-arm-cuda
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
+	DOCKER_BUILD_ARGS = '--platform "linux/arm64/v8" --progress=plain'
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
 	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
@@ -179,11 +187,14 @@ build-conda-env: build-python
 	python -m ipykernel install --user --name=$(IMAGE_NAME)
 
 build-docker:
-	sudo docker buildx build $(DOCKER_BUILD_ARGS) --progress=plain -t $(IMAGE_NAME):latest -f $(DOCKER_DIR)/$(IMAGE_NAME).Dockerfile .
+	sudo docker buildx build $(DOCKER_BUILD_ARGS) -t $(IMAGE_NAME):latest -f $(DOCKER_DIR)/$(IMAGE_NAME).Dockerfile .
 
 build-apptainer:
 	sudo apptainer build --force $(APPTAINER_DIR)/$(IMAGE_NAME).sif $(APPTAINER_DIR)/$(IMAGE_NAME).def 
 
+upload-to-dockerhub:
+	docker tag a2-arm-cuda:latest kristian4cast/ml:a2-cuda
+	docker push kristian4cast/ml:a2-cuda
 
 build: build-docker build-apptainer
 

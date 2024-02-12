@@ -1,5 +1,9 @@
 # Train and evaluate on cluster with JUBE
 
+## Local installation requirements
+Install apptainer via [repo instructions](https://github.com/apptainer/apptainer/blob/main/INSTALL.md).
+
+
 
 ## Environment for H100
 ### Locations images
@@ -46,20 +50,28 @@ apptainer pull --tmpdir $PROJECT/maelstrom/$USER/apptainertmpdir/ docker://${con
 apptainer run --nv pytorch_rocm5.7_ubuntu22.04_py3.10_pytorch_2.0.1.sif
 python3 -m pip install -I --prefix=$(pwd)/mi250_packages/ -r../../scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/requirements_rocm.txt
 ```
-### Test setup locally 
+## Environment for Grace Hopper (E4)
+Grace hopper gpu is mounted in an ARM machine. To build a docker image that can be run on arm using non-arm architecture, the following docker image should be executed
 ```bash
 docker run --rm -t arm64v8/ubuntu:latest uuname -m
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes # This step will execute the registering scripts
 docker run --rm -t arm64v8/ubuntu uname -m # Testing the emulation environment
+```
+Our base image is built on a nvidia provided image, it can locally be run by calling
+```
 # run docker in detached mode
 docker run -t -d --ipc=host -e HOME=$HOME -e USER=$USER nvcr.io/nvidia/pytorch:24.01-py3
+```
 
+Now the docker image can be build, set IMAGE_TYPE=ap2armcuda in Makefile and run 
 ```
+make build-docker
 ```
-apptainer run --nv pytorch_rocm5.7_ubuntu22.04_py3.10_pytorch_2.0.1.sif
-export PYTHONPATH=/p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/mi250_packages/local/lib/python3.10/dist-packages:$PYTHONPATH
-python3 -c "import transformers"
+and upload the image to docker hub
 ```
+make upload-to-dockerhub
+```
+Now the image should be available on the Grace Hopper machine and run via `/home/kristian/Projects/a2/scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/run_docker_e4.sh`. See jube script for more details.
 
 
 ## Setup environment
@@ -162,3 +174,12 @@ source activate /home/kehlert/.conda/envs/a2-gracehopper
 
 ## Training without jube
 Alternatively, job script `submit_train.sh` can be used to train the model on the cluster (via `run_benchmark.sh`).
+
+## Known issues:
+### Local apptainer installation
+```bash
+INFO:    Starting build...
+FATAL:   While performing build: conveyor failed to get: while converting reference: loading image from docker engine: Error response from daemon: client version 1.22 is too old. Minimum supported API version is 1.24, please upgrade your client to a newer version
+make: *** [Makefile:193: build-apptainer] Error 255
+```
+You can trick client by manually overriding minimum version, see [issue](https://github.com/containers/skopeo/issues/2202#issuecomment-1908830671).

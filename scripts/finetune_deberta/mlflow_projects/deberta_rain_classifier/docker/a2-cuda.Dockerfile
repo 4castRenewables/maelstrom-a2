@@ -1,4 +1,4 @@
-FROM --platform="linux/arm64/v8" nvcr.io/nvidia/pytorch:24.01-py3
+FROM nvcr.io/nvidia/pytorch:24.01-py3
 
 # RUN python${PYTHON_VERSION} -m ensurepip --upgrade
 # RUN sed -ie '$d' /opt/nvidia/deepstream/deepstream-6.3/entrypoint.sh
@@ -21,13 +21,7 @@ WORKDIR /opt/deberta_rain_classifier
 RUN pip install --upgrade pip
 
 RUN apt-get upgrade -y
-RUN aarch64-linux-gnu-gcc --version
 # RUN gcc-aarch64-linux-gnu --version
-RUN apt-get upgrade gcc-aarch64-linux-gnu
-ENV DISABLE_NUMCODECS_AVX2=1
-ENV DISABLE_NUMCODECS_SSE2=1
-RUN echo ${DISABLE_NUMCODECS_SSE2}
-RUN pip index versions a2
 RUN pip install -r requirements_cuda.txt
 # RUN pip install --ignore-installed -r requirements_cuda.txt
 
