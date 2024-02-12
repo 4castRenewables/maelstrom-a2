@@ -297,11 +297,14 @@ parameterset:
         tag: e4
         _: ""
       - name: gpus
-        tag: gpua2+!defaultgpu
+        tag: gpua2
         _: 2
       - name: gpus
         tag: "jwc|jwb|h100|a100"
         _: 4
+      - name: gpus
+        tag: "gpuassignsingle"
+        _: 1
       - name: timelimit
         tag: test
         _: "01:00:00"
