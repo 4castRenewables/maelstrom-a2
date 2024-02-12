@@ -23,6 +23,10 @@ parameterset:
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/a2/cluster/benchmarks3.7/pytorch_23.10-py3.sif
       - name: path_apptainer_image
+        tag: "a100"
+        type: string
+        _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/a2-cuda.sif
+      - name: path_apptainer_image
         tag: "mi250"
         type: string
         _: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/a2-rocm.sif
