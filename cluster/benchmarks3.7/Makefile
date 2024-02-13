@@ -71,5 +71,8 @@ jube-train-e4-gpua2-datamedium-conda-test:
 jube-train-e4-gpua2-datamedium-conda-test-gpudouble-assignsingle:
 	jube run jube_training.yaml -t test e4power e4 datamedium conda gpua2 gpuassignsingle gpudouble
 
+jube-train-e4-gpua2-datamedium-conda-test-gpudouble-assignsingle-nogpulog:
+	jube run jube_training.yaml -t test e4power e4 datamedium conda gpua2 gpuassignsingle gpudouble nogpulog
+
 jube-train-e4-gpua2-datamedium-conda-test-gpudouble:
 	jube run jube_training.yaml -t test e4power e4 datamedium conda gpua2 gpudouble
