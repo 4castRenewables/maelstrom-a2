@@ -435,6 +435,11 @@ parameterset:
         tag: "!nogpulog"
         mode: text
         _: >
+         
+      - name: additional_args
+        tag: "!nogpulog"
+        mode: text
+        _: >
           --log_gpu_memory
           --log_gpu_power
       - name: args_exec_command
@@ -573,15 +578,15 @@ result:
         - {title: "T. eval", format: ".4f", _: evaluation_time_max}
         # - {title: "MaxMemReservGPU", format: ".4f", _: gpu_max_mem_reserved_max}
         #- {title: "Job_Time", _: timelimit}
-        #- {title: "Node(s)", _: label_pat}
-        #- {title: "Tstart", _: time_pat_first}
-        #- {title: "Tend", _: time_pat_last}
-        # - {title: "Ma.W", format: ".2f", _: watt_pat_max}
-        # - {title: "A.W", format: ".2f", _: watt_pat_avg}
-        #- {title: "Mi.W", format: ".4f", _: watt_pat_min}
-        # - {title: "Ma.VA", format: ".2f", _: va_pat_max}
-        # - {title: "A.VA", format: ".2f", _: va_pat_avg}
-        #- {title: "Mi.VA", format: ".4f", _: va_pat_min}
+        - {title: "Node(s)", _: label_pat}
+        - {title: "Tstart", _: time_pat_first}
+        - {title: "Tend", _: time_pat_last}
+        - {title: "Ma.W", format: ".2f", _: watt_pat_max}
+        - {title: "A.W", format: ".2f", _: watt_pat_avg}
+        - {title: "Mi.W", format: ".4f", _: watt_pat_min}
+        - {title: "Ma.VA", format: ".2f", _: va_pat_max}
+        - {title: "A.VA", format: ".2f", _: va_pat_avg}
+        - {title: "Mi.VA", format: ".4f", _: va_pat_min}
         # - {title: "PpDevWh", _: total_power_wh_per_device}
         # - {title: "PWh", format: ".2f", _: total_power_wh}
         # - {title: "PW", _: total_power_w}
