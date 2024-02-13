@@ -336,7 +336,7 @@ parameterset:
         tag: "mi250"
         _: "None"
       - name: gres
-        tag: "gracehopper"
+        tag: "gracehopper|forcenongpu"
         _: "gpu"
 
       - name: queue
