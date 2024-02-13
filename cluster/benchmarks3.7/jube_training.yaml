@@ -33,7 +33,7 @@ parameterset:
       - name: path_apptainer_image
         tag: "gpua2"
         type: string
-        _: /home/kehlert/code/a2/apptainer_images/ap2deberta.sif
+        _: /home/kehlert/code/a2/apptainer_images/a2-cuda.sif
       - name: base_path_training_set
         tag: "!e4+!datamedium+!datalarge"
         type: str
