@@ -65,7 +65,7 @@ jube-split-e4-datamedium-test:
 
 ## E4: TRAINING
 # E4: Gracehopper
-jube-train-e4-datamedium-test:
+jube-train-e4-gracehopper-datamedium-test:
 	jube run jube_training.yaml -t test e4power e4 datamedium gracehopper
 
 # E4: A2
