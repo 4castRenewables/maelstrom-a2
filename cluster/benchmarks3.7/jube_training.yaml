@@ -431,6 +431,12 @@ parameterset:
         separator: ";"
         tag: gpudouble
         _: "CUDA_VISIBLE_DEVICES=0,1"
+      - name: additional_args
+        tag: "!nogpulog"
+        mode: text
+        _: >
+          --log_gpu_memory
+          --log_gpu_power
       - name: args_exec_command
         mode: text
         _: >
@@ -462,11 +468,10 @@ parameterset:
           --eval_steps 500
           --output_dir ${outdir}
           --folder_run dataset_split_thresh0M2/
-          --log_gpu_memory
           --job_id $${SLURM_JOBID}
           --ignore_tracking
           --dataset_backend ${dataset_backend}
-          --log_gpu_power
+          ${additional_args}
       - name: args_exec_command
         tag: split
         mode: text
