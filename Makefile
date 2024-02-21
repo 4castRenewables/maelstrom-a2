@@ -17,7 +17,7 @@ JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 E4_SSH = $(E4_USER)@172.18.19.216
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 E4_IMAGE_FOLDER := /home/kehlert/images/
-IMAGE_TYPE = ap2autolabel
+IMAGE_TYPE = ap2armcuda
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -83,7 +83,6 @@ else ifeq ($(IMAGE_TYPE), ap2armcuda)
 	POETRY_EXTRAS := ""
 	IMAGE_NAME := a2-arm-cuda
 	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
-	DOCKER_BUILD_ARGS = '--platform "linux/arm64/v8" --progress=plain'
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
 	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)

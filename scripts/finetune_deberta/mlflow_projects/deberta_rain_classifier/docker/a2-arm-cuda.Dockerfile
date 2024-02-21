@@ -4,6 +4,7 @@ FROM --platform="linux/arm64/v8" nvcr.io/nvidia/pytorch:24.01-py3
 # RUN sed -ie '$d' /opt/nvidia/deepstream/deepstream-6.3/entrypoint.sh
 # RUN sed -ie '$a /opt/nvidia/nvidia_entrypoint.sh $@' /opt/nvidia/deepstream/deepstream-6.3/entrypoint.sh
 ARG PYTHON_VERSION=3.10
+RUN cat /etc/apt/sources.list
 RUN apt-get update \
  && apt-get install -y software-properties-common \
  && add-apt-repository ppa:deadsnakes/ppa -y \
