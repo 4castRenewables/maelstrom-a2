@@ -1,0 +1,8 @@
+a2[benchmarks]
+bottleneck
+datasets
+transformers
+sentencepiece
+nltk
+sentence_transformers
+accelerate

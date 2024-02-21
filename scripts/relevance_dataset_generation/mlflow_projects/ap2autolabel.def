@@ -1,0 +1,7 @@
+Bootstrap: docker
+From: nvidia/cuda:12.2.2-cudnn8-devel-ubuntu22.04
+%post
+apt update
+apt upgrade -y
+apt install -y python3-venv python3-pip
+pip install a2[benchmarks,xarray-extra,deberta,notebooks] accelerate refuel-autolabel

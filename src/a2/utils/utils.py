@@ -145,6 +145,12 @@ def round_time_to_base_minutes(time: np.datetime64, base: int = 5):
     return np.datetime64(tm)
 
 
+def to_datetime(year=2000, month=1, day=1, hour=0, minute=0, second=0):
+    """Convenience function that returns np.datetime64 object.
+    Especially useful, when interacting with pandas indices specified as datetime."""
+    return np.datetime64(f"{year}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:{second:02d}")
+
+
 def vetorize_time_to_base_minutes(times: np.ndarray, base: int = 5):
     function = functools.partial(round_numpy_time_to_base_minutes, base=base)
     rounded = np.array(list(map(function, times)))

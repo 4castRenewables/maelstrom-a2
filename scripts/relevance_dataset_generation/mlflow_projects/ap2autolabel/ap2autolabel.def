@@ -1,0 +1,28 @@
+Bootstrap: docker-daemon
+From: docker.io/library/ap2autolabel:latest
+
+%environment
+    export PATH=/venv/bin:$PATH
+    # Silence git warning by MLflow
+    export GIT_PYTHON_REFRESH=quiet
+
+%test
+    export PATH=/usr/local/cuda-11.7/bin:/usr/local/bin:/venv/bin:${PATH}
+    which python
+    python --version
+    pip list
+    python -c 'import a2, torch'
+
+%startscript
+    exec "$@"
+
+%runscript
+    echo "[$(date)] Running a2"
+    echo "Arguments: $*"
+    echo "Running command"
+    exec "$@"
+
+%labels
+    Author Kristian Ehlert
+    Version cu12.3-py3.10
+

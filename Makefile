@@ -17,7 +17,7 @@ JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 E4_SSH = $(E4_USER)@172.18.19.216
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 E4_IMAGE_FOLDER := /home/kehlert/images/
-IMAGE_TYPE = ap2cuda
+IMAGE_TYPE = ap2autolabel
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -35,6 +35,15 @@ else ifeq ($(IMAGE_TYPE), llamachat)
 	KERNEL_PATH := /p/project/training2330/ehlert1/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/training2330/ehlert1/jupyter/images/
 	KERNEL_DISPLAY_NAME := ap2_llama
+else ifeq ($(IMAGE_TYPE), ap2autolabel)
+	POETRY_EXTRAS := ""
+	APPTAINER_DIR := scripts/relevance_dataset_generation/mlflow_projects/ap2autolabel/
+	DOCKER_DIR := $(APPTAINER_DIR)
+	IMAGE_NAME := $(IMAGE_TYPE)
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
+	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
+	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
 else ifeq ($(IMAGE_TYPE), HFfinetuningBnB)
 	POETRY_EXTRAS := ""
 	IMAGE_NAME := HFfinetuningBnB
@@ -116,6 +125,10 @@ install-default:
 install-cuda-arm:
 	poetry install --extras "benchmarks deberta notebooks" --sync --with torch-cpu 
 
+test-apptainer-image-autolabel:
+	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif \
+	python3 -c "from autolabel import LabelingAgent, AutolabelDataset, get_data"
+
 test-apptainer-image-training:
 	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \
@@ -187,7 +200,9 @@ build-conda-env: build-python
 	python -m ipykernel install --user --name=$(IMAGE_NAME)
 
 build-docker:
+ifdef DOCKER_DIR	
 	sudo docker buildx build $(DOCKER_BUILD_ARGS) -t $(IMAGE_NAME):latest -f $(DOCKER_DIR)/$(IMAGE_NAME).Dockerfile .
+endif
 
 build-apptainer:
 	sudo apptainer build --force $(APPTAINER_DIR)/$(IMAGE_NAME).sif $(APPTAINER_DIR)/$(IMAGE_NAME).def 
@@ -273,7 +288,7 @@ export JSC_KERNEL_JSON
 sync-bootcamp-data:
 	. ~/.bashrc && rsynctojuwels /home/kristian/Projects/a2/data/bootcamp2023/ /p/project/training2330/a2/data/bootcamp2023/
 
-upload-jsc-kernel: upload-image
+upload-jsc-kernel: build-docker build-apptainer upload-image 
 	echo $(KERNEL_PATH)
 	rsync -Pvra \
 		$(APPTAINER_DIR)/$(IMAGE_NAME).sif \

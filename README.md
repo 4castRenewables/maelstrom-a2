@@ -17,7 +17,7 @@ Training on HPC is mostly done with jupyter notebooks with jupyter kernels based
 ### Install apptainer
 See [this git doc](https://github.com/apptainer/apptainer/blob/main/INSTALL.md) for installation of apptainer.
 
-### Building and deploying the Jupyter kernel
+### Building and deploying the Jupyter kernel (apptainer)
 1. Prerequisites:
 Create a private SSH file ~/.ssh/jsc (~/.ssh/e4) and upload its public counterpart
 to JuDoor
@@ -44,6 +44,46 @@ Here, we execute our code in a venv environment. For setup of a venv with the ne
 In your project, create an `Experiment` to log data to and `Code` that refers to this repository.
 ### Create Run
 In the `Run` form adopt parameter values of the `MLflow` project file and compute backend file to your setup.
+
+## Conda environments on JSC
+### Install miniconda
+Follows "03-HowTos/Create your own Jupyter CONDA-Kernel" available on [JSC gitlab](https://github.com/FZJ-JSC/jupyter-jsc-notebooks/blob/documentation/03-HowTos/Create_JupyterKernel_conda.ipynb) (and jupyter-jsc).
+
+Set your default conda environment (add to `~/.bashrc`).
+```bash
+CONDA_ENV=my_condaenv
+export CONDA_ENV=$(echo "${CONDA_ENV}" | awk '{print tolower($0)}')
+```
+Double check
+```bash
+echo ${CONDA_ENV}
+```
+Setup installation folder miniconda. Note, that the home directory (=default setting) has a very strict limit on the number of files and sizes, which limits the number of conda environments you would be able to create. This should therefore be a folder on e.g., project: `/p/project/deepacf/maelstrom/${USER}`
+
+```bash
+export CONDA_TARGET_DIR=${PROJECT}/${USER}/miniconda3/${CONDA_ENV}
+```
+Download the miniconda installer
+```bash
+wget --output-document=$HOME/Miniconda3.sh https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+```
+Create installation folder for conda
+```bash
+mkdir -p ${CONDA_TARGET_DIR}
+echo ${CONDA_TARGET_DIR}
+```
+Install miniconda
+```bash
+bash $HOME/Miniconda3.sh -b -u -p ${CONDA_TARGET_DIR}
+```
+
+Create shared kernel folder visible to jupyter-jsc
+```bash
+/p/home/jusers/${USER}/juwels/.local/share/jupyter/kernels
+```
+
+### Building and deploying the Jupyter kernel (apptainer)
+
 
 ## Debugging
 To show processing bottelenecks line_profiler is used. For memory profiling, we use the respective [memory_profiler](https://github.com/pythonprofilers/memory_profiler) package.

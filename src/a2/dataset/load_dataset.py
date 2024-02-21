@@ -147,7 +147,7 @@ def load_dataset(
     elif a2.dataset.utils_dataset._using_pandas():
         use_columns = None
         if drop_variables:
-            columns = list(pd.read_csv("sample_data.csv", nrows=1, **kwargs))
+            columns = list(pd.read_csv(filename, nrows=1, **kwargs))
             use_columns = [c for c in columns if c not in drop_variables]
         ds = pd.read_csv(filename, usecols=use_columns, **kwargs)
     return ds
