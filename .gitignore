@@ -20,7 +20,11 @@ notebooks/*.nc
 *.coverage.*
 *#*#
 **/*.sif
+*.yaml
+data/
 
+notebooks/analysis/JSC
+notebooks/analysis/E4
 *.nc
 models/
 mlprojects/
