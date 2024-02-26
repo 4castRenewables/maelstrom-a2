@@ -167,6 +167,7 @@ entry_points:
         --cls_dropout {cls_dropout}
         --lr_scheduler_type {lr_scheduler_type}
         --loss {loss}
+        --save_steps {save_steps}
         --logging_steps {logging_steps}
         --evaluation_strategy {evaluation_strategy}
         --eval_steps {eval_steps}
