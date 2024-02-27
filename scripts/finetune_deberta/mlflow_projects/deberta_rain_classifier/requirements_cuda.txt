@@ -1,2 +1,2 @@
-a2[benchmarks,xarray-extra,deberta]
+a2[benchmarks,xarray-extra,deberta,tracking]
 accelerate

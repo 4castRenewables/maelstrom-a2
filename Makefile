@@ -17,7 +17,7 @@ JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 E4_SSH = $(E4_USER)@172.18.19.216
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 E4_IMAGE_FOLDER := /home/kehlert/images/
-IMAGE_TYPE = ap2armcuda
+IMAGE_TYPE = ap2cuda
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -73,10 +73,10 @@ else ifeq ($(IMAGE_TYPE), ap2cuda)
 	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
 	POETRY_EXTRAS := ""
 	IMAGE_NAME := a2-cuda
-	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_TYPE)
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_NAME)
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
-	KERNEL_DISPLAY_NAME := $(IMAGE_TYPE)
+	KERNEL_DISPLAY_NAME := $(IMAGE_NAME)
 else ifeq ($(IMAGE_TYPE), ap2armcuda)
 	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/
 	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
@@ -235,6 +235,8 @@ test-view-images:
 
 test-generate-images:
 	poetry run pytest --mpl-generate-hash-library=src/tests/data/mpl_baselines/hash_json.json --mpl-generate-path=src/tests/data/mpl_baselines/ --record-mode=once src/tests/
+
+deploy: build upload-image
 
 upload-image:
 	# Copy kernel image file

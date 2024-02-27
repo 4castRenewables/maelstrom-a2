@@ -202,7 +202,7 @@ entry_points:
       num_labels:
         default: 2
       trainer_name:
-        default: default
+        default: deep500
       loss:
         type: str
         default: default_loss
