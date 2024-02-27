@@ -84,7 +84,7 @@ entry_points:
       num_labels:
         default: 2
       trainer_name:
-        default: default
+        default: deep500
       
       random_seed:
         type: int
