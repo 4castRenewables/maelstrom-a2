@@ -172,6 +172,7 @@ entry_points:
         --evaluation_strategy {evaluation_strategy}
         --eval_steps {eval_steps}
         --log_gpu_memory
+        --use_deep500
         --output_dir {output_dir}
         --folder_run {folder_run}
         --folder_saved_models {folder_saved_models}
