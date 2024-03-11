@@ -1,12 +1,10 @@
 UnicoreApiUrl: https://zam2125.zam.kfa-juelich.de:9112/JUWELS/rest/core
-Environment:
-  Apptainer:
-    Path: /p/project/deepacf/maelstrom/ehlert1/apptainer_images/a2-cuda.sif
-    Type: remote
-    Options:
-      - --nv
-  Variables:
-    GIT_PYTHON_REFRESH: quiet
+PreRunCommandOnComputeNode: >
+  conda activate 
+  module load Stages/2023
+  module load cuDNN/8.6.0.163-CUDA-11.7
+  module unload Python/3.10.4
+  export GIT_PYTHON_REFRESH=quiet
 Resources:
   Queue: develbooster
   Nodes: 1

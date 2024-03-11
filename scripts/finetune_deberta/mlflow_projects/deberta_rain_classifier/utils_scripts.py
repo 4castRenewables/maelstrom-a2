@@ -8,11 +8,19 @@ import a2.training.tracking
 import a2.utils.file_handling
 import a2.dataset.utils_dataset
 import numpy as np
-from a2.training import benchmarks as timer
+import training.benchmarks
 
 FONTSIZE = 16
 
 logger = logging.getLogger(__name__)
+
+
+def import_timer(use_deep500=False):
+    if use_deep500:
+        from deep500.utils import timer_torch as timer
+    else:
+        from a2.training import benchmarks as timer
+    return timer
 
 
 def _determine_path_output(args):
@@ -139,7 +147,7 @@ def evaluate_model(
         font_size=FONTSIZE,
     )
     tracker.log_artifact(filename_roc_plot)
-    logger.info(f"Max memory consumption [Gbyte]: {timer.get_max_memory_usage()/1e9}")
+    logger.info(f"Max memory consumption [Gbyte]: {training.benchmarks.get_max_memory_usage()/1e9}")
     if args.log_gpu_memory:
         memory_tracker.get_cuda_memory_usage("Finished run")
 

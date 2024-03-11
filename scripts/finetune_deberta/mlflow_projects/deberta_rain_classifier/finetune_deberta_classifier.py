@@ -36,11 +36,11 @@ import a2.training.training_hugging
 import a2.training.model_infos
 import a2.utils.argparse
 import utils_scripts
-from a2.training import benchmarks as timer
 import numpy as np
 
 
 def main(args):
+    timer = utils_scripts.import_timer(use_deep500=args.use_deep500)
     os.environ["A2_DATASET_BACKEND"] = args.dataset_backend
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     memory_tracker = a2.training.benchmarks.CudaMemoryMonitor()
@@ -116,7 +116,8 @@ def main(args):
             "model_name": model_name,
         }
     )
-    tmr.start(timer.TimeType.RUN)
+    if not args.use_deep500:
+        tmr.start(timer.TimeType.RUN)
     if args.log_gpu_memory:
         memory_tracker.get_cuda_memory_usage("Starting run")
     trainer_class = a2.training.model_configs.get_customized_trainer_class(
@@ -152,18 +153,21 @@ def main(args):
     tracker.log_params(n_model_parameters)
     tracker.log_params(trainer_object.hyper_parameters.__dict__)
     tracker.log_params(args.__dict__)
-    tmr.start(timer.TimeType.TRAINING)
+    if not args.use_deep500:
+        tmr.start(timer.TimeType.TRAINING)
     trainer.train()
-    tmr.end(timer.TimeType.TRAINING)
-    tmr.start(timer.TimeType.EVALUATION)
+    if not args.use_deep500:
+        tmr.end(timer.TimeType.TRAINING)
+        tmr.start(timer.TimeType.EVALUATION)
     (
         predictions,
         prediction_probabilities,
     ) = a2.training.evaluate_hugging.predict_dataset(dataset_test, trainer)
     if args.log_gpu_memory:
         memory_tracker.get_cuda_memory_usage("Finished training")
-    tmr.end(timer.TimeType.EVALUATION)
-    tmr.end(timer.TimeType.RUN)
+    if not args.use_deep500:
+        tmr.end(timer.TimeType.EVALUATION)
+        tmr.end(timer.TimeType.RUN)
 
     tmr.print_all_time_stats()
     ds_test_predicted = a2.training.evaluate_hugging.build_ds_test(
@@ -310,6 +314,11 @@ if __name__ == "__main__":
         "--log_gpu_power",
         action="store_true",
         help="Monitor Cuda power consumption on Juwels.",
+    )
+    parser.add_argument(
+        "--use_deep500",
+        action="store_true",
+        help="Use deep500 framework to log GPU performance.",
     )
     parser.add_argument(
         "--ignore_tracking",

@@ -142,6 +142,6 @@ class TrainerWithTimer(Trainer):
         return dl
 
     def save_model(self, output_dir: Optional[str] = None, _internal_call: bool = False):
-        self.tmr.start(timer.TimeType.SAVING_MODEL)
+        self.tmr.start(timer.TimeType.OTHER)
         super().save_model(output_dir=output_dir, _internal_call=_internal_call)
-        self.tmr.end(timer.TimeType.SAVING_MODEL)
+        self.tmr.end(timer.TimeType.OTHER)
