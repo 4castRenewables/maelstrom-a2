@@ -1,10 +1,7 @@
 UnicoreApiUrl: https://zam2125.zam.kfa-juelich.de:9112/JUWELS/rest/core
 Environment:
   PreRunCommandOnComputeNode: >
-    conda activate a2py3p10;
-    module load Stages/2023;
-    module load cuDNN/8.6.0.163-CUDA-11.7;
-    module unload Python/3.10.4
+    conda activate a2py3p10; module load Stages/2023; module load cuDNN/8.6.0.163-CUDA-11.7; module unload Python/3.10.4
   Variables:
     GIT_PYTHON_REFRESH: quiet
 Resources:

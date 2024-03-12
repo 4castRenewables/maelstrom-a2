@@ -8,7 +8,7 @@ import a2.training.tracking
 import a2.utils.file_handling
 import a2.dataset.utils_dataset
 import numpy as np
-import training.benchmarks
+import a2.training.benchmarks
 
 FONTSIZE = 16
 
@@ -147,7 +147,7 @@ def evaluate_model(
         font_size=FONTSIZE,
     )
     tracker.log_artifact(filename_roc_plot)
-    logger.info(f"Max memory consumption [Gbyte]: {training.benchmarks.get_max_memory_usage()/1e9}")
+    logger.info(f"Max memory consumption [Gbyte]: {a2.training.benchmarks.get_max_memory_usage()/1e9}")
     if args.log_gpu_memory:
         memory_tracker.get_cuda_memory_usage("Finished run")
 
