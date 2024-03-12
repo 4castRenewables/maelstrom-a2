@@ -20,7 +20,6 @@ notebooks/*.nc
 *.coverage.*
 *#*#
 **/*.sif
-*.yaml
 data/
 
 notebooks/analysis/JSC
