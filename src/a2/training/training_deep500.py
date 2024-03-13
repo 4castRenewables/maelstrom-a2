@@ -114,7 +114,7 @@ class TrainerWithTimer(Trainer):
             loss_mb = smp_forward_backward(model, inputs, self.args.gradient_accumulation_steps)
             return loss_mb.reduce_mean().detach().to(self.args.device)
         if self.tmr:
-            self.tmr.start(timer.TimeType.FORWARD, gpu=self.tmr_gpu)
+            self.tmr.start(timer.TimeType.FORWARD)
 
         with self.compute_loss_context_manager():
             loss = self.compute_loss(model, inputs)
@@ -122,8 +122,8 @@ class TrainerWithTimer(Trainer):
         if self.args.n_gpu > 1:
             loss = loss.mean()  # mean() to average on multi-gpu parallel training
         if self.tmr:
-            self.tmr.end(timer.TimeType.FORWARD, gpu=self.tmr_gpu)
-            self.tmr.start(timer.TimeType.BACKWARD, gpu=self.tmr_gpu)
+            self.tmr.end(timer.TimeType.FORWARD)
+            self.tmr.start(timer.TimeType.BACKWARD)
 
         if self.use_apex:
             with amp.scale_loss(loss, self.optimizer) as scaled_loss:
@@ -131,7 +131,7 @@ class TrainerWithTimer(Trainer):
         else:
             self.accelerator.backward(loss)
         if self.tmr:
-            self.tmr.end(timer.TimeType.BACKWARD, gpu=self.tmr_gpu)
+            self.tmr.end(timer.TimeType.BACKWARD)
 
         return loss.detach() / self.args.gradient_accumulation_steps
 

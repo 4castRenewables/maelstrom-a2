@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "a2"
-version = "0.10.1"
+version = "0.10.2"
 description = "Package for predicting information about the weather from social media data as application 2 for maelstrom project"
 authors = ["Kristian Ehlert <kristian.ehlert@4-cast.de>"]
 packages = [{ include = "a2", from = "src" }]

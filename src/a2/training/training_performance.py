@@ -106,7 +106,7 @@ class TrainerWithTimer(Trainer):
         inputs = self._prepare_inputs(inputs)
 
         if self.tmr:
-            self.tmr.start(timer.TimeType.FORWARD, gpu=self.tmr_gpu)
+            self.tmr.start(timer.TimeType.FORWARD)
         with self.compute_loss_context_manager():
             loss = self.compute_loss(model, inputs)
 
@@ -117,8 +117,8 @@ class TrainerWithTimer(Trainer):
             # deepspeed handles loss scaling by gradient_accumulation_steps in its `backward`
             loss = loss / self.args.gradient_accumulation_steps
         if self.tmr:
-            self.tmr.end(timer.TimeType.FORWARD, gpu=self.tmr_gpu)
-            self.tmr.start(timer.TimeType.BACKWARD, gpu=self.tmr_gpu)
+            self.tmr.end(timer.TimeType.FORWARD)
+            self.tmr.start(timer.TimeType.BACKWARD)
         print(f"{self.do_grad_scaling=}")
         print(f"{self.use_apex=}")
         print(f"{self.deepspeed=}")
@@ -134,7 +134,7 @@ class TrainerWithTimer(Trainer):
             loss.backward()
 
         if self.tmr:
-            self.tmr.end(timer.TimeType.BACKWARD, gpu=self.tmr_gpu)
+            self.tmr.end(timer.TimeType.BACKWARD)
 
         return loss.detach()
 
