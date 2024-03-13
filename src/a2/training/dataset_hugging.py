@@ -9,10 +9,6 @@ import transformers
 xarray, xarray_dataset_type = a2.utils.utils._import_xarray_and_define_xarray_type(__file__)
 
 
-def _get_tokenizer():
-    return
-
-
 class DatasetHuggingFace:
     """
     Used to create dataset in Hugging Face format.
