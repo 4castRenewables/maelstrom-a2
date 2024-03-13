@@ -30,10 +30,10 @@ class TimerCallback(transformers.TrainerCallback):
         self.timer.complete_all()
 
     def on_step_begin(self, args, state, control, **kwargs):
-        self.timer.start(timer.TimeType.BATCH, gpu=self.gpu)
+        self.timer.start(timer.TimeType.BATCH)
 
     def on_step_end(self, args, state, control, **kwargs):
-        self.timer.end(timer.TimeType.BATCH, gpu=self.gpu)
+        self.timer.end(timer.TimeType.BATCH)
         if state.global_step % 10 == 0:
             self.timer.complete_all()
 

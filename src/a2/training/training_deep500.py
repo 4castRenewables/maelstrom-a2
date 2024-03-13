@@ -36,10 +36,10 @@ class TimerCallback(transformers.TrainerCallback):
         logging_std_library.info(
             f"Epoch {int(state.epoch)}: Start iteration step {state.global_step}/{state.max_steps} of training..."
         )
-        self.timer.start(timer.TimeType.BATCH, gpu=self.gpu)
+        self.timer.start(timer.TimeType.BATCH)
 
     def on_step_end(self, args, state, control, **kwargs):
-        self.timer.end(timer.TimeType.BATCH, gpu=self.gpu)
+        self.timer.end(timer.TimeType.BATCH)
         if state.global_step % 10 == 0:
             self.timer.complete_all()
 
