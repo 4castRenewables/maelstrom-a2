@@ -1,7 +1,9 @@
 # flake8: noqa
 import torch
 import transformers
-from deep500.utils import timer_torch as timer
+
+timer = a2.training.benchmarks.import_timer(use_deep500=os.environ("USE_DEEP500"))
+
 from transformers.trainer import *  # Ugly but probably needed ... # noeq
 
 

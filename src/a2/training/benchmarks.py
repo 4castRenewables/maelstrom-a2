@@ -10,6 +10,14 @@ import numpy as np
 torch = a2.utils.utils._import_torch(__file__)
 
 
+def import_timer(use_deep500=False):
+    if use_deep500:
+        from deep500.utils import timer_torch as timer
+    else:
+        from a2.training import benchmarks as timer
+    return timer
+
+
 @dataclasses.dataclass(frozen=True)
 class TimeType:
     EPOCH: str = "EPOCH"

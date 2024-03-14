@@ -15,14 +15,6 @@ FONTSIZE = 16
 logger = logging.getLogger(__name__)
 
 
-def import_timer(use_deep500=False):
-    if use_deep500:
-        from deep500.utils import timer_torch as timer
-    else:
-        from a2.training import benchmarks as timer
-    return timer
-
-
 def _determine_path_output(args):
     path_output = f"{args.output_dir}/{args.folder_run}/"
     logging.info(f".... using {path_output=}")
