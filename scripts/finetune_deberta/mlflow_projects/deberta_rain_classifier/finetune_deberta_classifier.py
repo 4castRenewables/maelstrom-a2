@@ -171,6 +171,7 @@ def main(args):
         tmr.end(timer.TimeType.EVALUATION)
         tmr.end(timer.TimeType.RUN)
 
+    tmr.complete_all()
     tmr.save_all_time_stats("deep500.logs")
     tmr.print_all_time_stats()
     ds_test_predicted = a2.training.evaluate_hugging.build_ds_test(
