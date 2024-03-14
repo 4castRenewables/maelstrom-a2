@@ -40,9 +40,9 @@ import numpy as np
 
 
 def main(args):
-    timer = a2.training.benchmarks.import_timer(use_deep500=args.use_deep500)
+    os.environ["USE_DEEP500"] = str(args.use_deep500)
+    timer = a2.training.benchmarks.import_timer()
     os.environ["A2_DATASET_BACKEND"] = args.dataset_backend
-    os.environ["USE_DEEP500"] = args.use_deep500
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
     memory_tracker = a2.training.benchmarks.CudaMemoryMonitor()
     if a2.training.utils_training.cuda_available():
