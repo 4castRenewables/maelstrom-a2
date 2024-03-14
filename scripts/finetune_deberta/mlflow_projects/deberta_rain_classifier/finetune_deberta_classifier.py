@@ -146,6 +146,7 @@ def main(args):
         evaluation_strategy=args.evaluation_strategy,
         label=args.key_output,
     )
+    tmr.save_all_time_stats("deep500.logs")
     logger.info(f"Device map:\n{dir(trainer.model)}")
     logger.info(f"Device map:\n{trainer.model.device}")
     n_model_parameters = a2.training.model_infos.n_model_parameters(trainer.model)

@@ -3385,13 +3385,13 @@ unicore = ["fs (>=2.4.16,<3.0.0)", "pyunicore[crypto,fs,fuse] (>=0.15.0,<0.16.0)
 
 [[package]]
 name = "markdown"
-version = "3.5.2"
+version = "3.6"
 description = "Python implementation of John Gruber's Markdown."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Markdown-3.5.2-py3-none-any.whl", hash = "sha256:d43323865d89fc0cb9b20c75fc8ad313af307cc087e84b657d9eec768eddeadd"},
-    {file = "Markdown-3.5.2.tar.gz", hash = "sha256:e1ac7b3dc550ee80e602e71c1d168002f062e49f1b11e26a36264dafd4df2ef8"},
+    {file = "Markdown-3.6-py3-none-any.whl", hash = "sha256:48f276f4d8cfb8ce6527c8f79e2ee29708508bf4d40aa410fbc3b4ee832c850f"},
+    {file = "Markdown-3.6.tar.gz", hash = "sha256:ed4f41f6daecbeeb96e576ce414c41d2d876daa9a16cb35fa8ed8c2ddfad0224"},
 ]
 
 [package.extras]
@@ -3836,12 +3836,12 @@ dill = ">=0.3.8"
 
 [[package]]
 name = "multiurl"
-version = "0.2.3.2"
+version = "0.3.1"
 description = "A package to download several URL as one, as well as supporting multi-part URLs"
 optional = false
 python-versions = "*"
 files = [
-    {file = "multiurl-0.2.3.2.tar.gz", hash = "sha256:b625892ef3a5b8d4bd323f1dcd4750b6ea7e4e2e2e4574b6e88cdf92e10579e9"},
+    {file = "multiurl-0.3.1.tar.gz", hash = "sha256:c7001437b59d56d4c310d725c3dcfff98c97c4b652893d88989853827465d442"},
 ]
 
 [package.dependencies]
