@@ -5,7 +5,7 @@ import a2.utils.utils
 import transformers
 from transformers.trainer import *  # Ugly but probably needed ... # noeq
 
-timer = a2.training.benchmarks.import_timer(use_deep500=os.environ("USE_DEEP500"))
+timer = a2.training.benchmarks.import_timer()
 
 torch = a2.utils.utils._import_torch(__file__)
 

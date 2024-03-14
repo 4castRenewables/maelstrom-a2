@@ -1,10 +1,12 @@
 # flake8: noqa
 import torch
 import transformers
+import a2.training.benchmarks
 
-timer = a2.training.benchmarks.import_timer(use_deep500=os.environ("USE_DEEP500"))
 
 from transformers.trainer import *  # Ugly but probably needed ... # noeq
+
+timer = a2.training.benchmarks.import_timer()
 
 
 class TimerCallback(transformers.TrainerCallback):

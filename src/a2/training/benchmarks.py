@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+import os
 import pprint
 import resource
 import time
@@ -11,6 +12,9 @@ torch = a2.utils.utils._import_torch(__file__)
 
 
 def import_timer(use_deep500=False):
+    if not use_deep500:
+        use_deep500 = os.environ.get("USE_DEEP500")
+    print(f"{use_deep500=}")
     if use_deep500:
         from deep500.utils import timer_torch as timer
     else:

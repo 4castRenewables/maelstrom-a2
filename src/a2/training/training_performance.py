@@ -5,7 +5,7 @@ import torch
 import transformers
 from transformers.trainer import *  # Ugly but probably needed ... # noeq
 
-timer = a2.training.benchmarks.import_timer(use_deep500=os.environ("USE_DEEP500"))
+timer = a2.training.benchmarks.import_timer()
 
 
 def get_model(params):

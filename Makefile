@@ -157,6 +157,7 @@ test-training:
     --trainer_name deep500 \
 	--dataset_backend xarray \
 	--ignore_tracking \
+	--use_deep500 \
     --debug 
 
 test-apptainer-image-training-rocm:

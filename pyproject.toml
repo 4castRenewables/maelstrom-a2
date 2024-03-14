@@ -43,6 +43,7 @@ logging-tree = "^1.9"
 netcdf4 = {version = "^1.6.5", optional = true}
 tf-keras = {version = "^2.16.0", optional = true}
 accelerate = {version = "^0.28.0", optional = true}
+deep500 = {version = "^0.2.0", optional = true}
 
 [[tool.poetry.source]]
 name = "torch-source"
