@@ -117,18 +117,13 @@ class HuggingFaceTrainerClass:
             self.db_config_base = config
         self.hyper_parameters = HyperParametersDebertaClassifier()
 
-    def get_model(self, params: t.Dict, mantik: bool = True, base_model_trainable: bool = True, use_tf: bool = False):
+    def get_model(self, params: t.Dict, mantik: bool = True, base_model_trainable: bool = True):
         db_config = self.db_config_base
         if params is not None:
             db_config.update({"cls_dropout": params["cls_dropout"]})
         if self.num_labels is not None:
             db_config.update({"num_labels": self.num_labels})
-        if use_tf:
-            model = transformers.TFAutoModelForSequenceClassification.from_pretrained(
-                self.model_folder, config=db_config
-            )
-        else:
-            model = transformers.AutoModelForSequenceClassification.from_pretrained(self.model_folder, config=db_config)
+        model = transformers.AutoModelForSequenceClassification.from_pretrained(self.model_folder, config=db_config)
         if not base_model_trainable:
             for param in model.base_model.parameters():
                 param.requires_grad = False
@@ -211,6 +206,7 @@ class HuggingFaceTrainerClass:
                 logging_steps=logging_steps,
                 save_steps=save_steps,
             )
+
         if not hyper_tuning:
             args = transformers.TrainingArguments(
                 folder_output,

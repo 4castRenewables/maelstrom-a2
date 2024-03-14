@@ -121,6 +121,12 @@ endif
 install-default:
 	poetry install --extras "deberta benchmarks xarray-extra" --sync --with torch-cpu
 
+install-deberta-tf:
+	poetry install --extras "deberta-tf benchmarks xarray-extra tracking" --sync
+
+install-deberta-tf-notebooks:
+	poetry install --extras "deberta-tf benchmarks xarray-extra tracking notebooks" --sync
+
 install-cuda-arm:
 	poetry install --extras "benchmarks deberta notebooks" --sync --with torch-cpu 
 
@@ -140,6 +146,18 @@ test-apptainer-image-training:
 	--dataset_backend pandas \
 	--ignore_tracking \
     --debug
+
+test-training:
+	poetry run python scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \
+    --filename_dataset_train /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_train.nc \
+    --filename_dataset_validate /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_validate.nc \
+    --filename_dataset_test /tmp/dataset_rain_classifier/dataset_split_thresh6M3//$(tweets_prefix)_test.nc \
+    --model_path models/deberta-v3-small/ \
+    --output_dir /tmp/trained_model/ \
+    --trainer_name deep500 \
+	--dataset_backend xarray \
+	--ignore_tracking \
+    --debug 
 
 test-apptainer-image-training-rocm:
 	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/a2-rocm.sif \
@@ -167,6 +185,24 @@ test-apptainer-image-training-cuda:
 test-apptainer-image-split:
 	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif \
 	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
+    --filename_tweets $(PATH_TWEETS)/$(tweets_prefix).csv \
+	--dataset_backend pandas \
+    --key_precipitation_station tp_mm_station \
+	--ignore_tracking \
+    --output_dir /tmp/dataset_rain_classifier/
+
+test-split:
+	poetry run \
+	python scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
+    --filename_tweets $(PATH_TWEETS)/$(tweets_prefix).nc \
+	--dataset_backend xarray \
+    --key_precipitation_station tp_mm_station \
+	--ignore_tracking \
+    --output_dir /tmp/dataset_rain_classifier/
+
+test-split-pandas:
+	poetry run \
+	python scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
     --filename_tweets $(PATH_TWEETS)/$(tweets_prefix).csv \
 	--dataset_backend pandas \
     --key_precipitation_station tp_mm_station \
