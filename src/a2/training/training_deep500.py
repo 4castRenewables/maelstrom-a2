@@ -29,6 +29,7 @@ class TimerCallback(transformers.TrainerCallback):
 
     def on_epoch_begin(self, args, state, control, **kwargs):
         self.timer.start(timer.TimeType.EPOCH)
+        self.timer.save_all_time_stats("deep500.logs")
 
     def on_epoch_end(self, args, state, control, **kwargs):
         self.timer.end(timer.TimeType.EPOCH)
