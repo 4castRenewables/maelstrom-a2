@@ -21,7 +21,6 @@ else:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-
 logger = logging.getLogger(__name__)
 
 import argparse
@@ -40,7 +39,6 @@ import numpy as np
 
 
 def main(args):
-    os.environ["USE_DEEP500"] = str(args.use_deep500)
     timer = a2.training.benchmarks.import_timer()
     os.environ["A2_DATASET_BACKEND"] = args.dataset_backend
     tracker = a2.training.tracking.Tracker(ignore=args.ignore_tracking)
