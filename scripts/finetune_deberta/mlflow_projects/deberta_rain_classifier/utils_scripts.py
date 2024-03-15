@@ -30,6 +30,8 @@ def get_dataset(
     tracker=None,
     prefix_histogram="",
     setting_rain=True,
+    text_drop_na=True,
+    precipitation_drop_na=True,
 ):
     ds = a2.dataset.load_dataset.load_tweets_dataset(
         filename,
@@ -43,6 +45,16 @@ def get_dataset(
             indices=slice(100),
         )
     logger.info(f"Input field definition: Setting field {args.key_input=} to {args.key_text=}")
+    if text_drop_na:
+        is_na = a2.dataset.utils_dataset.is_nan(ds, field=args.key_text)
+        logger.info(f"Dropping {np.sum(is_na)} nan-values in {args.key_text=}")
+        ds = a2.dataset.utils_dataset.drop_rows(ds, ~is_na)
+        ds = a2.dataset.load_dataset.reset_index_coordinate(ds)
+    if precipitation_drop_na:
+        is_na = a2.dataset.utils_dataset.is_nan(ds, field=args.key_precipitation)
+        logger.info(f"Dropping {np.sum(is_na)} nan-values in {args.key_precipitation=}")
+        ds = a2.dataset.utils_dataset.drop_rows(ds, ~is_na)
+        ds = a2.dataset.load_dataset.reset_index_coordinate(ds)
     ds = a2.dataset.utils_dataset.add_variable(
         ds=ds,
         key=args.key_input,

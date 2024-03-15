@@ -122,7 +122,7 @@ install-default:
 	poetry install --extras "deberta benchmarks xarray-extra" --sync --with torch-cpu
 
 install-deberta-tf:
-	poetry install --extras "deberta-tf benchmarks xarray-extra tracking" --sync
+	poetry install --extras "deberta-tf benchmarks xarray-extra tracking notebooks" --sync
 
 install-deberta-tf-notebooks:
 	poetry install --extras "deberta-tf benchmarks xarray-extra tracking notebooks" --sync
@@ -159,6 +159,21 @@ test-training:
 	--ignore_tracking \
 	--use_deep500 \
     --debug 
+
+test-training-tf:
+	poetry run python scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_text_classification_tf.py \
+		--train_file /tmp/dataset_rain_classifier/dataset_split_thresh6M3//tweets_2017_era5_normed_filtered_train.csv \
+		--validation_file /tmp/dataset_rain_classifier/dataset_split_thresh6M3//tweets_2017_era5_normed_filtered_validate.csv \
+		--test_file /tmp/dataset_rain_classifier/dataset_split_thresh6M3//tweets_2017_era5_normed_filtered_test.csv \
+		--model_name_or_path models/deberta-v3-small/ \
+		--output_dir /tmp/trained_model/ \
+		--learning_rate  0.00003 \
+		--dataloader_drop_last True \
+		--per_device_train_batch_size 32 \
+		--per_device_eval_batch_size 32 \
+		--do_train
+
+
 
 test-apptainer-image-training-rocm:
 	apptainer run scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/a2-rocm.sif \
@@ -206,6 +221,7 @@ test-split-pandas:
 	python scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/build_dataset_rain_classifier.py \
     --filename_tweets $(PATH_TWEETS)/$(tweets_prefix).csv \
 	--dataset_backend pandas \
+    --key_precipitation_station tp_mm_station \
     --key_precipitation_station tp_mm_station \
 	--ignore_tracking \
     --output_dir /tmp/dataset_rain_classifier/

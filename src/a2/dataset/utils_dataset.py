@@ -55,12 +55,16 @@ def is_nan(
     -------
     Boolean DataArray
     """
-    if dims is None:
-        dims = ds[field].coords.dims
-    if is_same_type_data_array(ds, field):
-        return xarray.DataArray(ds[field].values == "nan", dims=dims)
-    else:
-        return xarray.DataArray(pd.isna(ds[field].values), dims=dims)
+    if _using_xarray():
+        if dims is None:
+            dims = ds[field].coords.dims
+        if is_same_type_data_array(ds, field):
+            is_na = xarray.DataArray(ds[field].values == "nan", dims=dims)
+        else:
+            is_na = xarray.DataArray(pd.isna(ds[field].values), dims=dims)
+    elif _using_pandas():
+        is_na = ds[field].isna()
+    return is_na
 
 
 def ds_shape(ds, variable=None):

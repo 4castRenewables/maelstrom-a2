@@ -76,7 +76,6 @@ def main(args):
     )
     for suffix, indices in zip(["train", "validate", "test"], [indices_train, indices_validate, indices_test]):
         ds_sel = a2.dataset.utils_dataset.select_rows_by_index(ds, indices=indices)
-        print(f"{suffix=}")
         utils_scripts.plot_and_log_histogram(
             ds_sel,
             key=args.key_output,
