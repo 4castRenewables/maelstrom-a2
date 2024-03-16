@@ -4,7 +4,7 @@ Environment:
     conda activate a2py3p10; module load Stages/2023; module load cuDNN/8.6.0.163-CUDA-11.7; module unload Python/3.10.4
   Variables:
     GIT_PYTHON_REFRESH: quiet
-    USE_DEEP500: True
+    USE_DEEP500: "true"
 Resources:
   Queue: develbooster
   Nodes: 1

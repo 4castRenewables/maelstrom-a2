@@ -268,3 +268,7 @@ def _import_xarray_and_define_xarray_type(file, also_return_dataarray=False):
     if also_return_dataarray:
         return xarray, xarray_dataset_type, xarray_dataarray_type
     return xarray, xarray_dataset_type
+
+
+def parse_bool(bool_str):
+    return bool_str in ["true", True, "True"]
