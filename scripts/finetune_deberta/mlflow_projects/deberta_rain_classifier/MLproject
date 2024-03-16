@@ -55,6 +55,11 @@ entry_points:
       filename_tweets:
         type: str
         default: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_era5_normed_filtered.csv
+
+      dataset_backend:
+        type: str
+        default: pandas
+
       key_precipitation:
         type: str
         default: tp_h_mm
@@ -87,6 +92,7 @@ entry_points:
       folder_run:
         type: str
         default: dataset_split_thresh6M3/
+
     command: >
       python3 build_dataset_rain_classifier.py
         --filename_tweets {filename_tweets}
