@@ -214,6 +214,7 @@ entry_points:
         --key_output {key_output}
         --key_raining {key_raining}
         --key_text {key_text}
+        --dataset_backend {dataset_backend}
         --model_path {model_path}
         --model_name {model_name}
         --num_labels {num_labels}
