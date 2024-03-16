@@ -113,15 +113,15 @@ entry_points:
       filename_dataset_train:
         type: str
         default:
-          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier_pandas//dataset_split_thresh6M3///tweets_2017_era5_normed_filtered_train.nc
+          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier_pandas//dataset_split_thresh6M3///tweets_2017_era5_normed_filtered_train.csv
       filename_dataset_validate:
         type: str
         default:
-          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier_pandas//dataset_split_thresh6M3///tweets_2017_era5_normed_filtered_validate.nc
+          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier_pandas//dataset_split_thresh6M3///tweets_2017_era5_normed_filtered_validate.csv
       filename_dataset_test:
         type: str
         default:
-          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier_pandas//dataset_split_thresh6M3///tweets_2017_era5_normed_filtered_test.nc
+          /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier_pandas//dataset_split_thresh6M3///tweets_2017_era5_normed_filtered_test.csv
       key_input:
         type: str
         default: text
