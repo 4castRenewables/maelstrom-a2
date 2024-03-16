@@ -68,7 +68,7 @@ entry_points:
         default: 6e-3
       key_precipitation_station:
         type: str
-        default: station_tp_mm
+        default: tp_mm_station
       precipitation_threshold_rain_station:
         type: float
         default: 0.1
