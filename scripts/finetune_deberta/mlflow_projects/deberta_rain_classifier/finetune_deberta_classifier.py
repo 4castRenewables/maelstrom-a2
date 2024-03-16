@@ -76,6 +76,8 @@ def main(args):
         tracker=tracker,
         prefix_histogram="train",
         setting_rain=False,
+        text_drop_na=False,
+        precipitation_drop_na=False,
     )
     dataset_train = utils_scripts.to_hugging_face_dataset(args=args, ds=ds_train, dataset_object=dataset_object)
     ds_validate = utils_scripts.get_dataset(
@@ -85,6 +87,8 @@ def main(args):
         tracker=tracker,
         prefix_histogram="validate",
         setting_rain=False,
+        text_drop_na=False,
+        precipitation_drop_na=False,
     )
     dataset_validate = utils_scripts.to_hugging_face_dataset(args=args, ds=ds_validate, dataset_object=dataset_object)
     ds_test = utils_scripts.get_dataset(
@@ -94,6 +98,8 @@ def main(args):
         tracker=tracker,
         prefix_histogram="test",
         setting_rain=False,  # already done in build_dataset_rain_classifier.py
+        text_drop_na=False,
+        precipitation_drop_na=False,
     )
     dataset_test = utils_scripts.to_hugging_face_dataset(args=args, ds=ds_test, dataset_object=dataset_object)
 
