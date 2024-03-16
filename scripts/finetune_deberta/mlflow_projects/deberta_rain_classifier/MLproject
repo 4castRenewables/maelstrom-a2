@@ -105,6 +105,7 @@ entry_points:
         --validation_size {validation_size}
         --test_size {test_size}
         --output_dir {output_dir}
+        --dataset_backend {dataset_backend}
         --folder_run {folder_run}
 
   train:
