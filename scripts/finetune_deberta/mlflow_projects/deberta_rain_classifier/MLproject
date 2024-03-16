@@ -48,7 +48,59 @@ entry_points:
         --validation_size {validation_size}
         --test_size {test_size}
         --output_dir {output_dir}
+        --folder_run {folder_run}  
+  
+  split_rain_classifier_pandas:
+    parameters:
+      filename_tweets:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/data/tweets/tweets_2017_era5_normed_filtered.csv
+      key_precipitation:
+        type: str
+        default: tp_h_mm
+      precipitation_threshold_rain:
+        type: float
+        default: 6e-3
+      key_precipitation_station:
+        type: str
+        default: station_tp_mm
+      precipitation_threshold_rain_station:
+        type: float
+        default: 0.1
+      key_distance_weather_station:
+        type: str
+        default: station_distance_km
+      maximum_distance_to_station:
+        type: float
+        default: 1
+
+      validation_size:
+        type: float
+        default: 0.2
+      test_size:
+        type: float
+        default: 0.2
+
+      output_dir:
+        type: str
+        default: /p/project/deepacf/maelstrom/ehlert1/data/training_sets_rain_classifier_pandas/
+      folder_run:
+        type: str
+        default: dataset_split_thresh6M3/
+    command: >
+      python3 build_dataset_rain_classifier.py
+        --filename_tweets {filename_tweets}
+        --key_precipitation {key_precipitation}
+        --precipitation_threshold_rain {precipitation_threshold_rain}
+        --key_precipitation_station {key_precipitation_station}
+        --precipitation_threshold_rain_station {precipitation_threshold_rain_station}
+        --key_distance_weather_station {key_distance_weather_station}
+        --maximum_distance_to_station {maximum_distance_to_station}
+        --validation_size {validation_size}
+        --test_size {test_size}
+        --output_dir {output_dir}
         --folder_run {folder_run}
+
   train:
     parameters:
       filename_dataset_train:
