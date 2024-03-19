@@ -1,2 +1,3 @@
-a2[benchmarks,xarray-extra,deberta-tf,tracking]
-accelerate
+a2[benchmarks,deberta-tf,tracking]
+tf-keras
+transformers
