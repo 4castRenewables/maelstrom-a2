@@ -8507,7 +8507,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 benchmarks = ["pynvml"]
 coordinates = ["pyproj"]
 deberta = ["bottleneck", "nltk", "sentence-transformers", "sentencepiece", "transformers"]
-deberta-tf = ["bottleneck", "nltk", "sentence-transformers", "sentencepiece"]
+deberta-tf = ["bottleneck", "sentencepiece"]
 extend-exclude = []
 fancy-plotting = ["plotly", "seaborn"]
 llama-chatbot = ["sentencepiece", "transformers"]
@@ -8519,4 +8519,4 @@ xarray-extra = ["ecmwflibs", "netcdf4", "xarray"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "34c5b2fe97522b8cd074cf0994cda472bdb717fa0b60032236a6e757eb08587a"
+content-hash = "3a72307777e2db8505b9205b53f6f236bb75397fc212fec3dad2f8a4622cf817"

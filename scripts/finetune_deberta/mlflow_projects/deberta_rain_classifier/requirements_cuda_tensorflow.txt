@@ -1,3 +1,8 @@
-a2[benchmarks,deberta-tf,tracking]
-tf-keras
-transformers
+a2[deberta-tf,tracking]
+transformers[tf]
+# pandas
+# matplotlib
+# scikit-learn
+# datasets
+# mantik[mlflow]
+# sentencepiece
