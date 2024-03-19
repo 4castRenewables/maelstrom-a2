@@ -17,7 +17,7 @@ JSC_SSH = $(JSC_USER)@juwels22.fz-juelich.de#juwels-cluster.fz-juelich.de
 E4_SSH = $(E4_USER)@172.18.19.216
 JSC_SSH_PRIVATE_KEY_FILE = -i $(HOME)/.ssh/jsc
 E4_IMAGE_FOLDER := /home/kehlert/images/
-IMAGE_TYPE = ap2cuda
+IMAGE_TYPE = ap2cudatf
 KERNEL_IMAGE_DEFINITION_FILENAME := jupyter_kernel_recipe
 POETRY_GROUPS := ""
 POETRY_EXTRAS := ""
@@ -73,6 +73,15 @@ else ifeq ($(IMAGE_TYPE), ap2cuda)
 	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
 	POETRY_EXTRAS := ""
 	IMAGE_NAME := a2-cuda
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_NAME)
+	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
+	KERNEL_DISPLAY_NAME := $(IMAGE_NAME)
+else ifeq ($(IMAGE_TYPE), ap2cudatf)
+	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/
+	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
+	POETRY_EXTRAS := ""
+	IMAGE_NAME := a2-cuda-tf
 	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_NAME)
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
@@ -262,6 +271,10 @@ build-apptainer:
 upload-to-dockerhub:
 	docker tag a2-arm-cuda:latest kristian4cast/ml:a2-cuda
 	docker push kristian4cast/ml:a2-cuda
+
+upload-to-dockerhub-tf:
+	docker tag a2-cuda-tf:latest kristian4cast/ml:a2-cuda-tf
+	docker push kristian4cast/ml:a2-cuda-tf
 
 build: build-docker build-apptainer
 

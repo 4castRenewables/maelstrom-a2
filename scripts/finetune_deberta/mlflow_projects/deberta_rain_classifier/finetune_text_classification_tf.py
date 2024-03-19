@@ -33,7 +33,7 @@ from transformers import (
     AutoTokenizer,
     HfArgumentParser,
     PretrainedConfig,
-    # PushToHubCallback,
+    PushToHubCallback,
     TFAutoModelForSequenceClassification,
     TFTrainingArguments,
     create_optimizer,
@@ -568,25 +568,22 @@ def main():
         if not push_to_hub_model_id:
             push_to_hub_model_id = f"{model_name}-finetuned-text-classification"
 
-        # model_card_kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-classification"}
+        model_card_kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-classification"}
+
+        callbacks = []
 
         if model_args.use_deep500:
-            callbacks = [Deep500Callback()]
-        else:
-            callbacks = []
-        # if training_args.push_to_hub:
-        #     callbacks = [
-        #         PushToHubCallback(
-        #             output_dir=training_args.output_dir,
-        #             hub_model_id=push_to_hub_model_id,
-        #             hub_token=training_args.push_to_hub_token,
-        #             tokenizer=tokenizer,
-        #             **model_card_kwargs,
-        #         )
-        #     ]
-        # else:
-        #     callbacks = []
-        # endregion
+            callbacks = callbacks + [Deep500Callback()]
+        if training_args.push_to_hub:
+            callbacks = callbacks + [
+                PushToHubCallback(
+                    output_dir=training_args.output_dir,
+                    hub_model_id=push_to_hub_model_id,
+                    hub_token=training_args.push_to_hub_token,
+                    tokenizer=tokenizer,
+                    **model_card_kwargs,
+                )
+            ]
 
         # region Training and validation
         print(f"{tf_data['train']=}")
