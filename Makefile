@@ -86,6 +86,15 @@ else ifeq ($(IMAGE_TYPE), ap2cudatf)
 	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
 	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
 	KERNEL_DISPLAY_NAME := $(IMAGE_NAME)
+else ifeq ($(IMAGE_TYPE), ap2cudatfcuda11)
+	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/
+	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
+	POETRY_EXTRAS := ""
+	IMAGE_NAME := a2-cuda-tf-cuda11
+	KERNEL_IMAGE_DEFINITION_FILENAME := $(IMAGE_NAME)
+	KERNEL_PATH := /p/home/jusers/ehlert1/juwels/.local/share/jupyter/kernels/$(IMAGE_NAME)/
+	JSC_IMAGE_FOLDER := /p/project/deepacf/maelstrom/ehlert1/apptainer_images/
+	KERNEL_DISPLAY_NAME := $(IMAGE_NAME)
 else ifeq ($(IMAGE_TYPE), ap2armcuda)
 	APPTAINER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/apptainer/
 	DOCKER_DIR := scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/docker/
@@ -155,6 +164,24 @@ test-apptainer-image-training:
 	--dataset_backend pandas \
 	--ignore_tracking \
     --debug
+
+
+test-apptainer-image-training-tf:
+	apptainer run $(APPTAINER_DIR)/$(IMAGE_NAME).sif \
+	python3 scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_text_classification_tf.py \
+    --train_file /tmp/dataset_rain_classifier/dataset_split_thresh6M3/tweets_2017_era5_normed_filtered_train.csv \
+    --validation_file /tmp/dataset_rain_classifier/dataset_split_thresh6M3/tweets_2017_era5_normed_filtered_validate.csv \
+    --test_file /tmp/dataset_rain_classifier/dataset_split_thresh6M3/tweets_2017_era5_normed_filtered_test.csv \
+    --model_name_or_path models/deberta-v3-small/ \
+    --output_dir /tmp/trained_model/ \
+    --learning_rate  3e-05 \
+    --num_train_epochs 1 \
+    --lr_scheduler_type linear \
+    --dataloader_drop_last True \
+    --per_device_train_batch_size 32 \
+    --per_device_eval_batch_size 32 \
+    --use_deep500 \
+    --do_train
 
 test-training:
 	poetry run python scripts/finetune_deberta/mlflow_projects/deberta_rain_classifier/finetune_deberta_classifier.py \

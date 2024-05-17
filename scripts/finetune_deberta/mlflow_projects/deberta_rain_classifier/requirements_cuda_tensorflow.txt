@@ -1,8 +1,0 @@
-a2[deberta-tf,tracking]
-transformers[tf]
-# pandas
-# matplotlib
-# scikit-learn
-# datasets
-# mantik[mlflow]
-# sentencepiece
